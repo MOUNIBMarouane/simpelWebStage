@@ -1,7 +1,6 @@
 import React from "react";
 
 const FormInput = ({
-//   label,
   id,
   type = "text",
   value,
@@ -31,9 +30,8 @@ const FormInput = ({
             text-sm border 
             border-slate-200
             rounded-md
-            px-3
-            py-2
-            transition
+
+           
             duration-300 ease 
             focus:outline-none 
             focus:border-slate-400 
@@ -59,7 +57,7 @@ const FormInput = ({
             dark:focus:border-blue-400
             dark:focus:ring-blue-400/20
             transition-colors
-            duration-200
+           
             ${Icon ? "pl-10" : "pl-4"}
           `}
           />
