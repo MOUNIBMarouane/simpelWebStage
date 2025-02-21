@@ -1,8 +1,10 @@
 import "./globales.css";
+import { useNavigate, Link } from "react-router-dom";
+
 import Avatar from "../assets/icons/icons8-login-50.png";
 import React, { useState } from "react";
 import FormInput from "../components/FormInputs";
-import { Mail, User, Lock, Phone, Link, Calendar } from "lucide-react";
+import { User, Lock } from "lucide-react";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +35,6 @@ const SignIn = () => {
           <div className="">
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="Email"
                 id="email"
                 type="email"
                 value={email}
@@ -45,7 +46,6 @@ const SignIn = () => {
             </div>
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="Password"
                 id="password"
                 type="password"
                 value={password}
@@ -56,9 +56,12 @@ const SignIn = () => {
               />
             </div>
           </div>
-          <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-between place-items-center place-items-center">
+          <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-between place-items-center">
             <label className="text-[12px]">
-              I didn't have an account. <span>register</span>
+              I didn't have an account.{" "}
+              <Link to="/signup">
+                <span>register</span>
+              </Link>
             </label>
             <button type="submit">LOGIN</button>
           </div>

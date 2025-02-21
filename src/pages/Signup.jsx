@@ -1,26 +1,71 @@
 import "./globales.css";
+
+import { useNavigate, Link } from "react-router-dom";
+
 import Avatar from "../assets/icons/icons8-login-50.png";
-import InputUI from "../components/inputs/InputUI"
+import InputUI from "../components/inputs/InputUI";
 import React, { useState } from "react";
 import FormInput from "../components/FormInputs";
-import { Mail, User, Lock, Phone, Link, Calendar } from "lucide-react";
-
-
+import { Mail, User, Lock } from "lucide-react";
 
 const SignIn = () => {
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [PasswordHash, setPassword] = useState("");
   const [cpassword, setCPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     // Handle sign in logic here
-    if (email && password && password == cpassword)
+    if (
+      firstName &&
+      lastName &&
+      username &&
+      email &&
+      PasswordHash &&
+      PasswordHash == cpassword
+    ) {
       console.log("Email:", email);
-    console.log("Password:", password);
+      console.log("Password:", PasswordHash);
+      // /api/Auth/registe
+      const userData = {
+        firstName,
+        lastName,
+        username,
+        email,
+        PasswordHash,
+      };
+
+      try {
+        console.log(userData);
+        const response = await fetch(
+          "http://192.168.1.85:5204/api/Auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          }
+        );
+
+        navigate(`/verify/${email}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Registration successful:", data);
+          // Handle successful registration (e.g., redirect to login page)
+        } else {
+          console.error("Registration failed:", response.statusText);
+          // Handle registration failure (e.g., show error message)
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle network or other errors
+      }
+    }
   };
 
   return (
@@ -36,11 +81,10 @@ const SignIn = () => {
               <div className="w-6/12">
                 <div className="w-full max-w-md mx-auto p-2">
                   <FormInput
-                    label="Firs Name"
-                    id="firstname"
+                    id="firstName"
                     type="text"
-                    value={firstname}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={firstName}
+                    onChange={(e) => setfirstName(e.target.value)}
                     placeholder="First Name"
                     required
                     icon={User}
@@ -50,10 +94,9 @@ const SignIn = () => {
               <div className="w-6/12">
                 <div className="w-full max-w-md mx-auto p-2">
                   <FormInput
-                    label="Last Name"
-                    id="lastname"
+                    id="lastName"
                     type="text"
-                    value={lastname}
+                    value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Last Name"
                     required
@@ -64,7 +107,6 @@ const SignIn = () => {
             </div>
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="User Name"
                 id="username"
                 type="text"
                 value={username}
@@ -76,7 +118,6 @@ const SignIn = () => {
             </div>
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="Email"
                 id="email"
                 type="email"
                 value={email}
@@ -88,10 +129,9 @@ const SignIn = () => {
             </div>
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="Password"
                 id="password"
                 type="password"
-                value={password}
+                value={PasswordHash}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
@@ -100,7 +140,6 @@ const SignIn = () => {
             </div>
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
-                label="Confirming Password"
                 id="cpassword"
                 type="password"
                 value={cpassword}
@@ -111,8 +150,13 @@ const SignIn = () => {
               />
             </div>
           </div>
-          <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-between place-items-center place-items-center">
-            <label className="text-sm">I have alredy an account. <span>login</span></label>
+          <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-between place-items-center">
+            <label className="text-sm">
+              I have alredy an account.{" "}
+              <Link to="/sigin">
+                <span>login</span>
+              </Link>
+            </label>
             <button type="submit">Sign Up</button>
           </div>
         </form>
