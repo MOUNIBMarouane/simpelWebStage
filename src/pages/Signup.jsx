@@ -30,7 +30,7 @@ const SignIn = () => {
     ) {
       console.log("Email:", email);
       console.log("Password:", PasswordHash);
-      // /api/Auth/registe
+
       const userData = {
         firstName,
         lastName,

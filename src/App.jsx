@@ -10,75 +10,60 @@ import SignUp from "./pages/signup";
 import VerificationP from "./pages/Verification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AutContext";
+import Layout from "./components/dashboard/layout/layout";
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/",
-  //   children: [
-  //     {
-  //       index: true,
-  //       element: <SignIn />,
-  //     },
-  //     // {
-  //     //   element: <Layout />,
-  //     //   children: [
-  //     //     {
-  //     //       path: "/dashboard",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <Dashboard />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //     {
-  //     //       path: "/tictacto",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <TicTacToe />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //     {
-  //     //       path: "/profile/:username",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <Profile />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //     {
-  //     //       path: "/chat",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <Chat />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //     {
-  //     //       path: "/search",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <Search />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //     {
-  //     //       path: "/settings",
-  //     //       element: (
-  //     //         <ProtectedRoute>
-  //     //           <Settings />
-  //     //         </ProtectedRoute>
-  //     //       ),
-  //     //     },
-  //     //   ],
-  //     // },
-  //   ],
-  //   errorElement: (
-  //     <div className=" font-bold border-l-4 h-screen  bg-blue-100 p-[50%]">
-  //       404 Page Not Found
-  //     </div>
-  //   ),
-  // },
+  {
+    path: "/",
+    children: [
+      {
+        index: true,
+        element: <SignIn />,
+      },
+      {
+        element: <Layout />,
+        children: [
+          {
+            path: "/dashboard",
+            element: (
+              // <ProtectedRoute>
+              <Dashboard />
+              // </ProtectedRoute>
+            ),
+          },
+        ],
+      },
+    ],
+    errorElement: (
+      <div className=" font-bold border-l-4 h-screen  bg-blue-100 p-[50%]">
+        404 Page Not Found
+      </div>
+    ),
+    //   ],
+    // },
+    // {
+    //   element: <Layout />,
+    //   children: [
+    //     {
+    //       path: "/dashboard",
+    //       element: (
+    //         <ProtectedRoute>
+    //           <Dashboard />
+    //         </ProtectedRoute>
+    //       ),
+    //     },
+    //     {
+    //       path: "/tictacto",
+    //       element: (
+    //         <ProtectedRoute>
+    //           <TicTacToe />
+    //         </ProtectedRoute>
+    //       ),
+    //     },
+
+    //   ],
+    // },
+  },
   {
     path: "/",
     element: (
