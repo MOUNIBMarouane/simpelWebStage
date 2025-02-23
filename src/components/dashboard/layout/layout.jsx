@@ -1,5 +1,6 @@
 import React from "react";
-
+import { Outlet, createBrowserRouter } from "react-router-dom";
+import NavBar from "../navBar/NavBar";
 function Layout() {
   return (
     <div className="flex w-full h-full ">

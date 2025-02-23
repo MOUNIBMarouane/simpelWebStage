@@ -11,6 +11,7 @@ import VerificationP from "./pages/Verification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AutContext";
 import Layout from "./components/dashboard/layout/layout";
+import Dashboard from "./pages/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -35,41 +36,9 @@ const router = createBrowserRouter([
       },
     ],
     errorElement: (
-      <div className=" font-bold border-l-4 h-screen  bg-blue-100 p-[50%]">
+      <div className=" font-bold border-l-4 h-screen  bg-red-400 p-[50%]">
         404 Page Not Found
       </div>
-    ),
-    //   ],
-    // },
-    // {
-    //   element: <Layout />,
-    //   children: [
-    //     {
-    //       path: "/dashboard",
-    //       element: (
-    //         <ProtectedRoute>
-    //           <Dashboard />
-    //         </ProtectedRoute>
-    //       ),
-    //     },
-    //     {
-    //       path: "/tictacto",
-    //       element: (
-    //         <ProtectedRoute>
-    //           <TicTacToe />
-    //         </ProtectedRoute>
-    //       ),
-    //     },
-
-    //   ],
-    // },
-  },
-  {
-    path: "/",
-    element: (
-      // <PublicRoute>
-      <SignUp />
-      // </PublicRoute>
     ),
   },
   {
