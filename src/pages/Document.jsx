@@ -21,25 +21,9 @@ const Documents = () => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center items-center text-white">
-      <div className="bg-black/60 w-full h-full backdrop-blur-md p-6 shadow-lg">
-        {/* <h2 className="text-center text-2xl font-bold">Documents</h2> */}
-        <div className="">
+    <div className="w-full h-full flex justify-center items-center text-white overflow-scroll">
+      <div className="bg-white w-full h-full backdrop-blur-md shadow-lg">
           <DocumentList />
-          {/* <AddDocs onDocumentAdded={handleDocumentAdded} />
-          {documents.length > 0 ? (
-            documents.map((doc) => (
-              <DocumentCard
-                key={doc.id}
-                title={doc.title}
-                date={doc.createdAt}
-                description={doc.content}
-              />
-            ))
-          ) : (
-            <p>No documents available.</p>
-          )} */}
-        </div>
       </div>
     </div>
   );

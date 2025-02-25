@@ -41,7 +41,7 @@ function Layout() {
           <NavBar />
         </div>
       </div>
-      <div className="w-full h-full bg-blue-800">
+      <div className="w-full h-full bg-blue-800 overflow">
         <Outlet />
       </div>
     </div>

@@ -63,7 +63,7 @@ const DocumentList = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 ">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <h1 className="text-2xl font-bold text-white flex items-center">
           <FileText size={24} className="mr-2 text-blue-400" />

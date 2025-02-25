@@ -114,7 +114,6 @@ const AddDocs = ({ onDocumentAdded }) => {
                     className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>
-
                 <div>
                   <label
                     htmlFor="content"
