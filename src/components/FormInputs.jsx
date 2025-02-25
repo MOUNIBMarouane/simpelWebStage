@@ -2,7 +2,7 @@ import React from "react";
 
 const FormInput = ({
   id,
-  type = "text",
+  type,
   value,
   onChange,
   placeholder,
@@ -23,23 +23,13 @@ const FormInput = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className={`peer
-            bg-transparent 
-            placeholder:text-slate-400
-            text-slate-700 
+            className={`peer 
             text-sm border 
-            border-slate-200
-            rounded-md
-
-           
             duration-300 ease 
-            focus:outline-none 
-            focus:border-slate-400 
             hover:border-slate-300 
             shadow-sm focus:shadow
             w-full
             rounded-lg
-            border
             border-gray-300
             bg-white
             px-4
@@ -57,7 +47,6 @@ const FormInput = ({
             dark:focus:border-blue-400
             dark:focus:ring-blue-400/20
             transition-colors
-           
             ${Icon ? "pl-10" : "pl-4"}
           `}
           />

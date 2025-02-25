@@ -1,0 +1,79 @@
+import axios from "axios";
+const API_BASE_URL = "http://192.168.1.85:5204/api";
+
+export const getUserAccount = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null; // Don't throw an error, just return null
+  }
+
+  try {
+    const response = await axios.get(
+      "http://192.168.1.85:5204/api/Account/user-info",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+    return null; // Return null if request fails
+  }
+};
+
+export const getDocuments = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return [];
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Documents`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (response.status === 200) {
+      return response.data; // Returns an array of documents
+    }
+  } catch (error) {
+    console.error("Failed to fetch documents:", error);
+    return [];
+  }
+};
+
+export const addDocument = async (title, content) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("userId"); // Ensure userId is stored after login
+
+  if (!accessToken || !userId) {
+    console.error("User is not authenticated.");
+    return null;
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Documents`, // ✅ Use /api/Documents
+      {
+        title,
+        content,
+        createdByUserId: userId, // ✅ Automatically set user ID
+      },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    if (response.status === 201) {
+      console.log("Document added successfully:", response.data);
+      return response.data; // Return the newly created document
+    }
+  } catch (error) {
+    console.error("Failed to add document:", error);
+    return null;
+  }
+};

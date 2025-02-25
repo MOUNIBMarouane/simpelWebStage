@@ -179,56 +179,7 @@ const SignIn = () => {
               required
               icon={Lock}
             />
-            <div className="text-sm text-gray-400">
-              <p>Password must include:</p>
-              <ul>
-                <li
-                  className={
-                    passwordValidations.length
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  At least 8 characters
-                </li>
-                <li
-                  className={
-                    passwordValidations.uppercase
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  An uppercase letter
-                </li>
-                <li
-                  className={
-                    passwordValidations.lowercase
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  A lowercase letter
-                </li>
-                <li
-                  className={
-                    passwordValidations.digit
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  A digit
-                </li>
-                <li
-                  className={
-                    passwordValidations.specialChar
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  A special character (@$!%*?&)
-                </li>
-              </ul>
-            </div>
+
             <FormInput
               id="cpassword"
               type="password"
@@ -238,8 +189,54 @@ const SignIn = () => {
               required
               icon={Lock}
             />
+            <div className="text-sm text-gray-400">
+              <p>Password must include:</p>
+              <ul>
+                <li
+                  className={
+                    passwordValidations.length ? "text-green-500" : "text-white"
+                  }
+                >
+                  At least 8 characters
+                </li>
+                <li
+                  className={
+                    passwordValidations.uppercase
+                      ? "text-green-500"
+                      : "text-white"
+                  }
+                >
+                  An uppercase letter
+                </li>
+                <li
+                  className={
+                    passwordValidations.lowercase
+                      ? "text-green-500"
+                      : "text-white"
+                  }
+                >
+                  A lowercase letter
+                </li>
+                <li
+                  className={
+                    passwordValidations.digit ? "text-green-500" : "text-white"
+                  }
+                >
+                  A digit
+                </li>
+                <li
+                  className={
+                    passwordValidations.specialChar
+                      ? "text-green-500"
+                      : "text-white"
+                  }
+                >
+                  A special character (@$!%*?&)
+                </li>
+              </ul>
+            </div>
             {passwordError && (
-              <div className="text-red-500 text-sm">{passwordError}</div>
+              <div className="text-white text-sm">{passwordError}</div>
             )}
           </div>
         );
@@ -263,7 +260,6 @@ const SignIn = () => {
         return null;
     }
   };
-
   return (
     <div className=" grad-bg bg-image w-full h-full flex justify-center place-items-center text-white">
       <div className="bg-grade bg-black/60 backdrop-blur-md p-6 md:w-6/12 lg:w-6/12 rounded">
@@ -315,7 +311,7 @@ const SignIn = () => {
 
         <div className="mt-4 text-sm text-center">
           Already have an account?{" "}
-          <Link to="/sigin" className="text-blue-400 hover:text-blue-300">
+          <Link to="/signin" className="text-blue-400 hover:text-blue-300">
             Login here
           </Link>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Verification = () => {
   const { email } = useParams();
@@ -47,45 +48,34 @@ const Verification = () => {
     }
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "http://192.168.1.85:5204/api/Auth/verify-email",
         {
-          method: "POST",
+          email: email,
+          verificationCode,
+        },
+        {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify({
-            email: email,
-            code: verificationCode, // Changed from verificationCode to match expected API format
-          }),
         }
       );
 
-      // First try to get the response as text
-      const responseText = await response.text();
-      let data;
+      const data = response.data;
 
-      try {
-        // Try to parse as JSON if possible
-        data = JSON.parse(responseText);
-      } catch (e) {
-        // If not JSON, use the text as is
-        data = { message: responseText };
-      }
-
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(
           data.message || `Verification failed (${response.status})`
         );
       }
 
       console.log("Verification successful:", data);
-      navigate("/sigin");
+      navigate("/signin");
     } catch (error) {
       console.error("Verification error:", error);
       setError(
-        error.message ||
+        error.response?.data?.message ||
           "An error occurred during verification. Please try again."
       );
     } finally {
@@ -93,51 +83,42 @@ const Verification = () => {
     }
   };
 
-  const handleResendCode = () =>{console.log(code)}
-  //  = async () => {
-  //   setError("");
-  //   setIsLoading(true);
+  const handleResendCode = async () => {
+    setError("");
+    setIsLoading(true);
 
-  //   try {
-  //     const response = await fetch(
-  //       "http://192.168.1.85:5204/api/Auth/verify-email",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Accept: "application/json",
-  //         },
-  //         body: JSON.stringify({ email }),
-  //       }
-  //     );
+    try {
+      const response = await axios.post(
+        "http://192.168.1.85:5204/api/Auth/resend-code",
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
-  //     const responseText = await response.text();
-  //     let data;
+      const data = response.data;
 
-  //     try {
-  //       data = JSON.parse(responseText);
-  //     } catch (e) {
-  //       data = { message: responseText };
-  //     }
+      if (response.status !== 200) {
+        throw new Error(
+          data.message || `Failed to resend code (${response.status})`
+        );
+      }
 
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         data.message || `Failed to resend code (${response.status})`
-  //       );
-  //     }
-
-  //     // Clear existing code inputs
-  //     setCode(["", "", "", "", "", ""]);
-  //     alert("Verification code has been resent to your email");
-  //   } catch (error) {
-  //     console.error("Resend error:", error);
-  //     setError(
-  //       error.message || "Failed to resend verification code. Please try again."
-  //     );
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+      setCode(["", "", "", "", "", ""]);
+      alert("Verification code has been resent to your email");
+    } catch (error) {
+      console.error("Resend error:", error);
+      setError(
+        error.response?.data?.message ||
+          "Failed to resend verification code. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-image w-full h-full flex justify-center place-items-center text-white">

@@ -1,17 +1,20 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
 
-import { Outlet, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
 import SignIn from "./pages/signin";
 import SignUp from "./pages/signup";
 import VerificationP from "./pages/Verification";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { AuthProvider } from "./context/AutContext";
+import { AuthProvider } from "./Auth/AuthContext";
+// import PublicRoute from "./Auth/PublicRoute";
+// import ProtectedRoute from "./Auth/ProtectedRoute";
 import Layout from "./components/dashboard/layout/layout";
 import Dashboard from "./pages/Dashboard";
+import ResetPassword from "./pages/RestPassword";
+import Documents from "./pages/Document";
+import EmployerList from "./pages/EmployerList";
 
 const router = createBrowserRouter([
   {
@@ -32,11 +35,27 @@ const router = createBrowserRouter([
               // </ProtectedRoute>
             ),
           },
+          {
+            path: "/documents",
+            element: (
+              // <ProtectedRoute>
+              <Documents />
+              // </ProtectedRoute>
+            ),
+          },
+          {
+            path: "/employer-list",
+            element: (
+              // <ProtectedRoute>
+              <EmployerList />
+              // </ProtectedRoute>
+            ),
+          },
         ],
       },
     ],
     errorElement: (
-      <div className=" font-bold border-l-4 h-screen  bg-red-400 p-[50%]">
+      <div className="font-bold border-l-4 h-screen bg-red-400 p-[50%]">
         404 Page Not Found
       </div>
     ),
@@ -50,7 +69,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/sigin",
+    path: "/signin",
     element: (
       // <PublicRoute>
       <SignIn />
@@ -65,18 +84,33 @@ const router = createBrowserRouter([
       // </PublicRoute>
     ),
   },
+  {
+    path: "/forgot-password",
+    element: (
+      // <PublicRoute>
+      <ResetPassword />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/update-password",
+    element: (
+      // <PublicRoute>
+      <ResetPassword />
+      // </PublicRoute>
+    ),
+  },
 ]);
-function App() {
-  const [count, setCount] = useState(0);
 
+function App() {
   return (
     <div className="w-[100vw] h-[100vh] bg-red-500">
-      <ErrorBoundary fallback={<p>Something went wrong</p>}>
-        <AuthProvider>
+      <AuthProvider>
+        <ErrorBoundary fallback={<p>Something went wrong</p>}>
           {/* <Toaster /> */}
           <RouterProvider router={router} />
-        </AuthProvider>
-      </ErrorBoundary>
+        </ErrorBoundary>
+      </AuthProvider>
     </div>
   );
 }
