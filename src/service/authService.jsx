@@ -1,27 +1,28 @@
 import axios from "axios";
+
 const API_BASE_URL = "http://192.168.1.85:5204/api";
 
-export const getUserRole = async () =>{
-    const accessToken = localStorage.getItem("accessToken");
+export const getUserRole = async () => {
+  const accessToken = localStorage.getItem("accessToken");
 
-    if (!accessToken) {
-      console.warn("No access token found. User is not logged in.");
-      return null; // Don't throw an error, just return null
-    }
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null; // Don't throw an error, just return null
+  }
 
-    try {
-      const response = await axios.get(
-        "http://192.168.1.85:5204/api/Account/user-role",
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch user data:", error);
-      return null; // Return null if request fails
-    }
-}
+  try {
+    const response = await axios.get(
+      "http://192.168.1.85:5204/api/Account/user-role",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+    return null; // Return null if request fails
+  }
+};
 
 export const getUserAccount = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -38,7 +39,7 @@ export const getUserAccount = async () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
-    console.log("affiche resp user data---" , response.data)
+    console.log("affiche resp user data---", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user data:", error);
@@ -91,6 +92,8 @@ export const addDocument = async (title, content, status) => {
         createdByUserId: userData.userid, // ✅ Automatically set user ID
       },
       {
+        "Content-Type": "application/json",
+
         headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
@@ -102,5 +105,22 @@ export const addDocument = async (title, content, status) => {
   } catch (error) {
     console.error("Failed to add document:", error);
     return null;
+  }
+};
+
+export const UpdateUser = async (formData) => {
+  const accessToken = localStorage.getItem("accessToken");
+  console.log("update user called-------", formData);
+  console.log("iduser ------", formData.userId);
+  const response = await axios.put(
+    `${API_BASE_URL}/Admin/users/${formData.userId}`,
+    formData,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+  if (response.status === 201) {
+    console.log("Document added successfully:", response.data);
+    return response.data; // Return the newly created document
   }
 };

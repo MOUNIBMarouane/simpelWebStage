@@ -78,22 +78,22 @@ const DocumentCard = ({
         </div>
 
         <div className="w-full flex justify-end mt-4">
-          <motion.button
+          <div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleEditClick}
             className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
           >
             <Pencil size={14} className="mr-1" /> Edit
-          </motion.button>
-          <motion.button
+          </div>
+          <div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onDelete}
             className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
           >
             <Trash size={14} className="mr-1" /> Delete
-          </motion.button>
+          </div>
         </div>
       </motion.div>
 

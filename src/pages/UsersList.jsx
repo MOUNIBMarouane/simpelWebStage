@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FormInput from "../components/FormInputs";
-import { useNavigate, Link } from "react-router-dom";
-import {
-  Mail,
-  User,
-  Lock,
-  X,
-  Workflow,
-  Edit,
-  Trash,
-  Trash2,
-  Search,
-  Plus,
-} from "lucide-react";
+import { Mail, User, Lock, X, Trash } from "lucide-react";
 import FormSelect from "../components/inputs/FormSelect";
 import axios from "axios";
 
 import {} from "lucide-react";
+import { UpdateUser } from "../service/authService";
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showFormNew, setShowFormNew] = useState(false);
+  const [showFormUpdate, setShowFormUpdate] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [editingUsers, setEditingUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [newUsers, setNewUsers] = useState({
@@ -33,6 +24,7 @@ const UsersList = () => {
   });
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
+    userId: "",
     firstName: "",
     lastName: "",
     username: "",
@@ -137,7 +129,7 @@ const UsersList = () => {
       );
       if (response.status === 201) {
         console.log("User succusful saved");
-        setShowForm(false);
+        setShowFormNew(false);
         // navigate(`/verify/${formData.email}`);
       } else {
         console.log(response.status);
@@ -312,40 +304,23 @@ const UsersList = () => {
   const handleChange = (e) => {
     setNewUsers({ ...newUsers, [e.target.name]: e.target.value });
   };
-
-  const addOrEditUsers = () => {
-    if (
-      !newUsers.username ||
-      !newUsers.email ||
-      !newUsers.password ||
-      !newUsers.firstName ||
-      !newUsers.lastName ||
-      !newUsers.roleName
-    )
-      return;
-
-    if (editingUsers) {
-      setUsers(
-        Users.map((user) =>
-          user.id === editingUsers ? { ...user, ...newUsers } : user
-        )
-      );
-    } else {
-      setUsers([...Users, { id: Date.now(), ...newUsers }]);
-    }
-
-    setShowForm(false);
-    setNewUsers({
-      username: "",
-      email: "",
-      password: "",
+  const handleSave = async () => {
+    // Call API or update state with new user data
+    console.log("Saving user data:", formData);
+    UpdateUser(formData);
+    // Close the form after saving
+    setShowFormUpdate(false);
+  };
+  const handleClose = () => {
+    setShowFormUpdate(false);
+    setFormData({
+      userId: "",
       firstName: "",
       lastName: "",
+      email: "",
       roleName: "",
-    });
-    setEditingUsers(null);
+    }); // Clear form
   };
-
   const deleteUsers = (id) => {
     setUsers(Users.filter((user) => user.id !== id));
   };
@@ -353,17 +328,18 @@ const UsersList = () => {
   const editUsers = (user) => {
     setNewUsers(user);
     setEditingUsers(user.id);
-    setShowForm(true);
+    setShowFormNew(true);
   };
+
   const roleName = (idrole) => {
     console.log("Id role ", idrole);
     switch (idrole) {
       case 1:
         return "Admin";
       case 2:
-        return "Simple User";
+        return "SimpleUser";
       case 3:
-        return "Full User";
+        return "FullUser";
     }
   };
 
@@ -389,6 +365,23 @@ const UsersList = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (selectedUser) {
+      setFormData({
+        userId: selectedUser.id || "",
+        firstName: selectedUser.firstName || "",
+        lastName: selectedUser.lastName || "",
+        email: selectedUser.email || "",
+        roleName: selectedUser.roleId || "",
+      });
+    }
+  }, [selectedUser, showFormUpdate]);
+
+  const handleUserClick = (user) => {
+    console.log("selected: ", user);
+    setSelectedUser(user);
+    setShowFormUpdate(true);
+  };
   const filteredUsers = Users.filter((user) =>
     Object.values(user).some(
       (value) =>
@@ -411,52 +404,33 @@ const UsersList = () => {
             className="p-2 border rounded w-2/6"
           />
           <div
-            onClick={() => setShowForm(true)}
+            onClick={() => setShowFormNew(true)}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition "
           >
             + Add Users
           </div>
-
-          {/* {filteredUsers.map((user) => (
-            <motion.div
-              key={user.id}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-blue-700 p-4 rounded-lg shadow-md hover:shadow-lg"
-            >
-              <h3 className="text-lg font-bold">{user.name}</h3>
-              <p className="text-sm">{user.position}</p>
-              <p className="text-sm text-gray-300">{user.email}</p>
-              <div className="flex justify-between mt-2">
-                <button
-                  onClick={() => editUsers(user)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <div
-                  onClick={() => deleteUsers(user.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded flex"
-                >
-                  Delete
-                </div>
-              </div>
-            </motion.div>
-          ))} */}
         </div>
-        <div>
+        <div className="overflow-hidden rounded-lg shadow-lg">
           <motion.table
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full border-collapse bg-gray-900 text-white rounded-lg shadow-lg"
+            className="w-full border-collapse bg-gray-900 text-white rounded-lg"
           >
-            <thead className="bg-blue-800">
+            <thead className="bg-blue-700 text-white">
               <tr>
-                <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Email</th>
-                <th className="p-3 text-left">Role</th>
-                <th className="p-3 text-center">Actions</th>
+                <th className="p-4 text-left uppercase text-sm tracking-wide">
+                  Name
+                </th>
+                <th className="p-4 text-left uppercase text-sm tracking-wide">
+                  Email
+                </th>
+                <th className="p-4 text-left uppercase text-sm tracking-wide">
+                  Role
+                </th>
+                <th className="p-4 text-center uppercase text-sm tracking-wide">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -467,29 +441,28 @@ const UsersList = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-b border-gray-700 hover:bg-gray-800"
+                    className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
+                    onClick={() => handleUserClick(user)}
                   >
-                    <td className="p-3">
+                    <td className="p-4">
                       {user.firstName} {user.lastName}
                     </td>
-                    <td className="p-3">{user.email}</td>
-                    <td className="p-3">{roleName(user.roleId)}</td>
-                    <td className="p-3 text-center flex justify-center">
-                      <div className="w-full p-2 rounded-lg flex justify-center bg-gray-700 text-yellow-400 hover:text-yellow-500 mx-2">
-                        <Edit size={18} className="w-full" />
-                      </div>
+                    <td className="p-4">{user.email}</td>
+                    <td className="p-4">{roleName(user.roleId)}</td>
+                    <td className="p-4 flex items-center justify-center space-x-3">
                       <div
-                        className="w-full p-2 bg-red-100 rounded-lg flex justify-center text-red-500 hover:text-red-600"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200"
                         onClick={() => handleDelete(user.id)}
                       >
                         <Trash size={18} />
+                        <p className="hidden sm:inline">Delete</p>
                       </div>
                     </td>
                   </motion.tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="p-3 text-center text-gray-400">
+                  <td colSpan="4" className="p-4 text-center text-gray-400">
                     No users found.
                   </td>
                 </tr>
@@ -499,10 +472,10 @@ const UsersList = () => {
         </div>
       </div>
 
-      {showForm && (
+      {showFormNew && (
         <div
           onClick={(e) => {
-            if (e.target === e.currentTarget) setShowForm(false);
+            if (e.target === e.currentTarget) setShowFormNew(false);
           }}
           className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center place-items-center text-white"
         >
@@ -510,7 +483,7 @@ const UsersList = () => {
             <div className="w-full flex-col place-items-center pb-6">
               <X
                 className="absolute top-0 right-0 cursor-pointer m-2"
-                onClick={() => setShowForm(false)}
+                onClick={() => setShowFormNew(false)}
               />
               <h2 className="text-2xl font-bold">Add New User</h2>
               <div className="flex justify-center mt-4 space-x-2">
@@ -558,88 +531,87 @@ const UsersList = () => {
             </form>
           </div>
         </div>
-        // <div className="fixed inset-0 flex justify-center items-center bg-black/50">
-        //   <motion.div
-        //     initial={{ opacity: 0, scale: 0.9 }}
-        //     animate={{ opacity: 1, scale: 1 }}
-        //     transition={{ duration: 0.3 }}
-        //     className="bg-black/70 p-6 rounded-lg shadow-lg w-96 backdrop-blur-md"
-        //   >
-        //     <h2 className="text-xl font-bold mb-4 text-white text-center">
-        //       {editingUsers ? "Edit Users" : "Add New Users"}
-        //     </h2>
-        //     <input
-        //       type="text"
-        //       name="name"
-        //       placeholder="Name"
-        //       value={newUsers.name}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="text"
-        //       name="name"
-        //       placeholder="Name"
-        //       value={newUsers.name}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="text"
-        //       name="name"
-        //       placeholder="Name"
-        //       value={newUsers.name}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="text"
-        //       name="name"
-        //       placeholder="Name"
-        //       value={newUsers.name}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="text"
-        //       name="name"
-        //       placeholder="Name"
-        //       value={newUsers.name}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="text"
-        //       name="position"
-        //       placeholder="Position"
-        //       value={newUsers.position}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <input
-        //       type="email"
-        //       name="email"
-        //       placeholder="Email"
-        //       value={newUsers.email}
-        //       onChange={handleChange}
-        //       className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
-        //     />
-        //     <div className="flex justify-between">
-        //       <button
-        //         onClick={addOrEditUsers}
-        //         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-        //       >
-        //         {editingUsers ? "Update" : "Add"}
-        //       </button>
-        //       <div
-        //         onClick={() => setShowForm(false)}
-        //         className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition cursor-pointer"
-        //       >
-        //         Cancel
-        //       </div>
-        //     </div>
-        //   </motion.div>
-        // </div>
+      )}
+
+      {showFormUpdate && selectedUser && (
+        <div className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center items-center text-white">
+          <div className="relative bg-blue-950/60 backdrop-blur-md p-6 w-6/12 rounded-lg">
+            <X
+              className="absolute top-0 right-0 cursor-pointer m-2"
+              onClick={handleClose}
+            />
+
+            <h2 className="text-2xl font-bold mb-4">User Details</h2>
+            <p>
+              <strong>Role:</strong> {roleName(selectedUser.roleId)}
+            </p>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+              <div className="w-full flex gap-4">
+                <div className="w-1/2">
+                  <FormInput
+                    id="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
+                    required
+                    icon={User}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <FormInput
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
+                    required
+                    icon={User}
+                  />
+                </div>
+              </div>
+              <FormInput
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+                required
+                icon={User}
+              />
+              <FormSelect
+                id="roleName"
+                value={roleName(formData.roleName)}
+                onChange={handleInputChange}
+                options={options}
+                icon={(props) => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    {...props}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                )}
+              />
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg"
+                onClick={handleSave}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

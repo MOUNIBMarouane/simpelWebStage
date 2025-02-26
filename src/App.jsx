@@ -1,5 +1,4 @@
 import React from "react";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
@@ -8,8 +7,7 @@ import SignUp from "./pages/signup";
 import VerificationP from "./pages/Verification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./Auth/AuthContext";
-// import PublicRoute from "./Auth/PublicRoute";
-// import ProtectedRoute from "./Auth/ProtectedRoute";
+import ProtectedRoute from "./Auth/ProtectedRoute"; // ✅ Import ProtectedRoute
 import Layout from "./components/dashboard/layout/layout";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/RestPassword";
@@ -19,95 +17,65 @@ import UsersList from "./pages/UsersList";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <SignIn />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    element: <Layout />, // ✅ Protect everything inside Layout
     children: [
       {
-        index: true,
-        element: <SignIn />,
+        path: "/dashboard",
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
       {
-        element: <Layout />,
-        children: [
-          {
-            path: "/dashboard",
-            element: (
-              // <ProtectedRoute>
-              <Dashboard />
-              // </ProtectedRoute>
-            ),
-          },
-          {
-            path: "/documents",
-            element: (
-              // <ProtectedRoute>
-              <Documents />
-              // </ProtectedRoute>
-            ),
-          },
-          {
-            path: "/Users-list",
-            element: (
-              // <ProtectedRoute>
-              <UsersList />
-              // </ProtectedRoute>
-            ),
-          },
-        ],
+        path: "/documents",
+        element: (
+          <ProtectedRoute>
+            <Documents />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/users-list", // ✅ Lowercase path
+        element: (
+          <ProtectedRoute>
+            <UsersList />
+          </ProtectedRoute>
+        ),
       },
     ],
-    errorElement: (
-      <div className="font-bold border-l-4 h-screen bg-red-400 p-[50%]">
-        404 Page Not Found
-      </div>
-    ),
   },
   {
     path: "/signup",
-    element: (
-      // <PublicRoute>
-      <SignUp />
-      // </PublicRoute>
-    ),
+    element: <SignUp />,
   },
   {
     path: "/signin",
-    element: (
-      // <PublicRoute>
-      <SignIn />
-      // </PublicRoute>
-    ),
+    element: <SignIn />,
   },
   {
     path: "/verify/:email",
-    element: (
-      // <PublicRoute>
-      <VerificationP />
-      // </PublicRoute>
-    ),
+    element: <VerificationP />,
   },
   {
     path: "/forgot-password",
-    element: (
-      // <PublicRoute>
-      <ResetPassword />
-      // </PublicRoute>
-    ),
+    element: <ResetPassword />,
   },
   {
     path: "/update-password",
-    element: (
-      // <PublicRoute>
-      <ResetPassword />
-      // </PublicRoute>
-    ),
+    element: <ResetPassword />,
   },
 ]);
 
 function App() {
   return (
-    <div className="w-[100vw] h-[100vh] bg-red-500">
+    <div className="w-[100vw] h-[100vh]">
       <AuthProvider>
         <ErrorBoundary fallback={<p>Something went wrong</p>}>
-          {/* <Toaster /> */}
           <RouterProvider router={router} />
         </ErrorBoundary>
       </AuthProvider>

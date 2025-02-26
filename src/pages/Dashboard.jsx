@@ -1,14 +1,14 @@
 import React from "react";
+import { useAuth } from "../Auth/AuthContext"; // ✅ Ensure correct import
 
 const Dashboard = () => {
-
-     
-    return (
-        <div>
-            <h1>Dashboard</h1>
-            <p>Welcome to the dashboard!</p>
-        </div>
-    );
+  const { user } = useAuth(); // ✅ Access user from context
+    console.log("Context ---",user)
+  return (
+    <div>
+      <h1>Welcome, {user ? user.username : "Guest"}!</h1>
+    </div>
+  );
 };
 
 export default Dashboard;
