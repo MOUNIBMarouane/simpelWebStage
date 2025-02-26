@@ -5,11 +5,13 @@ import React, { useState } from "react";
 import FormInput from "../components/FormInputs";
 import { User, Lock } from "lucide-react";
 import axios from "axios";
+import { header } from "framer-motion/client";
 // import { useContext } from "react";
 // import AuthContext from "../Auth/AuthContext";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
+  const [userid, setUserId] = useState(-1);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -59,13 +61,7 @@ const SignIn = () => {
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);
-        // login(
-        //   response.data.user,
-        //   response.data.accessToken,
-        //   response.data.refreshToken
-        // );
         localStorage.setItem("accessToken", response.data.accessToken);
-        // console.log(response.data);
 
         navigate("/dashboard");
       } else {

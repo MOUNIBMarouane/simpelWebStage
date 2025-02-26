@@ -1,53 +1,55 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const EmployerList = () => {
-  const [employers, setEmployers] = useState([]);
+const UsersList = () => {
+  const [Users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingEmployer, setEditingEmployer] = useState(null);
+  const [editingUsers, setEditingUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [newEmployer, setNewEmployer] = useState({
-    name: "",
-    position: "",
+  const [newUsers, setNewUsers] = useState({
     email: "",
+    username: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    roleName: "",
   });
 
   const handleChange = (e) => {
-    setNewEmployer({ ...newEmployer, [e.target.name]: e.target.value });
+    setNewUsers({ ...newUsers, [e.target.name]: e.target.value });
   };
 
-  const addOrEditEmployer = () => {
-    if (!newEmployer.name || !newEmployer.position || !newEmployer.email)
-      return;
+  const addOrEditUsers = () => {
+    if (!newUsers.name || !newUsers.position || !newUsers.email) return;
 
-    if (editingEmployer) {
-      setEmployers(
-        employers.map((emp) =>
-          emp.id === editingEmployer ? { ...emp, ...newEmployer } : emp
+    if (editingUsers) {
+      setUsers(
+        Users.map((emp) =>
+          emp.id === editingUsers ? { ...emp, ...newUsers } : emp
         )
       );
     } else {
-      setEmployers([...employers, { id: Date.now(), ...newEmployer }]);
+      setUsers([...Users, { id: Date.now(), ...newUsers }]);
     }
 
     setShowForm(false);
-    setNewEmployer({ name: "", position: "", email: "" });
-    setEditingEmployer(null);
+    setNewUsers({ name: "", position: "", email: "" });
+    setEditingUsers(null);
   };
 
-  const deleteEmployer = (id) => {
-    setEmployers(employers.filter((emp) => emp.id !== id));
+  const deleteUsers = (id) => {
+    setUsers(Users.filter((emp) => emp.id !== id));
   };
 
-  const editEmployer = (emp) => {
-    setNewEmployer(emp);
-    setEditingEmployer(emp.id);
+  const editUsers = (emp) => {
+    setNewUsers(emp);
+    setEditingUsers(emp.id);
     setShowForm(true);
   };
 
-  const filteredEmployers = employers.filter((employer) =>
-    Object.values(employer).some(
+  const filteredUsers = Users.filter((Users) =>
+    Object.values(Users).some(
       (value) =>
         typeof value === "string" &&
         value.toLowerCase().includes(searchQuery.toLowerCase())
@@ -57,11 +59,11 @@ const EmployerList = () => {
   return (
     <div className="w-full h-full flex justify-center items-center text-white">
       <div className="bg-black/60 w-full h-full backdrop-blur-md p-6 shadow-lg">
-        <h2 className="text-center text-2xl font-bold">Employer List</h2>
+        <h2 className="text-center text-2xl font-bold">Users List</h2>
 
         <input
           type="text"
-          placeholder="Search employers..."
+          placeholder="Search Users..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border rounded w-full"
@@ -72,9 +74,9 @@ const EmployerList = () => {
             onClick={() => setShowForm(true)}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
           >
-            + Add Employer
+            + Add Users
           </button>
-          {filteredEmployers.map((emp) => (
+          {filteredUsers.map((emp) => (
             <motion.div
               key={emp.id}
               initial={{ opacity: 0, y: -10 }}
@@ -86,13 +88,13 @@ const EmployerList = () => {
               <p className="text-sm text-gray-300">{emp.email}</p>
               <div className="flex justify-between mt-2">
                 <button
-                  onClick={() => editEmployer(emp)}
+                  onClick={() => editUsers(emp)}
                   className="bg-yellow-500 text-white px-3 py-1 rounded"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteEmployer(emp.id)}
+                  onClick={() => deleteUsers(emp.id)}
                   className="bg-red-500 text-white px-3 py-1 rounded"
                 >
                   Delete
@@ -112,13 +114,13 @@ const EmployerList = () => {
             className="bg-black/70 p-6 rounded-lg shadow-lg w-96 backdrop-blur-md"
           >
             <h2 className="text-xl font-bold mb-4 text-white text-center">
-              {editingEmployer ? "Edit Employer" : "Add New Employer"}
+              {editingUsers ? "Edit Users" : "Add New Users"}
             </h2>
             <input
               type="text"
               name="name"
               placeholder="Name"
-              value={newEmployer.name}
+              value={newUsers.name}
               onChange={handleChange}
               className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
             />
@@ -126,7 +128,7 @@ const EmployerList = () => {
               type="text"
               name="position"
               placeholder="Position"
-              value={newEmployer.position}
+              value={newUsers.position}
               onChange={handleChange}
               className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
             />
@@ -134,16 +136,16 @@ const EmployerList = () => {
               type="email"
               name="email"
               placeholder="Email"
-              value={newEmployer.email}
+              value={newUsers.email}
               onChange={handleChange}
               className="w-full p-2 mb-2 bg-white/10 text-white border border-gray-400 rounded"
             />
             <div className="flex justify-between">
               <button
-                onClick={addOrEditEmployer}
+                onClick={addOrEditUsers}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
               >
-                {editingEmployer ? "Update" : "Add"}
+                {editingUsers ? "Update" : "Add"}
               </button>
               <div
                 onClick={() => setShowForm(false)}
@@ -159,4 +161,4 @@ const EmployerList = () => {
   );
 };
 
-export default EmployerList;
+export default UsersList;

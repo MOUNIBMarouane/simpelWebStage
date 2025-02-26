@@ -58,10 +58,9 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onDelete}
-            className="p-2 text-rose-400 hover:bg-rose-500/20 rounded-full transition"
-            aria-label="Delete document"
+            className="flex items-center bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-700 transition cursor-pointer text-sm font-medium"
           >
-            <Trash2 size={16} />
+            <Trash size={14} /> Delete
           </motion.button>
         </div>
       </div>

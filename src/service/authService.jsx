@@ -46,22 +46,27 @@ export const getDocuments = async () => {
   }
 };
 
-export const addDocument = async (title, content) => {
+export const addDocument = async (title, content, status) => {
+  const userData = await getUserAccount();
+  let resul = 0;
   const accessToken = localStorage.getItem("accessToken");
-  const userId = localStorage.getItem("userId"); // Ensure userId is stored after login
+  // const userId = localStorage.getItem("userId"); // Ensure userId is stored after login
 
-  if (!accessToken || !userId) {
+  if (!accessToken) {
     console.error("User is not authenticated.");
     return null;
   }
 
   try {
+    console.log("status -----", status);
+    if (status !== "opened") resul = 1;
     const response = await axios.post(
       `${API_BASE_URL}/Documents`, // ✅ Use /api/Documents
       {
         title,
         content,
-        createdByUserId: userId, // ✅ Automatically set user ID
+        status: resul,
+        createdByUserId: userData.userid, // ✅ Automatically set user ID
       },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

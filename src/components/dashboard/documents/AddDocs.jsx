@@ -5,18 +5,20 @@ import { addDocument } from "../../../service/authService";
 
 const AddDocs = ({ onDocumentAdded }) => {
   const [showForm, setShowForm] = useState(false);
-  const [newDoc, setNewDoc] = useState({ title: "", content: "" });
+  const [newDoc, setNewDoc] = useState({
+    title: "",
+    content: "",
+    status: "opened",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setNewDoc({ ...newDoc, [e.target.name]: e.target.value });
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
   const handleSubmit = async () => {
-    // Validate inputs
     if (!newDoc.title.trim()) {
       setError("Please enter a title for your document");
       return;
@@ -28,15 +30,16 @@ const AddDocs = ({ onDocumentAdded }) => {
     }
 
     setIsSubmitting(true);
-
     try {
-      const addedDoc = await addDocument(newDoc.title, newDoc.content);
+      const addedDoc = await addDocument(
+        newDoc.title,
+        newDoc.content,
+        newDoc.status
+      );
       if (addedDoc) {
         onDocumentAdded(addedDoc);
         setShowForm(false);
-        setNewDoc({ title: "", content: "" });
-      } else {
-        setError("Failed to add document. Please try again.");
+        setNewDoc({ title: "", content: "", status: "opened" });
       }
     } catch (err) {
       setError("An error occurred while saving your document");
@@ -55,7 +58,7 @@ const AddDocs = ({ onDocumentAdded }) => {
       >
         <div className="flex flex-col items-center">
           <PlusCircle size={48} className="text-blue-400 mb-2" />
-          <p className="text-gray-200 font-medium">Add New Document</p>
+          <p className="text-gray-200 font-medium">Add New Document card</p>
         </div>
       </motion.div>
 
@@ -77,17 +80,17 @@ const AddDocs = ({ onDocumentAdded }) => {
               transition={{ type: "spring", damping: 25 }}
               className="bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-md mx-4 border border-slate-700"
             >
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4 ">
                 <h2 className="text-xl font-bold text-white flex items-center">
                   <FileText size={20} className="mr-2 text-blue-400" />
-                  New Document
+                  New Document cardsss
                 </h2>
-                <button
+                <div
                   onClick={() => setShowForm(false)}
-                  className="text-gray-400 hover:text-white transition"
+                  className="text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   <X size={20} />
-                </button>
+                </div>
               </div>
 
               {error && (
@@ -98,88 +101,80 @@ const AddDocs = ({ onDocumentAdded }) => {
 
               <div className="space-y-4">
                 <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-300 mb-1"
-                  >
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Title
                   </label>
                   <input
                     type="text"
-                    id="title"
                     name="title"
-                    placeholder="Enter a descriptive title..."
                     value={newDoc.title}
                     onChange={handleChange}
                     className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="content"
-                    className="block text-sm font-medium text-gray-300 mb-1"
-                  >
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Content
                   </label>
                   <textarea
-                    id="content"
                     name="content"
-                    placeholder="Write your document content here..."
                     value={newDoc.content}
                     onChange={handleChange}
                     rows={6}
                     className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Status
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2 text-gray-300">
+                      <input
+                        type="radio"
+                        name="status"
+                        value="opened"
+                        checked={newDoc.status === "opened"}
+                        onChange={handleChange}
+                        className="form-radio text-blue-500"
+                      />
+                      <span>Opened</span>
+                    </label>
+                    <label className="flex items-center space-x-2 text-gray-300">
+                      <input
+                        type="radio"
+                        name="status"
+                        value="public"
+                        checked={newDoc.status === "public"}
+                        onChange={handleChange}
+                        className="form-radio text-blue-500"
+                      />
+                      <span>Public</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded transition focus:outline-none flex items-center"
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded transition focus:outline-none"
                 >
-                  <X size={16} className="mr-1.5" />
+                  {/* <X size={16} className="mr-1.5" />  */}
                   Cancel
                 </motion.button>
-
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition focus:outline-none flex items-center ${
+                  className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition focus:outline-none ${
                     isSubmitting ? "opacity-75 cursor-not-allowed" : ""
                   }`}
                 >
                   {isSubmitting ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Saving...
-                    </>
+                    "Saving..."
                   ) : (
                     <>
-                      <Check size={16} className="mr-1.5" />
+                      {/* <Check size={16} className="mr-1.5" />  */}
                       Save Document
                     </>
                   )}

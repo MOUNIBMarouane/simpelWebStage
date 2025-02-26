@@ -4,16 +4,26 @@ import React, { useState } from "react";
 import FormInput from "../components/FormInputs";
 import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     // Handle sign in logic here
     console.log("Email:", email);
-    // Navigate to sign in page
-    navigate("/signin");
+    const response = await axios.post(
+      "http://192.168.1.85:5204/api/Account/forgot-password",
+      {
+        email,
+      }
+    );
+
+    if (response.status == 200) {
+      console.log("hello");
+      navigate("/signin");
+    } else console.error("cheking");
   };
 
   return (

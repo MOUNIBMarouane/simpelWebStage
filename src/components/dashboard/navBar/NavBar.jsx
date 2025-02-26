@@ -7,14 +7,13 @@ const NavBar = () => {
     <nav className="h-full w-ful space-y-3">
       {/* pages */}
       <div className="h-full w-full flex flex-col justify-between">
-        
         <ul className="space-x-2 ">
-          <Link to="/employer-list">
+          <Link to="/Users-list">
             <div className="bg-white w-full p-2 rounded-sm flex justify-items-center hover:bg-blue-700 hover:text-sky-50">
               <List />
               <label htmlFor="img" className="w-full cursor-pointer">
                 {" "}
-                Employer
+                Users
               </label>
             </div>
           </Link>

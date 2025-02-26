@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, RefreshCw, Grid, List, CheckSquare } from "lucide-react";
+import {
+  FileText,
+  RefreshCw,
+  Grid,
+  List,
+  CheckSquare,
+  RefreshCcwDotIcon,
+  RefreshCcw,
+} from "lucide-react";
 import DocumentCard from "./DocumentCard";
 import DocumentListItem from "./DocumentListItem"; // We'll create this component next
 import AddDocs from "./AddDocs";
 import { getDocuments } from "../../../service/authService";
+import axios from "axios";
 
 const DocumentList = () => {
   const [documents, setDocuments] = useState([]);
@@ -37,14 +46,77 @@ const DocumentList = () => {
     setDocuments((prevDocs) => [newDoc, ...prevDocs]);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     // Implement delete functionality
-    setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
+
+    console.log("delete card ID:", id);
+    console.log("in progress calling delete card ID:", id);
+    const accessToken = localStorage.getItem("accessToken");
+    console.log("in progress see accestoken delete card ID:", id);
+    if (!accessToken) {
+      console.warn("No access token found. User is not logged in.");
+      navigate("/signin");
+      // return null; // Don't throw an error, just return null
+    }
+    console.log("in progress check access token delete card ID:", id);
+    try {
+      const path = `http://192.168.1.85:5204/api/Documents/${id}`;
+      setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
+      const respence = await axios.delete(path, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      console.log("delete complitecard ID:", id);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handleEdit = (id) => {
-    // Implement edit functionality - can open a modal similar to AddDocs
-    console.log("Edit document with ID:", id);
+  const handleEdit = async (
+    id,
+    updatedTitle,
+    updatedDescription,
+    updatedStatus
+  ) => {
+    try {
+      let satus = 1;
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        console.warn("No access token found. User is not logged in.");
+        return;
+      }
+
+      // API call to update document (modify the URL to match your API)
+      if (updatedStatus === "opened") satus = 0;
+      const response = await axios.put(
+        `http://192.168.1.85:5204/api/Documents/${id}`,
+        {
+          title: updatedTitle,
+          content: updatedDescription,
+          status: satus,
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (response.status === 200) {
+        // Update the state to reflect the edited document
+        setDocuments((prevDocs) =>
+          prevDocs.map((doc) =>
+            doc.id === id
+              ? {
+                  ...doc,
+                  title: updatedTitle,
+                  content: updatedDescription,
+                  status: satus,
+                }
+              : doc
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update document:", error);
+    }
   };
 
   const toggleViewMode = (mode) => {
@@ -63,54 +135,52 @@ const DocumentList = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-8 px-4 ">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-        <h1 className="text-2xl font-bold text-white flex items-center">
-          <FileText size={24} className="mr-2 text-blue-400" />
+    <div className="bg-slate-800/60 container mx-auto py-8 px-4 ">
+      <div className="flex flex-col  sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div className="font-bold text-white flex items-center">
+          <FileText
+            size={16}
+            className="h-full w-full mr-2 text-blue-400 text-[16px]"
+          />
           My Documents
-        </h1>
-
-        <div className="flex items-center space-x-3">
+        </div>
+        <div className="w-full flex justify-end items-center">
           {/* View Toggle */}
-          <div className="bg-slate-800 p-1 rounded-lg flex items-center mr-2">
-            <button
+          <div className=" rounded-lg flex justify-between items-center ">
+            <div
               onClick={() => toggleViewMode("card")}
-              className={`p-2 rounded-md flex items-center transition-colors ${
+              className={`p-1 mr-2 rounded-md flex items-center transition-colors ${
                 viewMode === "card"
                   ? "bg-blue-600 text-white"
-                  : "text-gray-400 hover:text-white hover:bg-slate-700"
+                  : "text-white bg-gray-400 hover:text-white hover:bg-blue-700"
               }`}
               aria-label="Grid view"
             >
-              <Grid size={16} />
-            </button>
-            <button
+              <Grid size={32} />
+            </div>
+            <div
               onClick={() => toggleViewMode("list")}
-              className={`p-2 rounded-md flex items-center transition-colors ${
+              className={`p-1 rounded-md flex items-center transition-colors ${
                 viewMode === "list"
                   ? "bg-blue-600 text-white"
-                  : "text-gray-400 hover:text-white hover:bg-slate-700"
+                  : "text-white bg-gray-400 hover:text-white hover:bg-blue-700"
               }`}
               aria-label="List view"
             >
-              <List size={16} />
-            </button>
+              <List size={32} />
+            </div>
           </div>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleRefresh}
-            disabled={loading || refreshing}
-            className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md flex items-center"
-          >
-            <RefreshCw
-              size={16}
-              className={`mr-2 ${refreshing ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </motion.button>
         </div>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleRefresh}
+          disabled={loading || refreshing}
+          className=" w-3 bg-slate-700 hover:bg-slate-600 text-white rounded-md flex items-center"
+        >
+          <RefreshCw className={`mr-2 ${refreshing ? "animate-spin" : ""}`} />
+        </motion.button>
       </div>
 
       {error && (
@@ -146,7 +216,7 @@ const DocumentList = () => {
           </div>
         </div>
       ) : (
-        <>
+        <div className="w-full h-full">
           {viewMode === "card" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Add document button/card */}
@@ -160,14 +230,18 @@ const DocumentList = () => {
                   <DocumentCard
                     key={doc.id}
                     title={doc.title}
-                    date={
-                      doc.createdAt ||
-                      doc.dateCreated ||
-                      new Date().toISOString()
-                    }
+                    date={doc.createdAt || new Date().toISOString()}
                     description={doc.content}
+                    status={doc.status}
                     onDelete={() => handleDelete(doc.id)}
-                    onEdit={() => handleEdit(doc.id)}
+                    onEdit={(updatedTitle, updatedDescription, updatedStatus) =>
+                      handleEdit(
+                        doc.id,
+                        updatedTitle,
+                        updatedDescription,
+                        updatedStatus
+                      )
+                    }
                   />
                 ))}
               </AnimatePresence>
@@ -197,8 +271,8 @@ const DocumentList = () => {
                 <AddDocs onDocumentAdded={handleDocumentAdded} />
               </div>
 
-              {/* Document list */}
-              <div className="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden">
+              {/* Document list bg-slate-800/50*/}
+              <div className="  bg-slate-800/50 w-full h-full rounded-lg border border-slate-700 overflow-hidden">
                 {documents.length > 0 ? (
                   <ul className="divide-y divide-slate-700">
                     <AnimatePresence>
@@ -213,7 +287,18 @@ const DocumentList = () => {
                           }
                           description={doc.content}
                           onDelete={() => handleDelete(doc.id)}
-                          onEdit={() => handleEdit(doc.id)}
+                          onEdit={(
+                            updatedTitle,
+                            updatedDescription,
+                            updatedStatus
+                          ) =>
+                            handleEdit(
+                              doc.id,
+                              updatedTitle,
+                              updatedDescription,
+                              updatedStatus
+                            )
+                          }
                         />
                       ))}
                     </AnimatePresence>
@@ -246,7 +331,7 @@ const DocumentList = () => {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

@@ -21,9 +21,9 @@ const Documents = () => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center items-center text-white overflow-scroll">
-      <div className="bg-white w-full h-full backdrop-blur-md shadow-lg">
-          <DocumentList />
+    <div className="w-full h-full max-h-full flex justify-center items-center text-white">
+      <div className="bg-blue-800/50 w-full h-full backdrop-blur-md shadow-lg overflow-scroll">
+        <DocumentList />
       </div>
     </div>
   );

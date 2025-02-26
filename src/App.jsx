@@ -14,7 +14,7 @@ import Layout from "./components/dashboard/layout/layout";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/RestPassword";
 import Documents from "./pages/Document";
-import EmployerList from "./pages/EmployerList";
+import UsersList from "./pages/UsersList";
 
 const router = createBrowserRouter([
   {
@@ -44,10 +44,10 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "/employer-list",
+            path: "/Users-list",
             element: (
               // <ProtectedRoute>
-              <EmployerList />
+              <UsersList />
               // </ProtectedRoute>
             ),
           },
