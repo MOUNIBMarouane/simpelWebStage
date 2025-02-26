@@ -14,7 +14,6 @@ function Layout() {
       if (userData) {
         setUser(userData);
       } else {
-        // If no user, redirect to login page
         navigate("/signin");
       }
     };
@@ -30,7 +29,10 @@ function Layout() {
             <Avatar sx={{ width: 56, height: 56 }} />
             <div>
               {user ? (
-                <p className="text-white">{user.username || user.email}</p>
+                <>
+                  <p className="text-white">{user?.username || user?.email}</p>
+                  <p className="text-white">{user?.role?.toString()}</p>
+                </>
               ) : (
                 <p className="text-gray-400">Not logged in</p>
               )}

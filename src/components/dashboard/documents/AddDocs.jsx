@@ -54,7 +54,7 @@ const AddDocs = ({ onDocumentAdded }) => {
         onClick={() => setShowForm(true)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center rounded-lg cursor-pointer p-6 transition border border-slate-700 backdrop-blur-md h-full"
+        className=" bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center rounded-lg cursor-pointer p-6 transition border border-slate-700 backdrop-blur-md h-full"
       >
         <div className="flex flex-col items-center">
           <PlusCircle size={48} className="text-blue-400 mb-2" />
@@ -68,7 +68,7 @@ const AddDocs = ({ onDocumentAdded }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
+            className=" absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowForm(false);
             }}

@@ -2,7 +2,7 @@ import React from "react";
 import { File, List, PanelRightClose } from "lucide-react";
 import { Link } from "react-router-dom";
 // import { Dock } from "lucide-react";
-const NavBar = () => {
+const NavBar = (logged) => {
   return (
     <nav className="h-full w-ful space-y-3">
       {/* pages */}
@@ -17,6 +17,7 @@ const NavBar = () => {
               </label>
             </div>
           </Link>
+
           {/* <br /> */}
           <Link to="/documents">
             <div className="bg-white w-full p-2 rounded-sm flex justify-items-center hover:bg-blue-700 hover:text-sky-50">

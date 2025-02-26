@@ -1,6 +1,28 @@
 import axios from "axios";
 const API_BASE_URL = "http://192.168.1.85:5204/api";
 
+export const getUserRole = async () =>{
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      console.warn("No access token found. User is not logged in.");
+      return null; // Don't throw an error, just return null
+    }
+
+    try {
+      const response = await axios.get(
+        "http://192.168.1.85:5204/api/Account/user-role",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      return null; // Return null if request fails
+    }
+}
+
 export const getUserAccount = async () => {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -16,7 +38,7 @@ export const getUserAccount = async () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
-
+    console.log("affiche resp user data---" , response.data)
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user data:", error);

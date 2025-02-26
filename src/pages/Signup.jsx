@@ -4,7 +4,7 @@ import { Mail, User, Lock, Key } from "lucide-react";
 import FormInput from "../components/FormInputs";
 import axios from "axios";
 
-const SignIn = () => {
+const SignUp = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -320,4 +320,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

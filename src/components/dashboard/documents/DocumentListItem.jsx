@@ -60,7 +60,7 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
             onClick={onDelete}
             className="flex items-center bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-700 transition cursor-pointer text-sm font-medium"
           >
-            <Trash size={14} /> Delete
+            <Trash2 size={14} /> Delete
           </motion.button>
         </div>
       </div>
