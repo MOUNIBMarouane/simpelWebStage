@@ -25,6 +25,7 @@ function Layout() {
   const handleLogout = () => {
     // Clear user session (replace this with your actual logout logic)
     localStorage.removeItem("accessToken"); // If using tokens
+    
     setUser(null);
     navigate("/"); // Redirect to login page
   };

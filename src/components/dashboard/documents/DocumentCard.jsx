@@ -193,7 +193,7 @@ const DocumentCard = ({
             <div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleEditClick}
+              onClick={handleSave}
               className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
             >
               <Pencil size={14} className="mr-1" /> Edit

@@ -249,7 +249,7 @@ const DocumentList = () => {
           ) : (
             <div className="flex flex-col space-y-3">
               {/* Add document button - compact version for list view */}
-              {/* <motion.button
+              <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() =>
@@ -259,7 +259,7 @@ const DocumentList = () => {
               >
                 <FileText size={18} className="mr-2" />
                 Add New Document
-              </motion.button> */}
+              </motion.button>
 
               {/* Hidden trigger for the AddDocs component */}
               <div

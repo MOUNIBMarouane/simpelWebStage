@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FormInput from "../components/FormInputs";
-import { Mail, User, Lock, X, Trash } from "lucide-react";
+import { Mail, User, Lock, X, Trash, Pencil } from "lucide-react";
 import FormSelect from "../components/inputs/FormSelect";
 import axios from "axios";
 
 import {} from "lucide-react";
-import { UpdateUser } from "../service/authService";
+import { DeletUser, UpdateUser } from "../service/authService";
+import { a } from "framer-motion/client";
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
   const [showFormNew, setShowFormNew] = useState(false);
   const [showFormUpdate, setShowFormUpdate] = useState(false);
+  const [showFormDetails, setShowFormDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editingUsers, setEditingUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -313,6 +315,7 @@ const UsersList = () => {
   };
   const handleClose = () => {
     setShowFormUpdate(false);
+    setShowFormDetails(false);
     setFormData({
       userId: "",
       firstName: "",
@@ -323,6 +326,7 @@ const UsersList = () => {
   };
   const deleteUsers = (id) => {
     setUsers(Users.filter((user) => user.id !== id));
+    DeletUser(id);
   };
 
   const editUsers = (user) => {
@@ -342,7 +346,10 @@ const UsersList = () => {
         return "FullUser";
     }
   };
-
+  const activeSatus = (status) => {
+    if (status) return "Active";
+    return "Unactive";
+  };
   const fetchUsers = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -375,13 +382,15 @@ const UsersList = () => {
         roleName: selectedUser.roleId || "",
       });
     }
-  }, [selectedUser, showFormUpdate]);
+  }, [selectedUser, showFormUpdate, showFormDetails]);
 
-  const handleUserClick = (user) => {
+  const handleUserClick = (user, option) => {
     console.log("selected: ", user);
     setSelectedUser(user);
-    setShowFormUpdate(true);
+    if (option === "update") setShowFormUpdate(true);
+    else setShowFormDetails(true);
   };
+
   const filteredUsers = Users.filter((user) =>
     Object.values(user).some(
       (value) =>
@@ -441,16 +450,27 @@ const UsersList = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"                  >
-                    <td className="p-4" onClick={() => handleUserClick(user)}>
+                    className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
+                  >
+                    <td
+                      className="p-4"
+                      onClick={() => handleUserClick(user, "details")}
+                    >
                       {user.firstName} {user.lastName}
                     </td>
                     <td className="p-4">{user.email}</td>
                     <td className="p-4">{roleName(user.roleId)}</td>
                     <td className="p-4 flex items-center justify-center space-x-3">
                       <div
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200"
-                        onClick={() => handleDelete(user.id)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                        onClick={() => handleUserClick(user, "update")}
+                      >
+                        <Trash size={18} />
+                        <p className="hidden sm:inline">Update</p>
+                      </div>
+                      <div
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
+                        onClick={() => deleteUsers(user.id)}
                       >
                         <Trash size={18} />
                         <p className="hidden sm:inline">Delete</p>
@@ -608,6 +628,32 @@ const UsersList = () => {
                 Save Changes
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {showFormDetails && selectedUser && (
+        <div className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center items-center text-white">
+          <div className="relative bg-blue-950/60 backdrop-blur-md p-6 w-6/12 rounded-lg">
+            <X
+              className="absolute top-0 right-0 cursor-pointer m-2"
+              onClick={handleClose}
+            />
+            {console.log("Details data:", selectedUser)}
+            <h2 className="text-2xl font-bold mb-4">User Detail form</h2>
+            <p>
+              <strong>Role:</strong> {roleName(selectedUser.roleId)}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUser.email}
+            </p>
+            <p>
+              <strong>full Name:</strong> {selectedUser.firstName}{" "}
+              {selectedUser.lastName}
+            </p>
+            <p>
+              <strong>Accout status :</strong>{" "}
+              {activeSatus(selectedUser.isActive)}
+            </p>
           </div>
         </div>
       )}

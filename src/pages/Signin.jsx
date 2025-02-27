@@ -16,36 +16,6 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   setError("");
-
-  //   try {
-  //     const response = await axios.post(
-  //       "http://192.168.1.85:5204/api/Auth/login",
-  //       {
-  //         emailOrUsername: email,
-  //         password: password,
-  //       }
-  //     );
-
-  //     if (response.status === 200) {
-  //       console.log("Login successful:", response.data);
-  //       navigate("/dashboard");
-  //     } else {
-  //       setError("Login failed. Please check your credentials and try again.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     setError(
-  //       error.response?.data?.message ||
-  //         "An error occurred during login. Please try again."
-  //     );
-  //   }
-  // };
-
-  // const { login } = useContext(AuthContext);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");

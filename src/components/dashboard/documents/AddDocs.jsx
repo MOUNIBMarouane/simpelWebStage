@@ -1,11 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle, FileText, X, Check } from "lucide-react";
 import { addDocument } from "../../../service/authService";
-import { useAuth } from "../../../Auth/AuthContext";
+// import { useAuth } from "../../../Auth/AuthContext";
+import { Outlet, useNavigate } from "react-router-dom";
+
+import { getUserAccount } from "../../../service/authService";
 
 const AddDocs = ({ onDocumentAdded }) => {
-  const authuser = useAuth();
+  // const authuser = useAuth();
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUserAccount();
+      if (userData) {
+        setUser(userData);
+      } else {
+        navigate("/");
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
   const [showForm, setShowForm] = useState(false);
   const [newDoc, setNewDoc] = useState({
     title: "",
@@ -52,7 +70,8 @@ const AddDocs = ({ onDocumentAdded }) => {
 
   return (
     <>
-      {(authuser.role === "Admin" || authuser.role === "FullUser") && (
+      {console.log("user role -----", user)}
+      {(user?.role === "Admin" || user?.role === "FullUser") && (
         <motion.div
           onClick={() => setShowForm(true)}
           whileHover={{ scale: 1.05 }}

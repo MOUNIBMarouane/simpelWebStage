@@ -124,3 +124,14 @@ export const UpdateUser = async (formData) => {
     return response.data; // Return the newly created document
   }
 };
+
+export const DeletUser = async (userId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const response = await axios.delete(`${API_BASE_URL}/Admin/users/${userId}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (response.status === 201) {
+    console.log("Document deleted successfully:", response.data);
+    return response.data; // Return the newly created document
+  }
+};
