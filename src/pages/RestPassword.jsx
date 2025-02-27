@@ -22,7 +22,7 @@ const ResetPassword = () => {
 
     if (response.status == 200) {
       console.log("hello");
-      navigate("/signin");
+      navigate("/");
     } else console.error("cheking");
   };
 

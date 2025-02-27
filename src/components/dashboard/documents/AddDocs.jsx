@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle, FileText, X, Check } from "lucide-react";
 import { addDocument } from "../../../service/authService";
+import { useAuth } from "../../../Auth/AuthContext";
 
 const AddDocs = ({ onDocumentAdded }) => {
+  const authuser = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [newDoc, setNewDoc] = useState({
     title: "",
@@ -50,17 +52,19 @@ const AddDocs = ({ onDocumentAdded }) => {
 
   return (
     <>
-      <motion.div
-        onClick={() => setShowForm(true)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className=" bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center rounded-lg cursor-pointer p-6 transition border border-slate-700 backdrop-blur-md h-full"
-      >
-        <div className="flex flex-col items-center">
-          <PlusCircle size={48} className="text-blue-400 mb-2" />
-          <p className="text-gray-200 font-medium">Add New Document card</p>
-        </div>
-      </motion.div>
+      {(authuser.role === "Admin" || authuser.role === "FullUser") && (
+        <motion.div
+          onClick={() => setShowForm(true)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className=" bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center rounded-lg cursor-pointer p-6 transition border border-slate-700 backdrop-blur-md h-full"
+        >
+          <div className="flex flex-col items-center">
+            <PlusCircle size={48} className="text-blue-400 mb-2" />
+            <p className="text-gray-200 font-medium">Add New Document card</p>
+          </div>
+        </motion.div>
+      )}
 
       <AnimatePresence>
         {showForm && (

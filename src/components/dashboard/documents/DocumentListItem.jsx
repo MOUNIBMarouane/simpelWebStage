@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash2, Calendar, FileText } from "lucide-react";
-
+import { useAuth } from "../../../Auth/AuthContext";
 const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
   // Format the date to be more readable
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -9,7 +9,7 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
     month: "short",
     day: "numeric",
   });
-
+  const authUser = useAuth();
   // Truncate description if it's too long
   const truncatedDescription =
     description.length > 160
@@ -44,7 +44,7 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
         </div>
 
         <div className="flex items-center space-x-2 ml-4">
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onEdit}
@@ -52,16 +52,15 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
             aria-label="Edit document"
           >
             <Pencil size={16} />
-          </motion.button>
+          </motion.button> */}
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <div
+
             onClick={onDelete}
-            className="flex items-center bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-700 focus:bg-emerald-700 active:bg-emerald-700 transition cursor-pointer text-sm font-medium"
+            className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 focus:bg-red-700 active:bg-red-700 transition cursor-pointer text-sm font-medium"
           >
-            <Trash2 size={14} /> Delete
-          </motion.button>
+            <Trash2 size={24} className=" text-sky-100"/> 
+          </div>
         </div>
       </div>
     </motion.li>

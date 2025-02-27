@@ -441,10 +441,8 @@ const UsersList = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
-                    onClick={() => handleUserClick(user)}
-                  >
-                    <td className="p-4">
+                    className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"                  >
+                    <td className="p-4" onClick={() => handleUserClick(user)}>
                       {user.firstName} {user.lastName}
                     </td>
                     <td className="p-4">{user.email}</td>

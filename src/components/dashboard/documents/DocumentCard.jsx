@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash, Calendar, FileText, X } from "lucide-react";
-
+import { useAuth } from "../../../Auth/AuthContext";
 const DocumentCard = ({
   title,
   date,
@@ -16,7 +16,7 @@ const DocumentCard = ({
   const [editStatus, setEditStatus] = useState(status);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
+  const { user } = useAuth();
   // Format date for better readability
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -51,7 +51,7 @@ const DocumentCard = ({
     onEdit(editTitle, editDescription, editStatus);
     setIsEditing(false);
   };
-
+  console.log("card user contest", user.role.toLowerCase());
   return (
     <>
       {/* Main Document Card */}
@@ -76,25 +76,27 @@ const DocumentCard = ({
           />
           <p className="text-gray-300 text-sm">{truncatedDescription}</p>
         </div>
-
-        <div className="w-full flex justify-end mt-4">
-          <div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleEditClick}
-            className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
-          >
-            <Pencil size={14} className="mr-1" /> Edit
+        {/* carde */}
+        {user.role.toLowerCase() === "admin" && (
+          <div className="w-full flex justify-end mt-4">
+            <div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEditClick}
+              className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
+            >
+              <Pencil size={14} className="mr-1" /> Edit
+            </div>
+            <div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onDelete}
+              className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
+            >
+              <Trash size={14} className="mr-1" /> Delete
+            </div>
           </div>
-          <div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onDelete}
-            className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
-          >
-            <Trash size={14} className="mr-1" /> Delete
-          </div>
-        </div>
+        )}
       </motion.div>
 
       {/* Edit Modal */}
@@ -188,19 +190,21 @@ const DocumentCard = ({
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md"
-              >
-                Save Changes
-              </button>
+            <div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEditClick}
+              className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
+            >
+              <Pencil size={14} className="mr-1" /> Edit
+            </div>
+            <div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onDelete}
+              className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
+            >
+              <Trash size={14} className="mr-1" /> Delete
             </div>
           </motion.div>
         </motion.div>

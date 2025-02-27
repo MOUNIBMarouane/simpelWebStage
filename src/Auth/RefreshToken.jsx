@@ -36,7 +36,7 @@
 //           console.error("Error during logout:", logoutError);
 //         }
 
-//         window.location.href = "/signin";
+//         window.location.href = "/";
 //         return Promise.reject(refreshError);
 //       }
 //     }

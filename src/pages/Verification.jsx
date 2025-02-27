@@ -71,7 +71,7 @@ const Verification = () => {
       }
 
       console.log("Verification successful:", data);
-      navigate("/signin");
+      navigate("/");
     } catch (error) {
       console.error("Verification error:", error);
       setError(

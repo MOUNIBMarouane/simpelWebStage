@@ -2,7 +2,7 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
-import SignIn from "./pages/signin";
+import SignIn from "./pages/Signin";
 import SignUp from "./pages/signup";
 import VerificationP from "./pages/Verification";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/RestPassword";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
+// import PublicRoute from "./Auth/PublicRoute";
 
 const router = createBrowserRouter([
   {
@@ -51,11 +52,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
+
     element: <SignUp />,
-  },
-  {
-    path: "/signin",
-    element: <SignIn />,
   },
   {
     path: "/verify/:email",

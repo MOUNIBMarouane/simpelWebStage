@@ -14,7 +14,7 @@ function Layout() {
       if (userData) {
         setUser(userData);
       } else {
-        navigate("/signin");
+        navigate("/");
       }
     };
 
@@ -26,7 +26,7 @@ function Layout() {
     // Clear user session (replace this with your actual logout logic)
     localStorage.removeItem("accessToken"); // If using tokens
     setUser(null);
-    navigate("/signin"); // Redirect to login page
+    navigate("/"); // Redirect to login page
   };
 
   return (
@@ -53,7 +53,7 @@ function Layout() {
         </div>
       </div>
       <div className="w-full h-full">
-        <Outlet/>
+        <Outlet />
       </div>
     </div>
   );
