@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, use } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash, Calendar, FileText, X } from "lucide-react";
-import { useAuth } from "../../../Auth/AuthContext";
+// import { useAuth } from "../../../Auth/AuthContext";
 const DocumentCard = ({
   title,
   date,
@@ -16,8 +16,9 @@ const DocumentCard = ({
   const [editStatus, setEditStatus] = useState(status);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const { user } = useAuth();
+  // const { user } = useAuth();
   // Format date for better readability
+  const [user, setUser] = useState("")
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -51,7 +52,7 @@ const DocumentCard = ({
     onEdit(editTitle, editDescription, editStatus);
     setIsEditing(false);
   };
-  console.log("card user contest", user.role.toLowerCase());
+  // console.log("card user contest", user.role.toLowerCase());
   return (
     <>
       {/* Main Document Card */}

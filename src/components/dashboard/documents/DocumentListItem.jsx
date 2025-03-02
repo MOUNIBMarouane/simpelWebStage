@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash2, Calendar, FileText } from "lucide-react";
-import { useAuth } from "../../../Auth/AuthContext";
+// import { useAuth } from "../../../Auth/AuthContext";
 import { div } from "framer-motion/client";
 const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
   // Format the date to be more readable
@@ -10,7 +10,7 @@ const DocumentListItem = ({ title, date, description, onDelete, onEdit }) => {
     month: "short",
     day: "numeric",
   });
-  const authUser = useAuth();
+  // const authUser = useAuth();
   // Truncate description if it's too long
   const truncatedDescription =
     description.length > 160

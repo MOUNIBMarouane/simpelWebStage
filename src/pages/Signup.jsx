@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, User, Lock, Key } from "lucide-react";
+import { Eye, EyeClosed, Mail, User, Lock, Key } from "lucide-react";
 import FormInput from "../components/FormInputs";
+import { useEffect } from "react";
 import axios from "axios";
+import { FindUserName } from "../service/authService";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -16,6 +18,22 @@ const SignUp = () => {
     secretkey: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
+  const [nameValidations, setNameValidations] = useState({
+    firstName: { length: false, format: false },
+    lastName: { length: false, format: false },
+    username: { length: false, format: false },
+  });
+
   const [passwordValidations, setPasswordValidations] = useState({
     length: false,
     uppercase: false,
@@ -34,6 +52,8 @@ const SignUp = () => {
 
     if (id === "PasswordHash") {
       validatePassword(value);
+    } else if (id === "firstName" || id === "lastName" || id === "username") {
+      validateName(id, value);
     }
   };
 
@@ -50,13 +70,53 @@ const SignUp = () => {
     return Object.values(validations).every(Boolean);
   };
 
-  const handleNext = () => {
+  const validateName = (field, value) => {
+    let validations;
+
+    if (field === "username") {
+      validations = {
+        length: value.length >= 3,
+        format: /^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$/.test(value), // Allows letters, numbers, `_`, `-` (not at start or end)
+      };
+    } else {
+      validations = {
+        length: value.length >= 3,
+        format: /^[a-zA-Z]+$/.test(value), // Only letters for firstName and lastName
+      };
+    }
+    setNameValidations((prev) => ({
+      ...prev,
+      [field]: validations,
+    }));
+  };
+
+  const handleNext = async () => {
     if (
       step === 1 &&
       (!formData.firstName || !formData.lastName || !formData.username)
     ) {
+      console.log(FindUserName(formData.username));
       alert("Please fill in all fields");
       return;
+    } else {
+      console.log("try to get user name");
+      try {
+        console.log("Checking if username exists...");
+
+        const usernameExists = await FindUserName(formData.username); // Await API call
+
+        if (!usernameExists) {
+          // Stop the process if username is taken
+          alert("Username is already taken. Please choose another.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking username:", error);
+        alert(
+          "An error occurred while checking the username. Please try again."
+        );
+        return;
+      }
     }
     if (
       step === 2 &&
@@ -115,7 +175,48 @@ const SignUp = () => {
       console.error("Error:", error);
     }
   };
+  const isNextDisabled = () => {
+    if (step === 1) {
+      return !(
+        (
+          formData.firstName &&
+          formData.lastName &&
+          formData.username &&
+          nameValidations.firstName.length &&
+          nameValidations.firstName.format &&
+          nameValidations.lastName.length &&
+          nameValidations.lastName.format &&
+          nameValidations.username.length &&
+          nameValidations.username.format
+        )
+        // FindUserName(nameValidations.username)
+      );
+    }
 
+    if (step === 2) {
+      return !(
+        (
+          formData.email &&
+          formData.PasswordHash &&
+          formData.cpassword &&
+          formData.PasswordHash === formData.cpassword &&
+          Object.values(passwordValidations).every(Boolean)
+        ) // Ensures all validations pass
+      );
+    }
+
+    return false; // Step 3 doesn't need validation
+  };
+
+  useEffect(() => {
+    validatePassword(formData.PasswordHash);
+  }, [formData.PasswordHash]);
+
+  useEffect(() => {
+    validateName("firstName", formData.firstName);
+    validateName("lastName", formData.lastName);
+    validateName("username", formData.username);
+  }, [formData.firstName, formData.lastName, formData.username]);
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -133,6 +234,20 @@ const SignUp = () => {
                   required
                   icon={User}
                 />
+                <p
+                  className={`text-sm mt-2 ${
+                    nameValidations.firstName.length &&
+                    nameValidations.firstName.format
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {nameValidations.firstName.length
+                    ? nameValidations.firstName.format
+                      ? "Valid name!"
+                      : "Only letters allowed"
+                    : "Name must be at least 3 characters"}
+                </p>
               </div>
               <div className="w-1/2">
                 <FormInput
@@ -144,6 +259,20 @@ const SignUp = () => {
                   required
                   icon={User}
                 />
+                <p
+                  className={`text-sm mt-2 ${
+                    nameValidations.lastName.length &&
+                    nameValidations.lastName.format
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {nameValidations.lastName.length
+                    ? nameValidations.lastName.format
+                      ? "Valid name!"
+                      : "Only letters allowed"
+                    : "Name must be at least 3 characters"}
+                </p>
               </div>
             </div>
             <FormInput
@@ -155,6 +284,20 @@ const SignUp = () => {
               required
               icon={User}
             />
+            <p
+              className={`text-sm mt-2 ${
+                nameValidations.username.length &&
+                nameValidations.username.format
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {nameValidations.username.length
+                ? nameValidations.username.format
+                  ? "Valid name!"
+                  : "Only letters allowed"
+                : "Name must be at least 3 characters"}
+            </p>
           </div>
         );
       case 2:
@@ -170,26 +313,31 @@ const SignUp = () => {
               required
               icon={Mail}
             />
+
             <FormInput
               id="PasswordHash"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formData.PasswordHash}
               onChange={handleInputChange}
               placeholder="Password"
               required
               icon={Lock}
+              rightIcon={showPassword ? EyeOff : Eye} // Toggle icon
+              onRightIconClick={togglePasswordVisibility} // Handle click
             />
 
             <FormInput
               id="cpassword"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               value={formData.cpassword}
               onChange={handleInputChange}
               placeholder="Confirm Password"
               required
               icon={Lock}
+              rightIcon={showConfirmPassword ? EyeOff : Eye} // Toggle icon
+              onRightIconClick={toggleConfirmPasswordVisibility} // Handle click
             />
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-400 transition-all">
               <p>Password must include:</p>
               <ul>
                 <li
@@ -277,7 +425,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-6">
           {renderStep()}
 
           <div className="flex justify-between mt-6">
@@ -295,19 +443,20 @@ const SignUp = () => {
                 type="button"
                 onClick={handleNext}
                 className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors ml-auto"
+                disabled={isNextDisabled()}
               >
-                Next
+                Next {step}
               </button>
             ) : (
               <button
-                type="submit"
+                onClick={handleSubmit}
                 className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
               >
                 Complete Signup
               </button>
             )}
           </div>
-        </form>
+        </div>
 
         <div className="mt-4 text-sm text-center">
           Already have an account?{" "}

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const FormInput = ({
   id,
@@ -9,21 +10,28 @@ const FormInput = ({
   required = false,
   icon: Icon,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const isPasswordField = type === "password";
+
   return (
     <div className="w-full space-y-2">
       <div className="relative">
         {Icon && (
           <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
         )}
-        <div>
-          <input
-            id={id}
-            type={type}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            required={required}
-            className={`peer 
+        <input
+          id={id}
+          type={isPasswordField && showPassword ? "text" : type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          required={required}
+          className={`peer 
             text-sm border 
             duration-300 ease 
             hover:border-slate-300 
@@ -47,48 +55,24 @@ const FormInput = ({
             dark:focus:border-blue-400
             dark:focus:ring-blue-400/20
             transition-colors
-            ${Icon ? "pl-10" : "pl-4"}
+            ${Icon ? "pl-10" : "pl-4"} 
+            ${isPasswordField ? "pr-10" : ""} // Adjust padding for the eye icon
           `}
-          />
-          <label class="absolute cursor-text bg-gray-800 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-5.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90">
-            {/* {label} */}
-          </label>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Example usage
-const EmailInputExample = () => {
-  const [email, setEmail] = React.useState("");
-
-  return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <FormInput
-        label="Email"
-        id="email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
-        required
-        icon={(props) => (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...props}
+        />
+        {isPasswordField && (
+          <div
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
-            <rect width="20" height="16" x="2" y="4" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-          </svg>
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </div>
         )}
-      />
+      </div>
     </div>
   );
 };

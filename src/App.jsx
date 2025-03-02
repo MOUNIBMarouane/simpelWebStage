@@ -5,9 +5,9 @@ import "./App.css";
 import SignIn from "./pages/Signin";
 import SignUp from "./pages/signup";
 import VerificationP from "./pages/Verification";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { AuthProvider } from "./Auth/AuthContext";
-import ProtectedRoute from "./Auth/ProtectedRoute"; // ✅ Import ProtectedRoute
+// import ErrorBoundary from "./components/ErrorBoundary";
+// import { AuthProvider } from "./Auth/AuthContext";
+// import ProtectedRoute from "./Auth/ProtectedRoute"; // ✅ Import ProtectedRoute
 import Layout from "./components/dashboard/layout/layout";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/RestPassword";
@@ -19,7 +19,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <SignIn />,
-    errorElement: <ErrorBoundary />,
   },
   {
     element: <Layout />, // ✅ Protect everything inside Layout
@@ -27,25 +26,25 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: (
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
+          // <ProtectedRoute>
+          <Dashboard />
+          // </ProtectedRoute>
         ),
       },
       {
         path: "/documents",
         element: (
-          <ProtectedRoute>
-            <Documents />
-          </ProtectedRoute>
+          // <ProtectedRoute>
+          <Documents />
+          // </ProtectedRoute>
         ),
       },
       {
         path: "/users-list", // ✅ Lowercase path
         element: (
-          <ProtectedRoute>
-            <UsersList />
-          </ProtectedRoute>
+          // <ProtectedRoute>
+          <UsersList />
+          // </ProtectedRoute>
         ),
       },
     ],
@@ -72,11 +71,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <div className="w-[100vw] h-[100vh]">
-      <AuthProvider>
-        <ErrorBoundary fallback={<p>Something went wrong</p>}>
-          <RouterProvider router={router} />
-        </ErrorBoundary>
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      {/* <ErrorBoundary fallback={<p>Something went wrong</p>}> */}
+      <RouterProvider router={router} />
+      {/* </ErrorBoundary> */}
+      {/* </AuthProvider> */}
     </div>
   );
 }

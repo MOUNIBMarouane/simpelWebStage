@@ -135,3 +135,30 @@ export const DeletUser = async (userId) => {
     return response.data; // Return the newly created document
   }
 };
+
+export const FindUserName = async (username) => {
+  try {
+    console.log("Checking username:", username);
+
+    const resp = await axios.post(`${API_BASE_URL}/Auth/valide-username/`, {
+      username: username,
+    });
+
+    if (resp.data === "True") {
+      console.log("Username is available");
+      return true;
+    } else return false;
+  } catch (error) {
+    console.error("Error checking username:", error.response?.data || error);
+    return false;
+  }
+};
+
+export const FindUserMail = async (email) => {
+  try {
+    console.log("check for email:", email);
+    const resp = await axios.post(`${API_BASE_URL}/Auth/valide-email/`, {
+      email,
+    });
+  } catch (error) {}
+};
