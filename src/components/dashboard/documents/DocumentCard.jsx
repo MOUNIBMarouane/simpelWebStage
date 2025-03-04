@@ -24,7 +24,7 @@ const DocumentCard = ({
     month: "short",
     day: "numeric",
   });
-
+  
   const truncatedDescription =
     description.length > 120
       ? `${description.substring(0, 120)}...`

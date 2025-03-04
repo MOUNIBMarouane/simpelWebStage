@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/RestPassword";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
+import UpdatePassword from "./pages/UpdatePassword";
 // import PublicRoute from "./Auth/PublicRoute";
 
 const router = createBrowserRouter([
@@ -51,7 +52,6 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-
     element: <SignUp />,
   },
   {
@@ -63,8 +63,8 @@ const router = createBrowserRouter([
     element: <ResetPassword />,
   },
   {
-    path: "/update-password",
-    element: <ResetPassword />,
+    path: "/update-password/:email",
+    element: <UpdatePassword />,
   },
 ]);
 

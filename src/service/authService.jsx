@@ -160,5 +160,12 @@ export const FindUserMail = async (email) => {
     const resp = await axios.post(`${API_BASE_URL}/Auth/valide-email/`, {
       email,
     });
-  } catch (error) {}
+    if (resp.data === "True") {
+      console.log("Email is available -- service");
+      return true;
+    } else return false;
+  } catch (error) {
+    console.log("Error checking email:", error.response?.data || error);
+    return false;
+  }
 };

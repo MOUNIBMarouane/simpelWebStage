@@ -4,7 +4,7 @@ import { Eye, EyeClosed, Mail, User, Lock, Key } from "lucide-react";
 import FormInput from "../components/FormInputs";
 import { useEffect } from "react";
 import axios from "axios";
-import { FindUserName } from "../service/authService";
+import { FindUserName, FindUserMail } from "../service/authService";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -33,6 +33,8 @@ const SignUp = () => {
     lastName: { length: false, format: false },
     username: { length: false, format: false },
   });
+  const [usernameError, setUsernameError] = useState("");
+  const [usermailError, setUsermailError] = useState("");
 
   const [passwordValidations, setPasswordValidations] = useState({
     length: false,
@@ -41,6 +43,8 @@ const SignUp = () => {
     digit: false,
     specialChar: false,
   });
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -49,6 +53,27 @@ const SignUp = () => {
       ...prev,
       [id]: value,
     }));
+
+    if (id === "username") {
+      validateName(id, value);
+      setUsernameError(""); // Clear error when typing
+    }
+    if (id === "email") {
+      setUsermailError(""); // Clear error when typing
+    }
+
+    if (id === "cpassword") {
+      setPasswordError(
+        value === formData.PasswordHash ? "" : "Passwords do not match!"
+      );
+    }
+
+    if (id === "PasswordHash") {
+      validatePassword(value);
+      setPasswordError(
+        value === formData.cpassword ? "" : "Passwords do not match!"
+      );
+    }
 
     if (id === "PasswordHash") {
       validatePassword(value);
@@ -91,51 +116,62 @@ const SignUp = () => {
   };
 
   const handleNext = async () => {
-    if (
-      step === 1 &&
-      (!formData.firstName || !formData.lastName || !formData.username)
-    ) {
-      console.log(FindUserName(formData.username));
-      alert("Please fill in all fields");
-      return;
-    } else {
-      console.log("try to get user name");
+    if (step === 1) {
+      if (!formData.firstName || !formData.lastName || !formData.username) {
+        alert("Please fill in all fields");
+        return;
+      }
+
       try {
         console.log("Checking if username exists...");
-
-        const usernameExists = await FindUserName(formData.username); // Await API call
+        const usernameExists = await FindUserName(formData.username);
 
         if (!usernameExists) {
-          // Stop the process if username is taken
-          alert("Username is already taken. Please choose another.");
+          setUsernameError("Username is already taken. Please choose another.");
           return;
         }
       } catch (error) {
         console.error("Error checking username:", error);
-        alert(
-          "An error occurred while checking the username. Please try again."
-        );
+        setUsernameError("Error checking username. Please try again.");
         return;
       }
     }
-    if (
-      step === 2 &&
-      (!formData.email || !formData.PasswordHash || !formData.cpassword)
-    ) {
-      alert("Please fill in all fields");
-      return;
-    }
-    if (step === 2 && formData.PasswordHash !== formData.cpassword) {
-      alert("Passwords don't match");
-      return;
-    }
-    if (step === 2 && !validatePassword(formData.PasswordHash)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character."
-      );
-      return;
+    if (step === 2) {
+      if (!formData.email || !formData.PasswordHash || !formData.cpassword) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      if (formData.PasswordHash !== formData.cpassword) {
+        setConfirmPasswordError("Passwords do not match!");
+        return;
+      } else {
+        setConfirmPasswordError(""); // Clear error if they match
+      }
+
+      if (!validatePassword(formData.PasswordHash)) {
+        setPasswordError(
+          "Password must be at least 8 characters with an uppercase letter, lowercase letter, digit, and special character."
+        );
+        return;
+      }
+
+      try {
+        console.log("Checking if email exists...");
+        const emailValide = await FindUserMail(formData.email);
+
+        if (!emailValide) {
+          setUsermailError("Email is already in use. Please use another.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+        setUsermailError("Error checking email. Please try again.");
+        return;
+      }
     }
     setPasswordError("");
+    setUsermailError("");
     setStep((prev) => prev + 1);
   };
 
@@ -178,18 +214,15 @@ const SignUp = () => {
   const isNextDisabled = () => {
     if (step === 1) {
       return !(
-        (
-          formData.firstName &&
-          formData.lastName &&
-          formData.username &&
-          nameValidations.firstName.length &&
-          nameValidations.firstName.format &&
-          nameValidations.lastName.length &&
-          nameValidations.lastName.format &&
-          nameValidations.username.length &&
-          nameValidations.username.format
-        )
-        // FindUserName(nameValidations.username)
+        formData.firstName &&
+        formData.lastName &&
+        formData.username &&
+        nameValidations.firstName.length &&
+        nameValidations.firstName.format &&
+        nameValidations.lastName.length &&
+        nameValidations.lastName.format &&
+        nameValidations.username.length &&
+        nameValidations.username.format
       );
     }
 
@@ -287,16 +320,19 @@ const SignUp = () => {
             <p
               className={`text-sm mt-2 ${
                 nameValidations.username.length &&
-                nameValidations.username.format
+                nameValidations.username.format &&
+                !usernameError
                   ? "text-green-500"
                   : "text-red-500"
               }`}
             >
-              {nameValidations.username.length
+              {usernameError
+                ? usernameError
+                : nameValidations.username.length
                 ? nameValidations.username.format
-                  ? "Valid name!"
-                  : "Only letters allowed"
-                : "Name must be at least 3 characters"}
+                  ? "Valid username!"
+                  : "Username can only contain letters, numbers, '-', and '_'"
+                : "Username must be at least 3 characters"}
             </p>
           </div>
         );
@@ -304,15 +340,28 @@ const SignUp = () => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Account Security</h3>
-            <FormInput
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              required
-              icon={Mail}
-            />
+            <div>
+              <FormInput
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+                required
+                icon={Mail}
+              />
+              <p
+                className={`text-sm mt-2 ${
+                  usermailError ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {usermailError
+                  ? usermailError
+                  : formData.email
+                  ? "Valid email!"
+                  : ""}
+              </p>
+            </div>
 
             <FormInput
               id="PasswordHash"
@@ -337,6 +386,21 @@ const SignUp = () => {
               rightIcon={showConfirmPassword ? EyeOff : Eye} // Toggle icon
               onRightIconClick={toggleConfirmPasswordVisibility} // Handle click
             />
+            <p
+              className={`text-sm mt-2 ${
+                formData.cpassword
+                  ? formData.PasswordHash === formData.cpassword
+                    ? "text-green-500"
+                    : "text-red-500"
+                  : "text-white"
+              }`}
+            >
+              {formData.cpassword
+                ? formData.PasswordHash === formData.cpassword
+                  ? "Passwords match!"
+                  : "Passwords do not match!"
+                : ""}
+            </p>
             <div className="text-sm text-gray-400 transition-all">
               <p>Password must include:</p>
               <ul>
@@ -442,7 +506,11 @@ const SignUp = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors ml-auto"
+                className={`px-4 py-2 rounded transition-colors ml-auto ${
+                  isNextDisabled()
+                    ? "bg-gray-500 cursor-not-allowed opacity-50" // Disabled style
+                    : "bg-blue-500 hover:bg-blue-600"
+                }`}
                 disabled={isNextDisabled()}
               >
                 Next {step}
@@ -452,7 +520,7 @@ const SignUp = () => {
                 onClick={handleSubmit}
                 className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
               >
-                Complete Signup
+                Signup
               </button>
             )}
           </div>

@@ -20,7 +20,7 @@ const ResetPassword = () => {
       }
     );
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       console.log("hello");
       navigate("/");
     } else console.error("cheking");
@@ -33,7 +33,7 @@ const ResetPassword = () => {
           <h2 className="text-bold text-[24px]">Reset your Password</h2>
           <br />
         </div>
-        <form onSubmit={handleSubmit}>
+        <div>
           <div className="">
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
@@ -48,9 +48,11 @@ const ResetPassword = () => {
             </div>
           </div>
           <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-center place-items-center">
-            <button type="submit">RESET</button>
+            <button type="submit" onClick={handleSubmit}>
+              RESET
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

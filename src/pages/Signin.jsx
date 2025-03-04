@@ -60,7 +60,7 @@ const SignIn = () => {
             className="fill-white"
           />
         </div>
-        <form onSubmit={handleSubmit}>
+        <div>
           <div className="">
             <div className="w-full max-w-md mx-auto p-2">
               <FormInput
@@ -105,9 +105,9 @@ const SignIn = () => {
                 <span>register</span>
               </Link>
             </label>
-            <button type="submit">LOGIN</button>
+            <button onClick={handleSubmit}>LOGIN</button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

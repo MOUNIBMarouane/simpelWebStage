@@ -21,7 +21,6 @@ const DocumentList = () => {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState("card"); // "card" or "list"
-
   const fetchDocuments = async () => {
     try {
       setLoading(true);
@@ -233,6 +232,7 @@ const DocumentList = () => {
                     date={doc.createdAt || new Date().toISOString()}
                     description={doc.content}
                     status={doc.status}
+
                     onDelete={() => handleDelete(doc.id)}
                     onEdit={(updatedTitle, updatedDescription, updatedStatus) =>
                       handleEdit(
