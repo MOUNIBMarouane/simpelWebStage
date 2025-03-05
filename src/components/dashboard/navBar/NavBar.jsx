@@ -8,7 +8,8 @@ const NavBar = ({ userRole, onLogout }) => {
       <div className="h-full w-full flex flex-col justify-between">
         <ul className="space-x-2">
           {/* Show "Users" only if the user is an Admin */}
-          {userRole?.toLowerCase() === "admin" && (
+          {(userRole?.toLowerCase() === "admin" ||
+            userRole?.toLowerCase() === "fulluser") && (
             <Link to="/Users-list">
               <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg  border border-slate-700 hover:shadow-xl transition transform hover:scale-102 backdrop-blur-md w-fullbg-white w-full p-2 rounded-sm flex items-center hover:bg-blue-700 hover:text-sky-50">
                 <List />

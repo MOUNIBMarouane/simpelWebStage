@@ -1,28 +1,62 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import "./App.css";
+// import { AuthProvider } from "./Auth/AuthContext";
+// import ProtectedRoute from "./Auth/ProtectedRoute";
+// import PublicRoute from "./Auth/PublicRoute";
 import SignIn from "./pages/Signin";
 import SignUp from "./pages/signup";
-import VerificationP from "./pages/Verification";
-// import ErrorBoundary from "./components/ErrorBoundary";
-// import { AuthProvider } from "./Auth/AuthContext";
-// import ProtectedRoute from "./Auth/ProtectedRoute"; // ✅ Import ProtectedRoute
-import Layout from "./components/dashboard/layout/layout";
 import Dashboard from "./pages/Dashboard";
+import VerificationP from "./pages/Verification";
 import ResetPassword from "./pages/RestPassword";
+import UpdatePassword from "./pages/UpdatePassword";
+import Layout from "./components/dashboard/layout/layout";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
-import UpdatePassword from "./pages/UpdatePassword";
-// import PublicRoute from "./Auth/PublicRoute";
 
+// Define the routes
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <SignIn />,
+    element: (
+      // <PublicRoute>
+      <SignIn />
+      // </PublicRoute>
+    ),
   },
   {
-    element: <Layout />, // ✅ Protect everything inside Layout
+    path: "/signup",
+    element: (
+      // <PublicRoute>
+      <SignUp />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/verify/:email",
+    element: (
+      // <PublicRoute>
+      <VerificationP />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      // <PublicRoute>
+      <ResetPassword />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/update-password/:email",
+    element: (
+      // <PublicRoute>
+      <UpdatePassword />
+      // </PublicRoute>
+    ),
+  },
+  {
+    element: <Layout />, // Layout for protected routes
     children: [
       {
         path: "/dashboard",
@@ -41,7 +75,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/users-list", // ✅ Lowercase path
+        path: "/users-list",
         element: (
           // <ProtectedRoute>
           <UsersList />
@@ -50,33 +84,14 @@ const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "/signup",
-    element: <SignUp />,
-  },
-  {
-    path: "/verify/:email",
-    element: <VerificationP />,
-  },
-  {
-    path: "/forgot-password",
-    element: <ResetPassword />,
-  },
-  {
-    path: "/update-password/:email",
-    element: <UpdatePassword />,
-  },
 ]);
 
+// App component
 function App() {
   return (
-    <div className="w-[100vw] h-[100vh]">
-      {/* <AuthProvider> */}
-      {/* <ErrorBoundary fallback={<p>Something went wrong</p>}> */}
-      <RouterProvider router={router} />
-      {/* </ErrorBoundary> */}
-      {/* </AuthProvider> */}
-    </div>
+    // <AuthProvider>
+    <RouterProvider router={router} />
+    // </AuthProvider>
   );
 }
 

@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useContext, use } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash, Calendar, FileText, X } from "lucide-react";
-// import { useAuth } from "../../../Auth/AuthContext";
+import Line from "./Line";
+
 const DocumentCard = ({
+  id,
   title,
   date,
   description,
   status,
   onDelete,
   onEdit,
+  userRole, // Default to 'user' if not provided
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
@@ -16,15 +19,13 @@ const DocumentCard = ({
   const [editStatus, setEditStatus] = useState(status);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  // const { user } = useAuth();
-  // Format date for better readability
-  const [user, setUser] = useState("")
+
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
-  
+
   const truncatedDescription =
     description.length > 120
       ? `${description.substring(0, 120)}...`
@@ -52,15 +53,16 @@ const DocumentCard = ({
     onEdit(editTitle, editDescription, editStatus);
     setIsEditing(false);
   };
-  // console.log("card user contest", user.role.toLowerCase());
+
   return (
     <>
       {/* Main Document Card */}
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg rounded-lg p-4 border border-slate-700 hover:shadow-xl transition transform hover:scale-102 backdrop-blur-md w-full"
+        className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg rounded-lg p-4 border border-slate-700 hover:shadow-xl transition transform hover:scale-102 w-full"
       >
         <div className="w-full flex justify-between items-start mb-3">
           <h2 className="text-xl font-bold text-white">{title}</h2>
@@ -69,7 +71,7 @@ const DocumentCard = ({
             {formattedDate}
           </span>
         </div>
-
+        <div>status: {status}</div>
         <div className="w-full flex items-start mb-4">
           <FileText
             size={16}
@@ -77,20 +79,20 @@ const DocumentCard = ({
           />
           <p className="text-gray-300 text-sm">{truncatedDescription}</p>
         </div>
-        {/* carde */}
-        {user.role.toLowerCase() === "admin" && (
+        <div>
+          <Line lineKey={id} role={userRole?.toLowerCase()} />
+        </div>
+
+        {/* Conditionally render admin actions */}
+        {userRole?.toLowerCase() === "admin" && (
           <div className="w-full flex justify-end mt-4">
             <div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={handleEditClick}
               className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
             >
               <Pencil size={14} className="mr-1" /> Edit
             </div>
             <div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={onDelete}
               className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
             >
@@ -106,15 +108,15 @@ const DocumentCard = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
+          className="fixed inset-0 flex justify-center items-center bg-black/70 z-50"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setIsEditing(false);
+            if (e.target) setIsEditing(false);
           }}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 1, scale: 0.1, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            exit={{ opacity: 0, scale: 0.1, y: 20 }}
             transition={{ type: "spring", damping: 25 }}
             className="bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-md mx-4 border border-slate-700"
           >
@@ -191,21 +193,19 @@ const DocumentCard = ({
               </div>
             </div>
 
-            <div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSave}
-              className="flex items-center mr-4 bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
-            >
-              <Pencil size={14} className="mr-1" /> Edit
-            </div>
-            <div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onDelete}
-              className="flex items-center bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition cursor-pointer text-sm font-medium"
-            >
-              <Trash size={14} className="mr-1" /> Delete
+            <div className="flex mt-4 space-x-2">
+              <div
+                onClick={handleSave}
+                className="flex items-center bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-emerald-600 transition cursor-pointer text-sm font-medium"
+              >
+                <Pencil size={14} className="mr-1" /> Save
+              </div>
+              <div
+                onClick={() => setIsEditing(false)}
+                className="flex items-center bg-gray-600 text-white px-3 py-1.5 rounded-md hover:bg-gray-700 transition cursor-pointer text-sm font-medium"
+              >
+                Cancel
+              </div>
             </div>
           </motion.div>
         </motion.div>

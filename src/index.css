@@ -80,3 +80,27 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+  /* Dark track */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  /* Blue thumb */
+  border-radius: 10px;
+  border: 2px solid #1e293b;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+  /* Lighter blue on hover */
+}

@@ -1,33 +1,61 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { getUserAccount } from "../service/authService"; // Ensure this function exists
+// import { createContext, useContext, useState, useEffect } from "react";
+// import { getUserAccount } from "../service/authService";
+// import { useNavigate } from "react-router-dom";
 
-// Create context
-const AuthContext = createContext(null);
+// // Create the AuthContext
+// const AuthContext = createContext({
+//   user: null,
+//   setUser: () => {},
+//   login: () => {},
+//   logout: () => {},
+// });
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+// // AuthProvider component to wrap the app
+// export const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
+//   const navigate = useNavigate(); // useNavigate is now used inside a Router context
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUserAccount(); // Get user details
-      setUser(userData);
-    };
-    fetchUser();
-  }, []);
+//   // Fetch user data on initial load
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       const accessToken = localStorage.getItem("accessToken");
+//       if (accessToken) {
+//         const userData = await getUserAccount();
+//         if (userData) {
+//           setUser(userData);
+//         }
+//       }
+//     };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("accessToken"); // Remove token if stored
-  };
+//     fetchUser();
+//   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+//   // Login function
+//   const login = async (accessToken) => {
+//     localStorage.setItem("accessToken", accessToken);
+//     const userData = await getUserAccount();
+//     if (userData) {
+//       setUser(userData);
+//       localStorage.setItem("user", JSON.stringify(userData));
+//     }
+//   };
 
-// ✅ Correctly export `useAuth`
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+//   // Logout function
+//   const logout = () => {
+//     setUser(null);
+//     localStorage.removeItem("user");
+//     localStorage.removeItem("accessToken");
+//     navigate("/"); // Redirect to the login page
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ user, setUser, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// // Custom hook to use AuthContext
+// export const useAuth = () => {
+//   return useContext(AuthContext);
+// };

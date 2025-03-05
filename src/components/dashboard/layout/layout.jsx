@@ -11,11 +11,11 @@ function Layout() {
   useEffect(() => {
     const fetchUser = async () => {
       const userData = await getUserAccount();
-      if (userData) setUser(userData);
-      //  {
-      // } else {
-      //   navigate("/");
-      // }
+      if (userData) {
+        setUser(userData);
+      } else {
+        navigate("/");
+      }
     };
 
     fetchUser();
