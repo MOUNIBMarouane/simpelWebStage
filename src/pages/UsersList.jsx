@@ -8,6 +8,7 @@ import axios from "axios";
 import {} from "lucide-react";
 import { DeletUser, UpdateUser } from "../service/authService";
 import { a } from "framer-motion/client";
+import FormSelectRole from "../components/inputs/FormSelectRole";
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
   const [showFormNew, setShowFormNew] = useState(false);
@@ -143,7 +144,6 @@ const UsersList = () => {
   };
 
   const options = [
-    { value: "", label: "Select an option" },
     { value: "Admin", label: "Admin" },
     { value: "FullUser", label: "FullUser" },
     { value: "SimpleUser", label: "SimpleUser" },
@@ -419,6 +419,17 @@ const UsersList = () => {
             + Add Users
           </div>
         </div>
+        <div className="w-full bg-red-600 flex justify-start gap-6 justify-items-center">
+          <div className="bg-blue-600 flex text-center justify-items-center ">
+            user selected:
+          </div>
+          <div className="flex gap-1">
+            <FormInput id="fullName"  type="text" value={}/>
+            <FormInput />
+            <FormInput />
+            <div className="bg-green-500 flex justify-center p-1">save</div>
+          </div>
+        </div>
         <div className="overflow-hidden rounded-lg shadow-lg">
           <motion.table
             initial={{ opacity: 0 }}
@@ -599,7 +610,7 @@ const UsersList = () => {
                 required
                 icon={User}
               />
-              <FormSelect
+              <FormSelectRole
                 id="roleName"
                 value={roleName(formData.roleName)}
                 onChange={handleInputChange}
