@@ -57,7 +57,7 @@ const DocumentCard = ({
   return (
     <>
       {/* Main Document Card */}
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -110,7 +110,7 @@ const DocumentCard = ({
           exit={{ opacity: 0 }}
           className="fixed inset-0 flex justify-center items-center bg-black/70 z-50"
           onClick={(e) => {
-            if (e.target) setIsEditing(false);
+            if (e.target === e.currentTarget) setIsEditing(false);
           }}
         >
           <motion.div

@@ -47,12 +47,66 @@ export const addDocumentLine = async (id, title, article, prix) => {
         },
       }
     );
-    if (response.status === 200) {
+    if (response.status === 201) {
       console.log("response.data", response.data);
       return response.data; // Returns the new Line
     }
   } catch (error) {
     console.error("Failed to add Line:", error);
+    return null;
+  }
+};
+
+export const getDocumetSublines = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return [];
+  }
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/SousLignes/by_ligne/${id}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    if (response.status === 200) {
+      console.log("response.data", response.data);
+      return response.data; // Returns an array of SubLines
+    }
+  } catch (error) {
+    console.error("Failed to fetch SubLines:", error);
+    return [];
+  }
+};
+
+export const addDocumentSubLine = async (id, title, attributes) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.error("User is not authenticated.");
+    return null;
+  }
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/SousLignes`,
+      {
+        ligneId: id,
+        title,
+        attributes,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 201) {
+      console.log("response.data", response.data);
+      return response.data; // Returns the new SubLine
+    }
+  } catch (error) {
+    console.error("Failed to add SubLine:", error);
     return null;
   }
 };

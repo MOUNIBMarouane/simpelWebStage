@@ -107,7 +107,7 @@ const AddDocs = ({ onDocumentAdded }) => {
       return;
     }
     if (step === 3 && !newDoc.date) {
-      setError("Please select a date.");
+      setError("Please select a date .");
       return;
     }
     if (step === 4 && !newDoc.type) {
@@ -158,29 +158,6 @@ const AddDocs = ({ onDocumentAdded }) => {
       setIsSubmitting(false);
     }
   };
-  // const handleSubmit = async () => {
-  //   setIsSubmitting(true);
-  //   console.log("Submitting document:", newDoc);
-  //   try {
-  //     const addedDoc = await addDocument(
-  //       newDoc.title,
-  //       newDoc.content,
-  //       newDoc.date,
-  //       newDoc.type
-  //     );
-  //     console.log("Document added - handelsubmite:", addedDoc);
-  //     if (addedDoc) {
-  //       onDocumentAdded(addedDoc);
-  //       setShowForm(false);
-  //       setNewDoc({ title: "", content: "", date: "", type: "" });
-  //       setStep(1);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
   return (
     <>

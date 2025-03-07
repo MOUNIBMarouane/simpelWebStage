@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FormInput from "../components/FormInputs";
-import { Mail, User, Lock, X, Trash, Pencil } from "lucide-react";
+import {
+  Mail,
+  User,
+  Lock,
+  X,
+  Trash,
+  Pencil,
+  Eye,
+  MailIcon,
+  MailsIcon,
+} from "lucide-react";
 import FormSelect from "../components/inputs/FormSelect";
 import axios from "axios";
 
@@ -9,10 +19,12 @@ import {} from "lucide-react";
 import { DeletUser, UpdateUser } from "../service/authService";
 import { a } from "framer-motion/client";
 import FormSelectRole from "../components/inputs/FormSelectRole";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
   const [showFormNew, setShowFormNew] = useState(false);
-  const [showFormUpdate, setShowFormUpdate] = useState(false);
   const [showFormDetails, setShowFormDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editingUsers, setEditingUsers] = useState(null);
@@ -44,7 +56,18 @@ const UsersList = () => {
     digit: false,
     specialChar: false,
   });
+  const toggleUserStatus = async (user) => {
+    const updatedUser = { ...user, isActive: !user.isActive };
 
+    try {
+      await updateUserStatusOnServer(updatedUser); // Call backend API
+      setFilteredUsers((prevUsers) =>
+        prevUsers.map((u) => (u.id === user.id ? updatedUser : u))
+      );
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -276,7 +299,7 @@ const UsersList = () => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Role of User</h3>
-            <FormSelect
+            <FormSelectRole
               id="roleName"
               value={formData.roleName}
               onChange={handleInputChange}
@@ -311,10 +334,8 @@ const UsersList = () => {
     console.log("Saving user data:", formData);
     UpdateUser(formData);
     // Close the form after saving
-    setShowFormUpdate(false);
   };
   const handleClose = () => {
-    setShowFormUpdate(false);
     setShowFormDetails(false);
     setFormData({
       userId: "",
@@ -382,13 +403,24 @@ const UsersList = () => {
         roleName: selectedUser.roleId || "",
       });
     }
-  }, [selectedUser, showFormUpdate, showFormDetails]);
+  }, [selectedUser, showFormDetails]);
 
   const handleUserClick = (user, option) => {
     console.log("selected: ", user);
     setSelectedUser(user);
-    if (option === "update") setShowFormUpdate(true);
-    else setShowFormDetails(true);
+
+    // setShowFormUpdate(true); // Show the update form
+    if (option === "update") {
+      // Update form data with selected user details
+      setFormData({
+        userId: user.id || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        username: user.username || "",
+        email: user.email || "",
+        roleName: user.roleId || "",
+      });
+    } else setShowFormDetails(true);
   };
 
   const filteredUsers = Users.filter((user) =>
@@ -419,15 +451,38 @@ const UsersList = () => {
             + Add Users
           </div>
         </div>
-        <div className="w-full bg-red-600 flex justify-start gap-6 justify-items-center">
-          <div className="bg-blue-600 flex text-center justify-items-center ">
-            user selected:
-          </div>
+        <div className="w-full flex justify-start gap-6 justify-items-center pb-4">
           <div className="flex gap-1">
-            <FormInput id="fullName"  type="text" value={}/>
-            <FormInput />
-            <FormInput />
-            <div className="bg-green-500 flex justify-center p-1">save</div>
+            <FormInput
+              id="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder="First Name"
+              required
+              icon={User}
+            />
+            <FormInput
+              id="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder="Last Name"
+              required
+              icon={User}
+            />
+            <FormInput
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Email"
+              required
+              icon={MailIcon}
+            />
+          </div>
+          <div className="bg-green-500 text-white px-4 py-2  rounded hover:bg-green-600 transition ">
+            Save
           </div>
         </div>
         <div className="overflow-hidden rounded-lg shadow-lg">
@@ -440,13 +495,19 @@ const UsersList = () => {
             <thead className="bg-blue-700 text-white">
               <tr>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
-                  Name
+                  #
+                </th>
+                <th className="p-4 text-left uppercase text-sm tracking-wide">
+                  User Name
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
                   Email
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
                   Role
+                </th>
+                <th className="p-4 text-left uppercase text-sm tracking-wide">
+                  Activate{" "}
                 </th>
                 <th className="p-4 text-center uppercase text-sm tracking-wide">
                   Actions
@@ -463,35 +524,46 @@ const UsersList = () => {
                     transition={{ duration: 0.3 }}
                     className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
                   >
+                    <td className="p-4">
+                      <input type="checkbox" className="w-6 h-6 rounded-lg" />
+                    </td>
                     <td
                       className="p-4"
-                      onClick={() => handleUserClick(user, "details")}
+                      onClick={() => handleUserClick(user, "update")}
                     >
-                      {user.firstName} {user.lastName}
+                      {user.username}
                     </td>
                     <td className="p-4">{user.email}</td>
                     <td className="p-4">{roleName(user.roleId)}</td>
+                    <td className="p-4 items-center">
+                      <FormGroup>
+                        <FormControlLabel control={<Switch />} />
+                      </FormGroup>
+                    </td>
                     <td className="p-4 flex items-center justify-center space-x-3">
+                      {/* Toggle Button */}
+
+                      {/* View Button */}
                       <div
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
-                        onClick={() => handleUserClick(user, "update")}
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                        onClick={() => handleUserClick(user, "details")}
                       >
-                        <Trash size={18} />
-                        <p className="hidden sm:inline">Update</p>
+                        <Eye size={18} />
                       </div>
+
+                      {/* Delete Button */}
                       <div
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
                         onClick={() => deleteUsers(user.id)}
                       >
                         <Trash size={18} />
-                        <p className="hidden sm:inline">Delete</p>
                       </div>
                     </td>
                   </motion.tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="p-4 text-center text-gray-400">
+                  <td colSpan="5" className="p-4 text-center text-gray-400">
                     No users found.
                   </td>
                 </tr>
@@ -527,7 +599,7 @@ const UsersList = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               {renderStep()}
 
               <div className="flex justify-between mt-6">
@@ -551,97 +623,18 @@ const UsersList = () => {
                 ) : (
                   <button
                     type="submit"
+                    onClick={handleSubmit}
                     className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
                   >
                     Complete Signup
                   </button>
                 )}
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showFormUpdate && selectedUser && (
-        <div className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center items-center text-white">
-          <div className="relative bg-blue-950/60 backdrop-blur-md p-6 w-6/12 rounded-lg">
-            <X
-              className="absolute top-0 right-0 cursor-pointer m-2"
-              onClick={handleClose}
-            />
-
-            <h2 className="text-2xl font-bold mb-4">User Details</h2>
-            <p>
-              <strong>Role:</strong> {roleName(selectedUser.roleId)}
-            </p>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
-              <div className="w-full flex gap-4">
-                <div className="w-1/2">
-                  <FormInput
-                    id="firstName"
-                    type="text"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="First Name"
-                    required
-                    icon={User}
-                  />
-                </div>
-                <div className="w-1/2">
-                  <FormInput
-                    id="lastName"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Last Name"
-                    required
-                    icon={User}
-                  />
-                </div>
-              </div>
-              <FormInput
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Email"
-                required
-                icon={User}
-              />
-              <FormSelectRole
-                id="roleName"
-                value={roleName(formData.roleName)}
-                onChange={handleInputChange}
-                options={options}
-                icon={(props) => (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    {...props}
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                )}
-              />
-            </div>
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg"
-                onClick={handleSave}
-              >
-                Save Changes
-              </button>
             </div>
           </div>
         </div>
       )}
+
       {showFormDetails && selectedUser && (
         <div className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center items-center text-white">
           <div className="relative bg-blue-950/60 backdrop-blur-md p-6 w-6/12 rounded-lg">
