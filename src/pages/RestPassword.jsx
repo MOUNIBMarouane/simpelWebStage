@@ -14,7 +14,7 @@ const ResetPassword = () => {
     // Handle sign in logic here
     console.log("Email:", email);
     const response = await axios.post(
-      "http://192.168.1.85:5204/api/Account/forgot-password",
+      "http://localhost:5204/api/Account/forgot-password",
       {
         email,
       }

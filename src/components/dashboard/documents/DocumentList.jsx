@@ -93,7 +93,7 @@ const DocumentList = () => {
             onClick={async () => {
               try {
                 await axios.delete(
-                  `http://192.168.1.85:5204/api/Documents/${id}`,
+                  `http://localhost:5204/api/Documents/${id}`,
                   { headers: { Authorization: `Bearer ${accessToken}` } }
                 );
                 console.log("Document deleted successfully :", id);
@@ -133,7 +133,7 @@ const DocumentList = () => {
       // API call to update document (modify the URL to match your API)
       if (updatedStatus === "opened") satus = 0;
       const response = await axios.put(
-        `http://192.168.1.85:5204/api/Documents/${id}`,
+        `http://localhost:5204/api/Documents/${id}`,
         {
           title: updatedTitle,
           content: updatedDescription,

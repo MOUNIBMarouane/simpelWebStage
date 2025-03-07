@@ -25,16 +25,16 @@ const Line = ({ lineKey, role }) => {
       }
     };
     fetchLines();
-  }, [lineKey]);
+}, [lineKey]);
 
   useEffect(() => {
     setIsFormValid(
       newLine.title.trim() && newLine.article.trim() && newLine.prix.trim()
     );
-  }, [newLine]);
+}, [newLine]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+const handleInputChange = (e) => {
+const { name, value } = e.target;
     setNewLine((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -96,7 +96,7 @@ const Line = ({ lineKey, role }) => {
                   <div className="w-full  rounded p-1  mt-1 flex flex-col justify-between items-center gap-2">
                     {" "}
                     <div className="w-full bg-gray-500/55 p-2 rounded">
-                      <SubLine line={line.id} />
+                      <SubLine LineId={line.id} />
                     </div>
                   </div>
                 )}

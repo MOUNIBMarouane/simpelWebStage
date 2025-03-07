@@ -71,7 +71,7 @@ const ResetPassword = () => {
     event.preventDefault();
     console.log("Email:", email);
     const response = await axios.put(
-      "http://192.168.1.85:5204/api/Account/update-password",
+      "http://localhost:5204/api/Account/update-password",
       {
         email,
         newPassword: formData.PasswordHash,

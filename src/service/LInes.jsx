@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.1.85:5204/api";
+const API_BASE_URL = "http://localhost:5204/api";
 
 export const getDocumentLines = async (id) => {
   const accessToken = localStorage.getItem("accessToken");
@@ -71,7 +71,6 @@ export const getDocumetSublines = async (id) => {
       }
     );
     if (response.status === 200) {
-      console.log("response.data", response.data);
       return response.data; // Returns an array of SubLines
     }
   } catch (error) {
@@ -80,7 +79,7 @@ export const getDocumetSublines = async (id) => {
   }
 };
 
-export const addDocumentSubLine = async (id, title, attributes) => {
+export const addDocumentSubLine = async (ligneId, title, attribute) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     console.error("User is not authenticated.");
@@ -90,9 +89,9 @@ export const addDocumentSubLine = async (id, title, attributes) => {
     const response = await axios.post(
       `${API_BASE_URL}/SousLignes`,
       {
-        ligneId: id,
+        ligneId,
         title,
-        attributes,
+        attribute,
       },
       {
         headers: {
@@ -102,8 +101,7 @@ export const addDocumentSubLine = async (id, title, attributes) => {
       }
     );
     if (response.status === 201) {
-      console.log("response.data", response.data);
-      return response.data; // Returns the new SubLine
+      return response.data;
     }
   } catch (error) {
     console.error("Failed to add SubLine:", error);

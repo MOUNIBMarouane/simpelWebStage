@@ -22,7 +22,7 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.85:5204/api/Auth/login",
+        "http://localhost:5204/api/Auth/login",
         {
           emailOrUsername: email,
           password: password,
