@@ -12,6 +12,7 @@ import UpdatePassword from "./pages/UpdatePassword";
 import Layout from "./components/dashboard/layout/layout";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
+import ProfileEdit from "./pages/editProfile";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -79,6 +80,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <UsersList />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/users-profile",
+        element: (
+          // <ProtectedRoute>
+          <ProfileEdit />
           // </ProtectedRoute>
         ),
       },

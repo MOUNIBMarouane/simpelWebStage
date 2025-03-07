@@ -3,6 +3,7 @@ import { Avatar } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../navBar/NavBar";
 import { getUserAccount } from "../../../service/authService";
+import { Link } from "react-router-dom";
 
 function Layout() {
   const [user, setUser] = useState(null);
@@ -35,7 +36,9 @@ function Layout() {
       <div className="h-full w-2/12 bg-gray-900">
         <div className="w-full h-3/12 flex flex-col justify-center space-y-2">
           <div className="w-full flex flex-col justify-center items-center">
-            <Avatar sx={{ width: 56, height: 56 }} />
+            <Link to="/users-profile">
+              <Avatar sx={{ width: 56, height: 56 }} />
+            </Link>
             <div className="text-center">
               {user ? (
                 <>
