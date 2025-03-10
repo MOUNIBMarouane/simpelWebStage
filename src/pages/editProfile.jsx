@@ -5,8 +5,16 @@ const ProfileEdit = () => {
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+    company: "",
+    role: "",
     profilePicture: "",
-    backgroundPicture: "",
     currentPassword: "",
     newPassword: "",
   });
@@ -14,26 +22,28 @@ const ProfileEdit = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Fetch current user info on mount only
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
           "http://192.168.1.59:5204/api/Account/user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        const data = response.data;
-        console.log("response data: ", data);
+
         setProfile({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          profilePicture: data.profilePicture || "",
-          backgroundPicture: data.backgroundPicture || "",
-          currentPassword: "",
-          newPassword: "",
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          email: response.data.email,
+          phone: response.data.phone,
+          address: response.data.address,
+          city: response.data.city,
+          state: response.data.state,
+          zipCode: response.data.zipCode,
+          country: response.data.country,
+          company: response.data.company,
+          role: response.data.role,
+          profilePicture: response.data.profilePicture,
         });
         setLoading(false);
       } catch (err) {
@@ -43,119 +53,274 @@ const ProfileEdit = () => {
     };
 
     fetchProfile();
-    // Empty dependency array: run once on mount
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.match(/image.(jpeg|jpg|png|gif)$/i)) {
+      setError("Invalid file format. Allowed: .jpeg, .jpg, .png, .gif");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size exceeds 5MB limit");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.post(
+        "http://192.168.1.59:5204/api/Account/upload-image",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setProfile((prev) => ({
+        ...prev,
+        profilePicture: `${response.data.filePath}?${Date.now()}`,
+      }));
+      setMessage("Profile picture updated successfully");
+    } catch (err) {
+      setError(err.response?.data || "Failed to upload image");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
+
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.put(
+      await axios.put(
         "http://192.168.1.59:5204/api/Account/update-profile",
         profile,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessage(response.data);
+      setMessage("Profile updated successfully");
     } catch (err) {
-      setError(err.response?.data || "Failed to update profile.");
+      setError(err.response?.data || "Failed to update profile");
     }
   };
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Edit Profile</h1>
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      {message && <div className="mb-4 text-green-600">{message}</div>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            First Name
-          </label>
-          <input
-            type="text"
-            name="firstName"
-            value={profile.firstName}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
+      <h1 className="text-2xl font-semibold mb-6 text-gray-800">
+        Edit Profile
+      </h1>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Profile Picture Section */}
+        <div className="border-b pb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Profile Picture
+          </h2>
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <img
+                src={`http://localhost:5204/${profile.profilePicture}`} // Add timestamp to bypass cache
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+              />
+              ;
+              <label className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-sm cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/jpeg, image/png, image/gif"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <svg
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </label>
+            </div>
+            <div className="text-sm text-gray-600">
+              <p>Allowed JPG, JPEG, PNG, or GIF</p>
+              <p>Max size of 5MB</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Last Name
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            value={profile.lastName}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
+
+        {/* Personal Information Section */}
+        <div className="border-b pb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-6">
+            Personal Information
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                First name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={profile.firstName}
+                onChange={handleChange}
+                placeholder="first name"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Last name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={profile.lastName}
+                onChange={handleChange}
+                placeholder="last name"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Email address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={profile.email}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Phone number
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={profile.phone}
+                onChange={handleChange}
+                placeholder="Ex: +212 600 000 000"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Address
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={profile.address}
+                onChange={handleChange}
+                placeholder="address"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                City
+              </label>
+              <input
+                type="text"
+                name="city"
+                value={profile.city}
+                onChange={handleChange}
+                placeholder="city"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Country
+              </label>
+              <select
+                name="country"
+                value={profile.country}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              >
+                <option value="">Select Country</option>
+                <option value="Morocco">Morocco</option>
+              </select>
+            </div>
+          </div>
         </div>
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Picture URL
-          </label>
-          <input
-            type="text"
-            name="profilePicture"
-            value={profile.profilePicture}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
+        {/* Security Section */}
+        <div className="border-b pb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-6">Security</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* <div className="space-y-4"> */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Current Password
+              </label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={profile.currentPassword}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+                placeholder="Enter current password"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                New Password
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                value={profile.newPassword}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+                placeholder="Enter new password"
+              />
+              {/* </div> */}
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Background Picture URL
-          </label>
-          <input
-            type="text"
-            name="backgroundPicture"
-            value={profile.backgroundPicture}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
-        </div> */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Current Password
-          </label>
-          <input
-            type="password"
-            name="currentPassword"
-            value={profile.currentPassword}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
+
+        {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
+        {message && (
+          <div className="text-green-600 text-sm mt-4">{message}</div>
+        )}
+
+        <div className="pt-6">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Save Changes
+          </button>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            New Password
-          </label>
-          <input
-            type="password"
-            name="newPassword"
-            value={profile.newPassword}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-800"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 transition"
-        >
-          Save Changes
-        </button>
       </form>
     </div>
   );
