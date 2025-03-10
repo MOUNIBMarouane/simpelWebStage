@@ -3,7 +3,7 @@ import { getDocumentLines, addDocumentLine } from "../../../service/LInes";
 import { ChevronDown, CirclePlus } from "lucide-react";
 import SubLine from "./SubLine";
 
-const Line = ({ lineKey, role }) => {
+const Line = ({ lineKey, role, docdumentId }) => {
   const [lines, setLines] = useState([]);
   const [isLinesVisible, setIsLinesVisible] = useState(false);
   const [isAddVisible, setIsVisible] = useState(false);
@@ -25,16 +25,16 @@ const Line = ({ lineKey, role }) => {
       }
     };
     fetchLines();
-}, [lineKey]);
+  }, [lineKey]);
 
   useEffect(() => {
     setIsFormValid(
       newLine.title.trim() && newLine.article.trim() && newLine.prix.trim()
     );
-}, [newLine]);
+  }, [newLine]);
 
-const handleInputChange = (e) => {
-const { name, value } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setNewLine((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -83,7 +83,7 @@ const { name, value } = e.target;
                   key={line.id}
                 >
                   <h3>
-                    {line.title}- {line.id}
+                    {docdumentId} - {line.title} - {line.id}
                   </h3>
                   <ChevronDown
                     onClick={() => toggleSubLine(line.id)}

@@ -7,6 +7,7 @@ const DocumentCard = ({
   id,
   title,
   date,
+  Document,
   description,
   status,
   onDelete,
@@ -62,7 +63,7 @@ const DocumentCard = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg rounded-lg p-4 border border-slate-700 hover:shadow-xl transition transform hover:scale-102 w-full"
+        className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg rounded-lg p-4 border border-slate-700 hover:border-slate-400 hover:shadow-xl transition transform w-full"
       >
         <div className="w-full flex justify-between items-start mb-3">
           <h2 className="text-xl font-bold text-white">{title}</h2>
@@ -80,7 +81,11 @@ const DocumentCard = ({
           <p className="text-gray-300 text-sm">{truncatedDescription}</p>
         </div>
         <div>
-          <Line lineKey={id} role={userRole?.toLowerCase()} />
+          <Line
+            lineKey={id}
+            role={userRole?.toLowerCase()}
+            docdumentId={Document}
+          />
         </div>
 
         {/* Conditionally render admin actions */}

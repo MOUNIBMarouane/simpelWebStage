@@ -93,7 +93,7 @@ const SubLine = ({ LineId, role }) => {
         </div>
       </div>
       {/* Show Add Sublines for Admin and FullUser */}
-      befor role {role}
+      {/* befor role {role} */}
       {/* {(role?.toLowerCase() === "admin" ||
         role?.toLowerCase() === "fulluser") && ( */}
       <div>
@@ -126,14 +126,6 @@ const SubLine = ({ LineId, role }) => {
             </div>
           </div>
         )}
-        <div onClick={() => setIsSubFormVisible(!isSubFormVisible)}>
-          <span
-            className={`cursor-pointer ${isSubFormVisible ? "rotate-45" : ""}`}
-          >
-            {" "}
-            add{" "}
-          </span>
-        </div>
       </div>
       {/* )} */}
     </div>
