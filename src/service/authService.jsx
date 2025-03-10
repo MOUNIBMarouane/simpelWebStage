@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.59:5204/api";
 
 export const getUserRole = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -11,7 +11,7 @@ export const getUserRole = async () => {
   }
   try {
     const response = await axios.get(
-      "http://localhost:5204/api/Account/user-role",
+      "http://192.168.1.59:5204/api/Account/user-role",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -33,7 +33,7 @@ export const getUserAccount = async () => {
 
   try {
     const response = await axios.get(
-      "http://localhost:5204/api/Account/user-info",
+      "http://192.168.1.59:5204/api/Account/user-info",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -105,5 +105,35 @@ export const FindUserMail = async (email) => {
   } catch (error) {
     console.log("Error checking email:", error.response?.data || error);
     return false;
+  }
+};
+
+export const authLogout = async (id) => {
+  const refreshToken = localStorage.getItem("refresh_token");
+  const accessToken = localStorage.getItem("accessToken");
+  console.log("refresh token--- at logout", refreshToken);
+
+  if (!refreshToken) {
+    console.warn("No refresh token found. User is not logged in.");
+    return null;
+  } else console.log("refresh token---", refreshToken);
+  console.log("id---", id);
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Auth/logout`, // Send an empty body
+      { userId: id },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      }
+    );
+
+    if (response.status === 200) {
+      console.log("User logged out successfully:", response.data);
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Failed to log out user:", error.response?.data || error);
+    return null;
   }
 };

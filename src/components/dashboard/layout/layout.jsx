@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Avatar } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../navBar/NavBar";
-import { getUserAccount } from "../../../service/authService";
+import { authLogout, getUserAccount } from "../../../service/authService";
 import { Link } from "react-router-dom";
 
 function Layout() {
@@ -21,14 +21,25 @@ function Layout() {
 
     fetchUser();
   }, [navigate]);
+  useEffect(() => {
+    window.testLogout = handleLogout;
+  }, []);
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refresh_token");
+    console.log("Before logout, refresh token:", refreshToken); // Debugging line
 
-  // 🔹 Logout Function
-  const handleLogout = () => {
-    // Clear user session (replace this with your actual logout logic)
-    localStorage.removeItem("accessToken"); // If using tokens
+    if (!refreshToken) {
+      console.warn("Refresh token is missing before calling logout!");
+    } else {
+      await authLogout(user?.userid); // Call before removing the token
+    }
+
+    // Remove tokens after logout attempt
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refresh_token");
 
     setUser(null);
-    navigate("/"); // Redirect to login page
+    navigate("/");
   };
 
   return (

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.59:5204/api";
 
 export const getDocumentLines = async (id) => {
   const accessToken = localStorage.getItem("accessToken");

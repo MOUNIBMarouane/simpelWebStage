@@ -22,16 +22,27 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Auth/login",
+        "http://192.168.1.59:5204/api/Auth/login",
         {
           emailOrUsername: email,
           password: password,
+        },
+        {
+          withCredentials: true, // ✅ Ensures cookies are sent/received
         }
       );
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);
+        // Example function to store tokens
+
+        // Store in LocalStorage (not recommended for security reasons)
         localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refresh_token", response.data.refreshToken);
+
+        // Store in cookies (safer approach)
+        document.cookie = `accessToken=${response.data.accessToken}; Path=/; Secure; HttpOnly; SameSite=Strict`;
+        document.cookie = `refresh_token=${response.data.refreshToken}; Path=/; Secure; HttpOnly; SameSite=Strict`;
 
         navigate("/dashboard");
       } else {

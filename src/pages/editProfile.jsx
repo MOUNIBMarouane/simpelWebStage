@@ -20,7 +20,7 @@ const ProfileEdit = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          "http://192.168.1.85:5204/api/Account/user-info",
+          "http://192.168.1.59:5204/api/Account/user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -58,7 +58,7 @@ const ProfileEdit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.put(
-        "http://192.168.1.85:5204/api/Account/update-profile",
+        "http://192.168.1.59:5204/api/Account/update-profile",
         profile,
         {
           headers: { Authorization: `Bearer ${token}` },

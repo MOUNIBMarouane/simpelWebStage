@@ -109,7 +109,7 @@ const DocumentList = () => {
               if (!undo) {
                 try {
                   await axios.delete(
-                    `http://localhost:5204/api/Documents/${id}`,
+                    `http://192.168.1.59:5204/api/Documents/${id}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
                   console.log("Document deleted successfully:", id);
@@ -133,7 +133,7 @@ const DocumentList = () => {
     setTimeout(async () => {
       if (!undo) {
         try {
-          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
+          await axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log("Document permanently deleted:", id);
@@ -154,7 +154,7 @@ const DocumentList = () => {
     const matchesFilter =
       filterStatus === "all" || doc.status.toString() === filterStatus;
 
-    const docDate = new Date(doc.createdAt).toISOString().split("T")[0]; // Format to YYYY-MM-DD
+    const docDate = new Date(doc.docDate).toISOString().split("T")[0]; // Format to YYYY-MM-DD
 
     const matchesDate =
       (!startDate || docDate >= startDate) && (!endDate || docDate <= endDate);
@@ -275,7 +275,7 @@ const DocumentList = () => {
                     key={doc.id}
                     id={doc.id}
                     title={doc.title}
-                    date={doc.createdAt || new Date().toISOString()}
+                    date={doc.docDate || new Date().toISOString()}
                     description={doc.content}
                     status={doc.status}
                     userRole={user?.role}
