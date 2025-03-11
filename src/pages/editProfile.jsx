@@ -3,24 +3,19 @@ import axios from "axios";
 
 const ProfileEdit = () => {
   const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "",
-    company: "",
-    role: "",
-    profilePicture: "",
-    currentPassword: "",
-    newPassword: "",
+    firstName: "", lastName: "", email: "",
+    phone: "", address: "", city: "",
+    country: "", profilePicture: "",
+    currentPassword: "", newPassword: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,11 +33,7 @@ const ProfileEdit = () => {
           phone: response.data.phone,
           address: response.data.address,
           city: response.data.city,
-          state: response.data.state,
-          zipCode: response.data.zipCode,
           country: response.data.country,
-          company: response.data.company,
-          role: response.data.role,
           profilePicture: response.data.profilePicture,
         });
         setLoading(false);
@@ -88,9 +79,11 @@ const ProfileEdit = () => {
         }
       );
 
+      console.log("response: ", response.data);
+
       setProfile((prev) => ({
         ...prev,
-        profilePicture: `${response.data.filePath}?${Date.now()}`,
+        profilePicture: `${response.data.filePath}`,
       }));
       setMessage("Profile picture updated successfully");
     } catch (err) {
@@ -133,7 +126,7 @@ const ProfileEdit = () => {
           <div className="flex items-center gap-6">
             <div className="relative">
               <img
-                src={`http://localhost:5204/${profile.profilePicture}`} // Add timestamp to bypass cache
+                src={`${profile.profilePicture}`} // Add timestamp to bypass cache
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
               />
@@ -172,7 +165,6 @@ const ProfileEdit = () => {
             </div>
           </div>
         </div>
-
         {/* Personal Information Section */}
         <div className="border-b pb-6">
           <h2 className="text-lg font-medium text-gray-900 mb-6">
@@ -274,16 +266,19 @@ const ProfileEdit = () => {
           </div>
         </div>
         {/* Security Section */}
+        // Update the Security section in your ProfileEdit component
         <div className="border-b pb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-6">Security</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-medium text-gray-900">Security</h2>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* <div className="space-y-4"> */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Current Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="currentPassword"
                 value={profile.currentPassword}
                 onChange={handleChange}
@@ -291,28 +286,41 @@ const ProfileEdit = () => {
                 placeholder="Enter current password"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 New Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="newPassword"
                 value={profile.newPassword}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
                 placeholder="Enter new password"
               />
-              {/* </div> */}
+            </div>
+            <div className="flex mt-4">
+              <input
+                data-hs-toggle-password='{"target": "#hs-toggle-password-with-checkbox"}'
+                onClick={togglePasswordVisibility}
+                id="hs-toggle-password-checkbox"
+                type="checkbox"
+                className="shrink-0  border-gray-100 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+              />
+              <label
+                htmlFor="hs-toggle-password-checkbox"
+                className="text-sm text-gray-500 ms-3 dark:text-neutral-400"
+              >
+                Show passwords
+              </label>
             </div>
           </div>
         </div>
-
         {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
         {message && (
           <div className="text-green-600 text-sm mt-4">{message}</div>
         )}
-
         <div className="pt-6">
           <button
             type="submit"
