@@ -160,17 +160,20 @@ const AddDocs = ({ onDocumentAdded }) => {
   };
 
   return (
-    <>
+    <div>
       {(user?.role === "Admin" || user?.role === "FullUser") && (
+        
         <motion.div
           onClick={() => setShowForm(true)}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center rounded-lg cursor-pointer p-6 transition border border-slate-700 backdrop-blur-md h-full"
+          className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center p-2  w-2/3  rounded-lg cursor-pointer transition border border-slate-700 h-full"
         >
-          <div className="flex flex-col items-center">
-            <PlusCircle size={48} className="text-blue-400 mb-2" />
-            <p className="text-gray-200 font-medium">Add New Document</p>
+          <div className="flex flex-row items-center">
+            <PlusCircle size={48 / 2} className="text-blue-400 " />
+            <p className="text-gray-200 font-medium text-center pl-2">
+              Add New Document
+            </p>
           </div>
         </motion.div>
       )}
@@ -318,7 +321,7 @@ const AddDocs = ({ onDocumentAdded }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
