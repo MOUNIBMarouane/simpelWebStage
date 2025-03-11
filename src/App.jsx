@@ -13,6 +13,7 @@ import Layout from "./components/dashboard/layout/layout";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
 import ProfileEdit from "./pages/editProfile";
+import DocumentDetail from "./pages/DocumentDetail";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -72,6 +73,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <Documents />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/DocumentDetail/:idDoc",
+        element: (
+          // <ProtectedRoute>
+          <DocumentDetail />
           // </ProtectedRoute>
         ),
       },
