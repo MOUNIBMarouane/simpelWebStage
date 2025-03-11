@@ -3,10 +3,17 @@ import axios from "axios";
 
 const ProfileEdit = () => {
   const [profile, setProfile] = useState({
-    firstName: "", lastName: "", email: "",
-    phone: "", address: "", city: "",
-    country: "", profilePicture: "",
-    currentPassword: "", newPassword: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    country: "",
+    profilePicture: "",
+    currentPassword: "",
+    newPassword: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,14 +34,17 @@ const ProfileEdit = () => {
         );
 
         setProfile({
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          email: response.data.email,
-          phone: response.data.phone,
-          address: response.data.address,
-          city: response.data.city,
-          country: response.data.country,
-          profilePicture: response.data.profilePicture,
+          firstName: response.data.firstName || "",
+          lastName: response.data.lastName || "",
+          email: response.data.email || "",
+          username: response.data.username || "",
+          phoneNumber: response.data.phoneNumber || "",
+          address: response.data.address || "",
+          city: response.data.city || "",
+          country: response.data.country || "",
+          profilePicture: response.data.profilePicture || "",
+          currentPassword: "",
+          newPassword: ""
         });
         setLoading(false);
       } catch (err) {
@@ -186,19 +196,6 @@ const ProfileEdit = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
-                Last name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleChange}
-                placeholder="last name"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Email address
               </label>
               <input
@@ -212,12 +209,39 @@ const ProfileEdit = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
+                Last name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={profile.lastName}
+                onChange={handleChange}
+                placeholder="last name"
+                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                User name
+              </label>
+              <input
+                type="tel"
+                name="username"
+                value={profile.username}
+                onChange={handleChange}
+                placeholder="username"
+                className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Phone number
               </label>
               <input
                 type="tel"
-                name="phone"
-                value={profile.phone}
+                name="phoneNumber"
+                value={profile.phoneNumber}
                 onChange={handleChange}
                 placeholder="Ex: +212 600 000 000"
                 className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
