@@ -17,7 +17,7 @@ import { getDocuments } from "../../../service/docSrvice";
 import axios from "axios";
 import LoadingDocs from "./loadingDocs";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getUserAccount } from "../../../service/authService";
 import "react-toastify/dist/ReactToastify.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -117,7 +117,7 @@ const DocumentList = () => {
               if (!undo) {
                 try {
                   await axios.delete(
-                    `http://192.168.1.59:5204/api/Documents/${id}`,
+                    `http://localhost:5204/api/Documents/${id}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
                   console.log("Document deleted successfully:", id);
@@ -141,7 +141,7 @@ const DocumentList = () => {
     setTimeout(async () => {
       if (!undo) {
         try {
-          await axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
+          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log("Document permanently deleted:", id);
@@ -318,11 +318,12 @@ const DocumentList = () => {
                         transition={{ duration: 0.3 }}
                         className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
                       >
-                        <td className="p-4">
+                        <td className="p-4 flex gap-1.5">
                           <input
                             type="checkbox"
                             className="w-6 h-6 rounded-lg"
                           />
+                          <p>DOC-{doc.id}</p>
                         </td>
                         <td
                           className="p-4"
@@ -344,17 +345,16 @@ const DocumentList = () => {
                           {/* Toggle Button */}
 
                           {/* View Button */}
-                          <div
-                            className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
-                            onClick={() => handleUserClick(user, "details")}
-                          >
-                            <Eye size={18} />
-                          </div>
+                          <Link to={`/DocumentDetail/${doc.id}`}>
+                            <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
+                              <Eye size={18} />
+                            </div>
+                          </Link>
 
                           {/* Delete Button */}
                           <div
                             className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
-                            onClick={() => deleteUsers(user.id)}
+                            onClick={() => handleDelete(doc.id)}
                           >
                             <Trash size={18} />
                           </div>

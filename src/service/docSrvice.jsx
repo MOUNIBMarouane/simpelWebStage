@@ -1,6 +1,7 @@
 import axios from "axios";
+import { title } from "framer-motion/client";
 
-const API_BASE_URL = "http://192.168.1.59:5204/api";
+const API_BASE_URL = "http://localhost:5204/api";
 
 export const getDocuments = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -110,3 +111,66 @@ export const addDocument = async (title, content, date, type) => {
 //     return null;
 //   }
 // };
+
+export const getDocument = async (idDoc) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return [];
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Documents/${idDoc}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (response.status === 200) {
+      return response.data; // Returns an array of documents
+    }
+  } catch (error) {
+    console.error("Failed to fetch documents:", error);
+    return [];
+  }
+};
+
+// Function to update document status
+export const updateDocumentStatus = async (idDoc, newStatus, document) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) return null;
+
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/Documents/${idDoc}`,
+      {
+        title: document.title,
+        content: document.content,
+        docDate: document.docDate,
+        typeId: document.typeId,
+        status: newStatus,
+      },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+
+    return response.status === 200 ? response.data : null;
+  } catch (error) {
+    console.error("Error updating document status:", error);
+    return null;
+  }
+};
+export const updateDocument = async (idDoc, updatedData) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) return null;
+
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/Documents/${idDoc}`,
+      updatedData,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    return response.status === 200 ? response.data : null;
+  } catch (error) {
+    console.error("Error updating document:", error);
+    return null;
+  }
+};
