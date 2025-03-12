@@ -14,6 +14,7 @@ import Documents from "./pages/Document";
 import UsersList from "./pages/UsersList";
 import ProfileEdit from "./pages/editProfile";
 import DocumentDetail from "./pages/DocumentDetail";
+import LineDetail from "./pages/LineDetail";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -45,8 +46,8 @@ const router = createBrowserRouter([
     path: "/forgot-password",
     element: (
       // <PublicRoute>
-      <ResetPassword /> 
-      // </PublicRoute> 
+      <ResetPassword />
+      // </PublicRoute>
     ),
   },
   {
@@ -81,6 +82,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <DocumentDetail />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/DocumentDetail/:idDoc/:idLine",
+        element: (
+          // <ProtectedRoute>
+          <LineDetail />
           // </ProtectedRoute>
         ),
       },

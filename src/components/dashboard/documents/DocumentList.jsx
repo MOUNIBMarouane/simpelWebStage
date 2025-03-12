@@ -79,7 +79,7 @@ const DocumentList = () => {
   const handleDocumentAdded = (newDoc) => {
     setDocuments((prevDocs) => [newDoc, ...prevDocs]);
   };
-  
+
   const handleDelete = async (id) => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
@@ -213,8 +213,8 @@ const DocumentList = () => {
               </div>
               <div className="w-8/12 flex justify-around">
                 {/* Start Date Filter */}
-                <div className="flex ">
-                  <p>start date: </p>
+                <div className="flex items-center gap-2">
+                  <p>Start date: </p>
                   <div className="relative ">
                     <Calendar
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -230,7 +230,7 @@ const DocumentList = () => {
                 </div>
 
                 {/* End Date Filter */}
-                <div className="flex ">
+                <div className="flex items-center gap-2">
                   <p>End Date: </p>
                   <div className="relative ">
                     <Calendar

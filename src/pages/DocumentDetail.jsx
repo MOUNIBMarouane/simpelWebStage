@@ -241,7 +241,9 @@ const DocumentDetail = () => {
                       <td className="p-4">
                         {editingLine === line.id ? (
                           <input
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="any"
                             value={line.prix}
                             onChange={(e) =>
                               setLines((prevLines) =>

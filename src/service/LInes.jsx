@@ -2,6 +2,67 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:5204/api";
 
+// Get Document by ID
+export const getDocument = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null;
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Documents/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (response.status === 200) {
+      return response.data; // Returns the document
+    }
+  } catch (error) {
+    console.error("Failed to fetch document:", error);
+    return null;
+  }
+};
+
+// Get Line by ID
+export const getDocumentLine = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null;
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Lignes/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (response.status === 200) {
+      return response.data; // Returns the line
+    }
+  } catch (error) {
+    console.error("Failed to fetch line:", error);
+    return null;
+  }
+};
+
+// Get Subline by ID
+export const getSubLine = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null;
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/SousLignes/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (response.status === 200) {
+      return response.data; // Returns the subline
+    }
+  } catch (error) {
+    console.error("Failed to fetch subline:", error);
+    return null;
+  }
+};
+
+// Existing functions for fetching lines and sublines by document/line ID
 export const getDocumentLines = async (id) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -25,6 +86,29 @@ export const getDocumentLines = async (id) => {
   }
 };
 
+export const getDocumetSublines = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return [];
+  }
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/SousLignes/by_ligne/${id}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    if (response.status === 200) {
+      return response.data; // Returns an array of SubLines
+    }
+  } catch (error) {
+    console.error("Failed to fetch SubLines:", error);
+    return [];
+  }
+};
+
+// Existing functions for adding, updating, and deleting lines and sublines
 export const addDocumentLine = async (id, title, article, prix) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -95,7 +179,7 @@ export const deleteDocumentLine = async (id) => {
     return null;
   }
   try {
-    const response = await axios.delete(`${API_BASE_URL}/Lignes/${id}`, {
+    const response = await axios.delete(`${API_BASE_URL}/SousLignes/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -109,26 +193,29 @@ export const deleteDocumentLine = async (id) => {
     return false;
   }
 };
+export const updateDocumentSubLine = async(id, updatedSubLine) =>
+{
 
-export const getDocumetSublines = async (id) => {
+};
+export const deleteDocumentSubLine = async (id) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
-    console.warn("No access token found. User is not logged in.");
-    return [];
+    console.error("User is not authenticated.");
+    return null;
   }
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/SousLignes/by_ligne/${id}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
-    if (response.status === 200) {
-      return response.data; // Returns an array of SubLines
+    const response = await axios.delete(`${API_BASE_URL}/Lignes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status === 204) {
+      console.log("Line deleted successfully:", id);
+      return true;
     }
   } catch (error) {
-    console.error("Failed to fetch SubLines:", error);
-    return [];
+    console.error("Failed to delete Line:", error);
+    return false;
   }
 };
 
