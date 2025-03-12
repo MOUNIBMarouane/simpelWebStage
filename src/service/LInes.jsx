@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.59:5204/api";
 
 // Get Document by ID
 export const getDocument = async (id) => {
@@ -193,10 +193,7 @@ export const deleteDocumentLine = async (id) => {
     return false;
   }
 };
-export const updateDocumentSubLine = async(id, updatedSubLine) =>
-{
-
-};
+export const updateDocumentSubLine = async (id, updatedSubLine) => {};
 export const deleteDocumentSubLine = async (id) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Links } from "react-router-dom";
 import { getDocument } from "../service/docSrvice";
 import {
   getDocumentLines,
@@ -154,8 +154,8 @@ const DocumentDetail = () => {
       </div>
       <div className="w-full h-full flex flex-row py-2 gap-2">
         {/* Left: Document Details */}
-        <div className="w-1/2 flex flex-col justify-between">
-          <div className="bg-blue-700 p-6 rounded-xl shadow-lg w-full max-w-md">
+        <div className="w-1/4 flex flex-col justify-between gap-4">
+          <div className="bg-blue-700 p-6 rounded-xl shadow-lg w-full max-w-md gap-6">
             <h2 className="text-2xl font-bold mb-4">Document Details</h2>
             <p>
               <strong>ID:</strong> DOC-{document.id}
@@ -177,18 +177,20 @@ const DocumentDetail = () => {
         </div>
 
         {/* Right: Document Lines Table */}
-        <div className="w-3/2 bg-gray-800 p-6 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-bold mb-4 w-full bg-amber-200">
-            Document Lines
+        <div className="w-3/4 h-full bg-gray-800 p-2 rounded-xl shadow-lg items-center">
+          <h2 className="text-2xl w-full h-2/12 font-bold flex flex-col justify-center gap-2 ">
+            <div>Document Lines</div>
+            <div className="w-full items-center">
+              <AddLine onLineAdded={handleAddLine} />
+            </div>
           </h2>
-          <AddLine onLineAdded={handleAddLine} />
 
-          <div className="mt-4 overflow-x-auto">
+          <div className="h-10/12 w-full overflow-scroll">
             <motion.table
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="w-full border-collapse bg-gray-900 text-white rounded-lg"
+              className="w-full border-collapse bg-gray-900 text-white rounded-lg "
             >
               <thead className="bg-blue-700 text-white">
                 <tr>
@@ -242,7 +244,7 @@ const DocumentDetail = () => {
                         {editingLine === line.id ? (
                           <input
                             type="number"
-                            min="1"
+                            min="0"
                             step="any"
                             value={line.prix}
                             onChange={(e) =>
@@ -283,6 +285,13 @@ const DocumentDetail = () => {
                             >
                               <Edit size={18} />
                             </div>
+                            <Link
+                              to={`/DocumentDetail/${document.id}/${line.id}`}
+                            >
+                              <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
+                                <Eye size={18} />
+                              </div>
+                            </Link>
                             <div
                               className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
                               onClick={() => handleDeleteLine(line.id)}

@@ -29,7 +29,7 @@ const ProfileEdit = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          "http://localhost:5204/api/Account/user-info",
+          "http://192.168.1.59:5204/api/Account/user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -44,7 +44,7 @@ const ProfileEdit = () => {
           country: response.data.country || "",
           profilePicture: response.data.profilePicture || "",
           currentPassword: "",
-          newPassword: ""
+          newPassword: "",
         });
         setLoading(false);
       } catch (err) {
@@ -79,7 +79,7 @@ const ProfileEdit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.post(
-        "http://localhost:5204/api/Account/upload-image",
+        "http://192.168.1.59:5204/api/Account/upload-image",
         formData,
         {
           headers: {
@@ -109,7 +109,7 @@ const ProfileEdit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        "http://localhost:5204/api/Account/update-profile",
+        "http://192.168.1.59:5204/api/Account/update-profile",
         profile,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -122,7 +122,7 @@ const ProfileEdit = () => {
   if (loading) return <div className="text-center py-4">Loading...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
+    <div className="max-w-4xl w-full h-full overflow-scroll mx-auto p-6 bg-white rounded-lg shadow-sm">
       <h1 className="text-2xl font-semibold mb-6 text-gray-800">
         Edit Profile
       </h1>

@@ -9,7 +9,7 @@ import {
   deleteDocumentSubLine,
 } from "../service/Lines";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash, Edit } from "lucide-react";
+import { Trash, Edit, Eye } from "lucide-react";
 
 const LineDetail = () => {
   const { idDoc, idLine } = useParams();
@@ -270,7 +270,7 @@ const LineDetail = () => {
                       className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
                     >
                       <td className="p-4">
-                        LINE-{line.id}-SL_{subLine.id}
+                        DOC-{document.id}-LINE-{line.id}-SL_{subLine.id}
                       </td>
                       <td className="p-4">
                         {editingSubLine === subLine.id ? (
@@ -336,6 +336,12 @@ const LineDetail = () => {
                             >
                               <Edit size={18} />
                             </div>
+                            {/* <div
+                              onClick={() => setEditingSubLine(subLine.id)}
+                              className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                            >
+                              <Eye size={18} />
+                            </div> */}
                             <div
                               className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
                               onClick={() => handleDeleteSubLine(subLine.id)}

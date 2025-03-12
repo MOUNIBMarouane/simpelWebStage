@@ -122,7 +122,6 @@ const SignUp = () => {
         alert("Please fill in all fields");
         return;
       }
-
       try {
         console.log("Checking if username exists...");
         const usernameExists = await FindUserName(formData.username);
@@ -193,7 +192,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Auth/register",
+        "http://192.168.1.59:5204/api/Auth/register",
         userData,
         {
           headers: {
@@ -207,9 +206,11 @@ const SignUp = () => {
         navigate(`/verify/${formData.email}`);
       }
     } catch (error) {
-      if (error.response?.data?.toLowerCase().includes("invalid secret key")) {
+      if (
+        error.response?.data?.toLowerCase().includes("invalid admin secret.")
+      ) {
         setSecretKeyError(
-          "Contact administration or check your secret key is incorrect"
+          "The secret key is incorrect check the key or Contact ."
         );
       } else {
         console.error("Error:", error);

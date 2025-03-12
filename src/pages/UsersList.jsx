@@ -22,6 +22,9 @@ import FormSelectRole from "../components/inputs/FormSelectRole";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
   const [showFormNew, setShowFormNew] = useState(false);
@@ -144,7 +147,7 @@ const UsersList = () => {
       console.log(userData);
       console.log(accessToken);
       const response = await axios.post(
-        "http://localhost:5204/api/Admin/users",
+        "http://192.168.1.59:5204/api/Admin/users",
         userData,
         {
           headers: {
@@ -375,7 +378,7 @@ const UsersList = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://localhost:5204/api/Admin/users",
+        "http://192.168.1.59:5204/api/Admin/users",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

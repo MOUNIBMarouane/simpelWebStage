@@ -37,6 +37,7 @@ const DocumentList = () => {
   const navigate = useNavigate();
   const [statuscontole, setStatusControl] = useState("Opened");
   const [activedel, setActiveDel] = useState(false);
+  const [selectedDocs, setSelectedDocs] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -118,7 +119,7 @@ const DocumentList = () => {
               if (!undo) {
                 try {
                   await axios.delete(
-                    `http://localhost:5204/api/Documents/${id}`,
+                    `http://192.168.1.59:5204/api/Documents/${id}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
                   console.log("Document deleted successfully:", id);
@@ -142,7 +143,7 @@ const DocumentList = () => {
     setTimeout(async () => {
       if (!undo) {
         try {
-          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
+          await axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log("Document permanently deleted:", id);
@@ -152,6 +153,48 @@ const DocumentList = () => {
         }
       }
     }, 5000);
+  };
+
+  const handleSelectDoc = (id) => {
+    setSelectedDocs(
+      (prevSelectedDocs) =>
+        prevSelectedDocs.includes(id)
+          ? prevSelectedDocs.filter((docId) => docId !== id) // Deselect
+          : [...prevSelectedDocs, id] // Select
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      console.warn("No access token found. User is not logged in.");
+      navigate("/");
+      return;
+    }
+
+    try {
+      // Delete from the database
+      await Promise.all(
+        selectedDocs.map((id) =>
+          axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+        )
+      );
+
+      // Remove from the state
+      setDocuments((prevDocs) =>
+        prevDocs.filter((doc) => !selectedDocs.includes(doc.id))
+      );
+
+      // Clear selected documents
+      setSelectedDocs([]);
+
+      toast.success("Selected documents deleted successfully!");
+    } catch (err) {
+      console.error("Failed to delete documents:", err);
+      toast.error("Failed to delete documents. Please try again.");
+    }
   };
 
   // Filtering logic (search, status, and date)
@@ -302,9 +345,10 @@ const DocumentList = () => {
                       </div>
                       <div
                         className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
-                        onClick={() => deleteUsers(user.id)}
+                        onClick={handleBulkDelete}
                       >
                         <Trash size={18} />
+                        Delete Selected
                       </div>
                     </th>
                   </tr>
@@ -323,6 +367,8 @@ const DocumentList = () => {
                           <input
                             type="checkbox"
                             className="w-6 h-6 rounded-lg"
+                            checked={selectedDocs.includes(doc.id)}
+                            onChange={() => handleSelectDoc(doc.id)}
                           />
                           <p>DOC-{doc.id}</p>
                         </td>

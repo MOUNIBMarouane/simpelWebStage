@@ -48,7 +48,10 @@ function Layout() {
         <div className="w-full h-3/12 flex flex-col justify-center space-y-2">
           <div className="w-full flex flex-col justify-center items-center">
             <Link to="/users-profile">
-              <Avatar sx={{ width: 56, height: 56 }} />
+              <Avatar
+                sx={{ width: 56, height: 56 }}
+                src={user?.profilePicture}
+              />
             </Link>
             <div className="text-center">
               {user ? (
