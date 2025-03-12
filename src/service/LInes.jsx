@@ -57,6 +57,59 @@ export const addDocumentLine = async (id, title, article, prix) => {
   }
 };
 
+export const updateDocumentLine = async (id, title, article, prix) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.error("User is not authenticated.");
+    return null;
+  }
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/Lignes/${id}`,
+      {
+        title,
+        article,
+        prix,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log("response.data", response.data);
+      return response.data; // Returns the updated Line
+    }
+  } catch (error) {
+    console.error("Failed to update Line:", error);
+    return null;
+  }
+};
+
+export const deleteDocumentLine = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.error("User is not authenticated.");
+    return null;
+  }
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/Lignes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status === 204) {
+      console.log("Line deleted successfully:", id);
+      return true;
+    }
+  } catch (error) {
+    console.error("Failed to delete Line:", error);
+    return false;
+  }
+};
+
 export const getDocumetSublines = async (id) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {

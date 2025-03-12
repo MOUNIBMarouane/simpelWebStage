@@ -20,15 +20,11 @@ const UpdatePassword = () => {
 
   const validatePassword = (password = "") => {
     const errors = [];
-    if (password.length < 8)
-      errors.push("Password must be at least 8 characters.");
-    if (!/[A-Z]/.test(password))
-      errors.push("Must include at least one uppercase letter.");
-    if (!/[a-z]/.test(password))
-      errors.push("Must include at least one lowercase letter.");
+    if (password.length < 8) errors.push("Password must be at least 8 characters.");
+    if (!/[A-Z]/.test(password)) errors.push("Must include at least one uppercase letter.");
+    if (!/[a-z]/.test(password)) errors.push("Must include at least one lowercase letter.");
     if (!/\d/.test(password)) errors.push("Must include at least one number.");
-    if (!/[@$!%*?&]/.test(password))
-      errors.push("Must include at least one special character (@$!%*?&).");
+    if (!/[@$!%*?&]/.test(password)) errors.push("Must include at least one special character (@$!%*?&).");
     return errors;
   };
 
@@ -78,9 +74,7 @@ const UpdatePassword = () => {
   return (
     <div className="signin-container bg-image w-full h-full flex justify-center place-items-center text-white">
       <div className="bg-black/60 w-4/12 backdrop-blur-md rounded-lg p-6">
-        <h2 className="text-bold text-[24px] text-center pb-3">
-          Update Your Password
-        </h2>
+        <h2 className="text-bold text-[24px] text-center pb-3">Update Your Password</h2>
 
         <div className="w-full max-w-md mx-auto p-2">
           <FormInput
@@ -118,22 +112,14 @@ const UpdatePassword = () => {
           />
         </div>
 
-        {error && (
-          <div className="text-red-400 text-sm text-center mt-3">{error}</div>
-        )}
-        {message && (
-          <div className="text-green-400 text-sm text-center mt-3">
-            {message}
-          </div>
-        )}
+        {error && <div className="text-red-400 text-sm text-center mt-3">{error}</div>}
+        {message && <div className="text-green-400 text-sm text-center mt-3">{message}</div>}
 
         <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-center place-items-center">
           <button
             type="submit"
             onClick={handleSubmit}
-            className={`btn ${
-              validationErrors.length > 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`btn ${validationErrors.length > 0 ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={validationErrors.length > 0}
           >
             RESET

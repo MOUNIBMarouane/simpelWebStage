@@ -79,6 +79,7 @@ const DocumentList = () => {
   const handleDocumentAdded = (newDoc) => {
     setDocuments((prevDocs) => [newDoc, ...prevDocs]);
   };
+  
   const handleDelete = async (id) => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {

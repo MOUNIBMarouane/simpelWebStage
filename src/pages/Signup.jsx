@@ -20,6 +20,7 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [secretKeyError, setSecretKeyError] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -204,11 +205,15 @@ const SignUp = () => {
 
       if (response.status === 200) {
         navigate(`/verify/${formData.email}`);
-      } else {
-        console.error("Registration failed:", response.statusText);
       }
     } catch (error) {
-      console.error("Error:", error);
+      if (error.response?.data?.toLowerCase().includes("invalid secret key")) {
+        setSecretKeyError(
+          "Contact administration or check your secret key is incorrect"
+        );
+      } else {
+        console.error("Error:", error);
+      }
     }
   };
   const isNextDisabled = () => {
@@ -466,6 +471,10 @@ const SignUp = () => {
               placeholder="Secret Key (Optional)"
               icon={Key}
             />
+            {/* Add error message display */}
+            {secretKeyError && (
+              <p className="text-red-500 text-sm mt-2">{secretKeyError}</p>
+            )}
           </div>
         );
       default:
