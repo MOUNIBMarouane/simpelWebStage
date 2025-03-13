@@ -7,6 +7,7 @@ const Verification = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadings, setIsLoadings] = useState(false);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
 
   const inputRefs = Array(6)
@@ -49,7 +50,7 @@ const Verification = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.59:5204/api/Auth/verify-email",
+        "http://localhost:5204/api/Auth/verify-email",
         {
           email: email,
           verificationCode,
@@ -85,11 +86,11 @@ const Verification = () => {
 
   const handleResendCode = async () => {
     setError("");
-    setIsLoading(true);
+    setIsLoadings(true);
 
     try {
       const response = await axios.post(
-        "http://192.168.1.59:5204/api/Auth/resend-code",
+        "http://localhost:5204/api/Account/resend-code",
         { email },
         {
           headers: {
@@ -116,7 +117,7 @@ const Verification = () => {
           "Failed to resend verification code. Please try again."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadings(false);
     }
   };
 
@@ -165,14 +166,14 @@ const Verification = () => {
 
             <div className="text-sm flex flex-col items-center gap-1">
               <div>Didn't receive the code?</div>
-              <button
+              <div
                 type="button"
-                className="text-blue-400 hover:text-blue-500 p-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-blue-400 text-xl hover:text-blue-500 p-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={handleResendCode}
-                disabled={isLoading}
+                disabled={isLoadings}
               >
-                {isLoading ? "Sending..." : "Resend"}
-              </button>
+                {isLoadings ? "Sending..." : "Resend Code"}
+              </div>
             </div>
           </div>
         </form>

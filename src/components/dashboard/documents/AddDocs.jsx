@@ -31,7 +31,7 @@ const AddDocs = ({ onDocumentAdded }) => {
 
       try {
         const response = await axios.get(
-          "http://192.168.1.59:5204/api/Documents/Types",
+          "http://localhost:5204/api/Documents/Types",
           {
             headers: { Authorization: `Bearer ${accessToken}` },
           }

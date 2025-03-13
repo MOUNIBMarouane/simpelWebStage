@@ -29,7 +29,7 @@ const ProfileEdit = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          "http://192.168.1.59:5204/api/Account/user-info",
+          "http://localhost:5204/api/Account/user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -79,7 +79,7 @@ const ProfileEdit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.post(
-        "http://192.168.1.59:5204/api/Account/upload-image",
+        "http://localhost:5204/api/Account/upload-image",
         formData,
         {
           headers: {
@@ -109,7 +109,7 @@ const ProfileEdit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        "http://192.168.1.59:5204/api/Account/update-profile",
+        "http://localhost:5204/api/Account/update-profile",
         profile,
         { headers: { Authorization: `Bearer ${token}` } }
       );

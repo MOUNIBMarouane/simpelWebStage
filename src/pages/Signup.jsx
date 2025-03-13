@@ -192,7 +192,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.59:5204/api/Auth/register",
+        "http://localhost:5204/api/Auth/register",
         userData,
         {
           headers: {
@@ -260,10 +260,15 @@ const SignUp = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 h">
             <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
             <div className="w-full flex gap-4">
-              <div className="w-1/2">
+              <div className="w-1/2 gap-4">
+                <div className="mb-4">
+                  <label className="text-gray-300" htmlFor="username">
+                    Enter Your Last Name :
+                  </label>
+                </div>
                 <FormInput
                   id="firstName"
                   type="text"
@@ -288,7 +293,12 @@ const SignUp = () => {
                     : "Name must be at least 3 characters"}
                 </p>
               </div>
-              <div className="w-1/2">
+              <div className="w-1/2 gap-4">
+                <div className="mb-4">
+                  <label className="text-gray-300" htmlFor="username">
+                    Enter Your Last Name :
+                  </label>
+                </div>
                 <FormInput
                   id="lastName"
                   type="text"
@@ -313,6 +323,11 @@ const SignUp = () => {
                     : "Name must be at least 3 characters"}
                 </p>
               </div>
+            </div>
+            <div>
+              <label className="text-gray-300" htmlFor="username">
+                Enter a User Name :
+              </label>
             </div>
             <FormInput
               id="username"
@@ -347,6 +362,11 @@ const SignUp = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Account Security</h3>
             <div>
+              <label className="text-gray-300" htmlFor="email">
+                Enter your Email :{" "}
+              </label>
+            </div>
+            <div>
               <FormInput
                 id="email"
                 type="email"
@@ -368,19 +388,27 @@ const SignUp = () => {
                   : ""}
               </p>
             </div>
-
+            <div>
+              <label className="text-gray-300" htmlFor="PasswordHash">
+                Enter a Password for this account :
+              </label>
+            </div>
             <FormInput
               id="PasswordHash"
               type={showPassword ? "text" : "password"}
               value={formData.PasswordHash}
               onChange={handleInputChange}
-              placeholder="Password"
+              placeholder="Enter a Password for this account"
               required
               icon={Lock}
               rightIcon={showPassword ? EyeOff : Eye} // Toggle icon
               onRightIconClick={togglePasswordVisibility} // Handle click
             />
-
+            <div>
+              <label className="text-gray-300" htmlFor="cpassword">
+                Conferme the password :
+              </label>
+            </div>
             <FormInput
               id="cpassword"
               type={showConfirmPassword ? "text" : "password"}
@@ -407,8 +435,8 @@ const SignUp = () => {
                   : "Passwords do not match!"
                 : ""}
             </p>
-            <div className="text-sm text-gray-400 transition-all">
-              <p>Password must include:</p>
+            <div className="text-sm text-gray-300 transition-all">
+              <p>Password must include :</p>
               <ul>
                 <li
                   className={
@@ -487,11 +515,11 @@ const SignUp = () => {
       <div className="bg-grade bg-black/60 backdrop-blur-md p-6 md:w-6/12 lg:w-6/12 rounded">
         <div className="w-full flex-col place-items-center pb-6">
           <h2 className="text-2xl font-bold">Sign Up</h2>
-          <div className="flex justify-center mt-4 space-x-2">
+          <div className="flex justify-center mt-4 space-x-4">
             {[1, 2, 3].map((num) => (
               <div
                 key={num}
-                className={`w-3 h-3 rounded-full ${
+                className={`w-4 h-4 rounded-full ${
                   step >= num ? "bg-blue-500" : "bg-gray-400"
                 }`}
               />
@@ -499,7 +527,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="">
           {renderStep()}
 
           <div className="flex justify-between mt-6">
@@ -523,7 +551,7 @@ const SignUp = () => {
                 }`}
                 disabled={isNextDisabled()}
               >
-                Next {step}
+                Next
               </button>
             ) : (
               <button
