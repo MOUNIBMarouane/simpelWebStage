@@ -36,7 +36,9 @@ const NavBar = ({ userRole, onLogout }) => {
           className="bg-red-600/95 hover:bg-red-600 w-full p-2 rounded-sm flex items-center"
         >
           <PanelRightClose color="#E0F2FE" />
-          <p className="w-full text-center cursor-pointer text-sky-50">Exit</p>
+          <p className="w-full text-center cursor-pointer text-sky-50">
+            Logout
+          </p>
         </div>
       </div>
     </nav>

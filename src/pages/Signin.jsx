@@ -22,7 +22,7 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Auth/login",
+        "http://192.168.1.59:5204/api/Auth/login",
         {
           emailOrUsername: email,
           password: password,
@@ -49,11 +49,9 @@ const SignIn = () => {
         setError("Login failed. Please check your credentials and try again.");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError(
-        error.response?.data?.message ||
-          "An error occurred during login. Please try again."
-      );
+      // console.error("Login error:", error);
+      // console.log(error.response?.data);
+      setError(error.response?.data);
     }
   };
 

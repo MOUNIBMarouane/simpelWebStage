@@ -1,7 +1,7 @@
 import axios from "axios";
 import { title } from "framer-motion/client";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.59:5204/api";
 
 export const getDocuments = async () => {
   const accessToken = localStorage.getItem("accessToken");

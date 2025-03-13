@@ -15,6 +15,9 @@ import UsersList from "./pages/UsersList";
 import ProfileEdit from "./pages/editProfile";
 import DocumentDetail from "./pages/DocumentDetail";
 import LineDetail from "./pages/LineDetail";
+import VerificationWelcome from "./pages/VerificationWelcome";
+import Welcome from "./pages/Welcome";
+import WelcomeEmd from "./pages/Welcome";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -39,6 +42,30 @@ const router = createBrowserRouter([
     element: (
       // <PublicRoute>
       <VerificationP />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/welcome-verify/:email",
+    element: (
+      // <PublicRoute>
+      <VerificationWelcome />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/welcome/:email",
+    element: (
+      // <PublicRoute>
+      <Welcome />
+      // </PublicRoute>
+    ),
+  },
+  {
+    path: "/welcome-end",
+    element: (
+      // <PublicRoute>
+      <WelcomeEmd />
       // </PublicRoute>
     ),
   },

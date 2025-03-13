@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 
-const VerificationWelcome = () => {
-  const { email } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+const WelcomeEmd = () => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -15,30 +11,6 @@ const VerificationWelcome = () => {
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleResendCode = async () => {
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const response = await axios.post(
-        "http://192.168.1.59:5204/api/Account/resend-code",
-        { email },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (response.status !== 200)
-        throw new Error(response.data?.message || "Resend failed");
-      alert("Verification code has been resent to your email");
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to resend code. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="bg-image w-full min-h-screen flex justify-center items-center text-white">
@@ -74,32 +46,23 @@ const VerificationWelcome = () => {
           }`}
         >
           <div className="flex flex-col items-center mb-8">
-            <h2 className="text-xl font-bold mb-4">
-              Your account is registred succefully!
+            <h2 className="text-3xl font-bold mb-4 text-center">
+              Registration Successful! 🎉
             </h2>
-            <p className="text-center text-md mb-6">
-              We've sent a verification code to
+            <p className="text-center text-lg mb-6">
+              All verification steps completed successfully
             </p>
-            <p className="text-blue-300 break-all text-center mb-6">{email}</p>
-            <p className="text-center text-lg">
-              Please check your email to continue.
-            </p>
+            <div className="animate-pulse text-center text-xl text-green-400 mb-6">
+              Ready to get started?
+            </div>
           </div>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-center">
-              {error}
-            </div>
-          )}
-
-          <div className="flex flex-col items-center gap-4 w-full ">
-            <Link to={`/verify/${email}`}>
-              <div
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white  py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Go to verify
-              </div>
+          <div className="flex flex-col items-center gap-4">
+            <Link
+              to="/login"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all duration-300 transform hover:scale-105"
+            >
+              Continue to Login
             </Link>
           </div>
         </div>
@@ -150,6 +113,15 @@ const styles = `
   stroke-miterlimit: 10;
   box-shadow: inset 0px 0px 0px #4bb543;
 }
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
 `;
 
 // Inject styles
@@ -157,4 +129,4 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
 
-export default VerificationWelcome;
+export default WelcomeEmd;
