@@ -119,7 +119,7 @@ const DocumentList = () => {
               if (!undo) {
                 try {
                   await axios.delete(
-                    `http://192.168.1.59:5204/api/Documents/${id}`,
+                    `http://localhost:5204/api/Documents/${id}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
                   console.log("Document deleted successfully:", id);
@@ -143,7 +143,7 @@ const DocumentList = () => {
     setTimeout(async () => {
       if (!undo) {
         try {
-          await axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
+          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log("Document permanently deleted:", id);
@@ -176,7 +176,7 @@ const DocumentList = () => {
       // Delete from the database
       await Promise.all(
         selectedDocs.map((id) =>
-          axios.delete(`http://192.168.1.59:5204/api/Documents/${id}`, {
+          axios.delete(`http://localhost:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           })
         )

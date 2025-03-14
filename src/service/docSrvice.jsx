@@ -1,7 +1,7 @@
 import axios from "axios";
 import { title } from "framer-motion/client";
 
-const API_BASE_URL = "http://192.168.1.59:5204/api";
+const API_BASE_URL = "http://localhost:5204/api";
 
 export const getDocuments = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -74,43 +74,6 @@ export const addDocument = async (title, content, date, type) => {
     throw error;
   }
 };
-// export const addDocument = async (title, content, date, type) => {
-//   const userData = await getUserAccount();
-//   let resul = 0;
-//   const accessToken = localStorage.getItem("accessToken");
-//   // const userId = localStorage.getItem("userId"); // Ensure userId is stored after login
-
-//   if (!accessToken) {
-//     console.error("User is not authenticated.");
-//     return null;
-//   }
-
-//   try {
-//     console.log("Adding document...", title, content, date, type);
-//     const response = await axios.post(
-//       `${API_BASE_URL}/Documents`, // ✅ Use /api/Documents
-//       {
-//         title,
-//         content,
-//         docDate: date,
-//         typeId: type,
-//       },
-//       {
-//         "Content-Type": "application/json",
-//         headers: { Authorization: `Bearer ${accessToken}` },
-//       }
-//     );
-//     console.log("response", response);
-
-//     if (response.status === 201) {
-//       console.log("Document added successfully:", response.data);
-//       return response.data; // Return the newly created document
-//     }
-//   } catch (error) {
-//     console.error("Failed to add document:", error);
-//     return null;
-//   }
-// };
 
 export const getDocument = async (idDoc) => {
   const accessToken = localStorage.getItem("accessToken");
