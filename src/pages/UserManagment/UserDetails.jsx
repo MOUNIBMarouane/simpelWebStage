@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft } from "lucide-react";
-import { getLogs } from "../../service/authService"; // Make sure to import your API service
+import { ArrowLeft, Login, Logout, ShieldAlert } from "lucide-react";
+import { getLogs } from "../../service/authService";
 
 const UserDetails = () => {
   const { userId } = useParams();
@@ -11,6 +11,33 @@ const UserDetails = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+
+  // Helper function to get action details
+  const getActionDetails = (action) => {
+    const lowerAction = action.toLowerCase();
+
+    if (lowerAction.includes("login")) {
+      return {
+        icon: <Login size={16} className="text-green-400" />,
+        color: "border-green-500",
+        textColor: "text-green-400",
+      };
+    }
+
+    if (lowerAction.includes("logout")) {
+      return {
+        icon: <Logout size={16} className="text-red-400" />,
+        color: "border-red-500",
+        textColor: "text-red-400",
+      };
+    }
+
+    return {
+      icon: <ShieldAlert size={16} className="text-blue-400" />,
+      color: "border-blue-500",
+      textColor: "text-blue-400",
+    };
+  };
 
   const roleName = (idrole) => {
     switch (idrole) {
@@ -25,9 +52,7 @@ const UserDetails = () => {
     }
   };
 
-  const activeStatus = (status) => {
-    return status ? "Active" : "Inactive";
-  };
+  const activeStatus = (status) => (status ? "Active" : "Inactive");
 
   const formatDateTime = (dateString) => {
     const options = {
@@ -46,17 +71,12 @@ const UserDetails = () => {
         const accessToken = localStorage.getItem("accessToken");
         const userResponse = await axios.get(
           `http://192.168.1.94:5204/api/Admin/users/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
+          { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         setUser(userResponse.data);
 
-        // Fetch logs after user data is loaded
         const logsData = await getLogs(userId);
-        if (logsData) {
-          setLogs(logsData);
-        }
+        if (logsData) setLogs(logsData);
       } catch (error) {
         console.error("Error fetching data:", error);
         navigate("/users");
@@ -103,26 +123,35 @@ const UserDetails = () => {
             <div className="text-gray-400">No activity logs found</div>
           ) : (
             <div className="space-y-4 max-h-[500px] overflow-y-auto">
-              {logs.map((log) => (
-                <div
-                  key={log.id}
-                  className="bg-gray-700/30 p-4 rounded-lg border-l-4 border-blue-500"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="font-medium text-blue-300">
-                      {log.action}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      {formatDateTime(log.timestamp)}
-                    </span>
+              {logs.map((log) => {
+                const actionDetails = getActionDetails(log.action);
+
+                return (
+                  <div
+                    key={log.id}
+                    className={`bg-gray-700/30 p-4 rounded-lg border-l-4 ${actionDetails.color}`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2">
+                        {actionDetails.icon}
+                        <span
+                          className={`font-medium ${actionDetails.textColor}`}
+                        >
+                          {log.action}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-400">
+                        {formatDateTime(log.timestamp)}
+                      </span>
+                    </div>
+                    <p className="text-gray-300 text-sm">{log.details}</p>
+                    <div className="mt-2 text-xs text-gray-400">
+                      {log.ipAddress && `IP: ${log.ipAddress}`}
+                      {log.userAgent && ` • ${log.userAgent}`}
+                    </div>
                   </div>
-                  <p className="text-gray-300 text-sm">{log.details}</p>
-                  <div className="mt-2 text-xs text-gray-400">
-                    {log.ipAddress && `IP: ${log.ipAddress}`}
-                    {log.userAgent && ` • ${log.userAgent}`}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

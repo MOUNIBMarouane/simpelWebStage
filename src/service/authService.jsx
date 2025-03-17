@@ -150,7 +150,7 @@ export const getLogs = async (userId) => {
     const response = await axios.get(`${API_BASE_URL}/Admin/logs/${userId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-
+    
     console.log("User logs retrieved successfully:", response.data);
     return response.data;
   } catch (error) {
