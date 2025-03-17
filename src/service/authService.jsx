@@ -137,3 +137,24 @@ export const authLogout = async (id) => {
     return null;
   }
 };
+
+export const getLogs = async (userId) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null;
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Admin/logs/${userId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log("User logs retrieved successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user logs:", error.response?.data || error);
+    return null;
+  }
+};
