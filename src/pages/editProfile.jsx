@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Phone,
+  MapPin,
+  Camera,
+} from "lucide-react";
 
 const ProfileEdit = () => {
   const [profile, setProfile] = useState({
@@ -121,241 +132,443 @@ const ProfileEdit = () => {
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
 
+  // return (
+  //   <div className="max-w-4xl w-full h-full overflow-scroll mx-auto p-6 bg-white rounded-lg shadow-sm">
+  //     <h1 className="text-2xl font-semibold mb-6 text-gray-800">
+  //       Edit Profile
+  //     </h1>
+
+  //     <form onSubmit={handleSubmit} className="space-y-8">
+  //       {/* Profile Picture Section */}
+  //       <div className="border-b pb-6">
+  //         <h2 className="text-lg font-medium text-gray-900 mb-4">
+  //           Profile Picture
+  //         </h2>
+  //         <div className="flex items-center gap-6">
+  //           <div className="relative">
+  //             <img
+  //               src={`${profile.profilePicture}`} // Add timestamp to bypass cache
+  //               alt="Profile"
+  //               className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+  //             />
+  //             ;
+  //             <label className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-sm cursor-pointer">
+  //               <input
+  //                 type="file"
+  //                 accept="image/jpeg, image/png, image/gif"
+  //                 onChange={handleImageUpload}
+  //                 className="hidden"
+  //               />
+  //               <svg
+  //                 className="w-6 h-6 text-gray-600"
+  //                 fill="none"
+  //                 stroke="currentColor"
+  //                 viewBox="0 0 24 24"
+  //               >
+  //                 <path
+  //                   strokeLinecap="round"
+  //                   strokeLinejoin="round"
+  //                   strokeWidth={2}
+  //                   d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+  //                 />
+  //                 <path
+  //                   strokeLinecap="round"
+  //                   strokeLinejoin="round"
+  //                   strokeWidth={2}
+  //                   d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+  //                 />
+  //               </svg>
+  //             </label>
+  //           </div>
+  //           <div className="text-sm text-gray-600">
+  //             <p>Allowed JPG, JPEG, PNG, or GIF</p>
+  //             <p>Max size of 5MB</p>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       {/* Personal Information Section */}
+  //       <div className="border-b pb-6">
+  //         <h2 className="text-lg font-medium text-gray-900 mb-6">
+  //           Personal Information
+  //         </h2>
+  //         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               First name
+  //             </label>
+  //             <input
+  //               type="text"
+  //               name="firstName"
+  //               value={profile.firstName}
+  //               onChange={handleChange}
+  //               placeholder="first name"
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Email address
+  //             </label>
+  //             <input
+  //               type="email"
+  //               name="email"
+  //               value={profile.email}
+  //               onChange={handleChange}
+  //               className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
+  //               disabled
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Last name
+  //             </label>
+  //             <input
+  //               type="text"
+  //               name="lastName"
+  //               value={profile.lastName}
+  //               onChange={handleChange}
+  //               placeholder="last name"
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               User name
+  //             </label>
+  //             <input
+  //               type="tel"
+  //               name="username"
+  //               value={profile.username}
+  //               onChange={handleChange}
+  //               placeholder="username"
+  //               className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
+  //               disabled
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Phone number
+  //             </label>
+  //             <input
+  //               type="tel"
+  //               name="phoneNumber"
+  //               value={profile.phoneNumber}
+  //               onChange={handleChange}
+  //               placeholder="Ex: +212 600 000 000"
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Address
+  //             </label>
+  //             <input
+  //               type="text"
+  //               name="address"
+  //               value={profile.address}
+  //               onChange={handleChange}
+  //               placeholder="address"
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               City
+  //             </label>
+  //             <input
+  //               type="text"
+  //               name="city"
+  //               value={profile.city}
+  //               onChange={handleChange}
+  //               placeholder="city"
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             />
+  //           </div>
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Country
+  //             </label>
+  //             <select
+  //               name="country"
+  //               value={profile.country}
+  //               onChange={handleChange}
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //             >
+  //               <option value="">Select Country</option>
+  //               <option value="Morocco">Morocco</option>
+  //             </select>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       {/* Security Section */}
+  //       // Update the Security section in your ProfileEdit component
+  //       <div className="border-b pb-6">
+  //         <div className="flex justify-between items-center mb-6">
+  //           <h2 className="text-lg font-medium text-gray-900">Security</h2>
+  //         </div>
+
+  //         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               Current Password
+  //             </label>
+  //             <input
+  //               type={showPassword ? "text" : "password"}
+  //               name="currentPassword"
+  //               value={profile.currentPassword}
+  //               onChange={handleChange}
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //               placeholder="Enter current password"
+  //             />
+  //           </div>
+
+  //           <div>
+  //             <label className="block text-sm font-medium text-gray-900 mb-2">
+  //               New Password
+  //             </label>
+  //             <input
+  //               type={showPassword ? "text" : "password"}
+  //               name="newPassword"
+  //               value={profile.newPassword}
+  //               onChange={handleChange}
+  //               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
+  //               placeholder="Enter new password"
+  //             />
+  //           </div>
+  //           <div className="flex mt-4">
+  //             <input
+  //               data-hs-toggle-password='{"target": "#hs-toggle-password-with-checkbox"}'
+  //               onClick={togglePasswordVisibility}
+  //               id="hs-toggle-password-checkbox"
+  //               type="checkbox"
+  //               className="shrink-0  border-gray-100 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+  //             />
+  //             <label
+  //               htmlFor="hs-toggle-password-checkbox"
+  //               className="text-sm text-gray-500 ms-3 dark:text-neutral-400"
+  //             >
+  //               Show passwords
+  //             </label>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
+  //       {message && (
+  //         <div className="text-green-600 text-sm mt-4">{message}</div>
+  //       )}
+  //       <div className="pt-6">
+  //         <button
+  //           type="submit"
+  //           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+  //         >
+  //           Save Changes
+  //         </button>
+  //       </div>
+  //     </form>
+  //   </div>
+  // );
   return (
-    <div className="max-w-4xl w-full h-full overflow-scroll mx-auto p-6 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-semibold mb-6 text-gray-800">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full h-full overflow-auto p-6 bg-gradient-to-br from-gray-900 to-blue-900/20 rounded-xl backdrop-blur-lg shadow-2xl"
+    >
+      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
         Edit Profile
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-10">
         {/* Profile Picture Section */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            Profile Picture
-          </h2>
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <img
-                src={`${profile.profilePicture}`} // Add timestamp to bypass cache
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
-              />
-              ;
-              <label className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-sm cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/jpeg, image/png, image/gif"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </label>
-            </div>
-            <div className="text-sm text-gray-600">
-              <p>Allowed JPG, JPEG, PNG, or GIF</p>
-              <p>Max size of 5MB</p>
-            </div>
+        <div className="group relative w-fit mx-auto">
+          <div className="w-32 h-32 rounded-full border-4 border-blue-500/30 hover:border-blue-400 transition-all overflow-hidden shadow-lg">
+            <img
+              src={profile.profilePicture || '/default-avatar.jpg'}
+              alt="Profile"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            />
           </div>
+          <label className="absolute bottom-2 right-2 bg-blue-600 p-2 rounded-full cursor-pointer hover:bg-blue-500 transition-colors shadow-md">
+            <Camera className="w-5 h-5 text-white" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
         </div>
-        {/* Personal Information Section */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-6">
-            Personal Information
-          </h2>
+
+        {/* Personal Information */}
+        <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                First name
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-blue-200 mb-2">
+                Basic Information
               </label>
-              <input
-                type="text"
-                name="firstName"
-                value={profile.firstName}
-                onChange={handleChange}
-                placeholder="first name"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <User className="text-gray-400" size={20} />
+                <input
+                  type="text"
+                  name="firstName"
+                  value={profile.firstName}
+                  onChange={handleChange}
+                  placeholder="First Name"
+                  className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <User className="text-gray-400" size={20} />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleChange}
+                  placeholder="Last Name"
+                  className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Email address
+
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-blue-200 mb-2">
+                Contact Information
               </label>
-              <input
-                type="email"
-                name="email"
-                value={profile.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
-                disabled
-              />
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <Mail className="text-gray-400" size={20} />
+                <input
+                  type="email"
+                  name="email"
+                  value={profile.email}
+                  onChange={handleChange}
+                  className="w-full bg-transparent text-gray-400 cursor-not-allowed"
+                  disabled
+                />
+              </div>
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <Phone className="text-gray-400" size={20} />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={profile.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Phone Number"
+                  className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Last name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleChange}
-                placeholder="last name"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                User name
-              </label>
-              <input
-                type="tel"
-                name="username"
-                value={profile.username}
-                onChange={handleChange}
-                placeholder="username"
-                className="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed text-gray-800"
-                disabled
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Phone number
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={profile.phoneNumber}
-                onChange={handleChange}
-                placeholder="Ex: +212 600 000 000"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Address
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={profile.address}
-                onChange={handleChange}
-                placeholder="address"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={profile.city}
-                onChange={handleChange}
-                placeholder="city"
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Country
-              </label>
-              <select
-                name="country"
-                value={profile.country}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-              >
-                <option value="">Select Country</option>
-                <option value="Morocco">Morocco</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        {/* Security Section */}
-        // Update the Security section in your ProfileEdit component
-        <div className="border-b pb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-medium text-gray-900">Security</h2>
           </div>
 
+          {/* Address Section */}
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-blue-200 mb-2">
+              Address Information
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <MapPin className="text-gray-400" size={20} />
+                <input
+                  type="text"
+                  name="address"
+                  value={profile.address}
+                  onChange={handleChange}
+                  placeholder="Street Address"
+                  className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <MapPin className="text-gray-400" size={20} />
+                <input
+                  type="text"
+                  name="city"
+                  value={profile.city}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                <MapPin className="text-gray-400" size={20} />
+                <select
+                  name="country"
+                  value={profile.country}
+                  onChange={handleChange}
+                  className="w-full bg-transparent text-gray-200 focus:outline-none"
+                >
+                  <option value="" className="bg-gray-800">Select Country</option>
+                  <option value="Morocco" className="bg-gray-800">Morocco</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Section */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-blue-200">Security Settings</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Current Password
-              </label>
+            <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+              <Lock className="text-gray-400" size={20} />
               <input
                 type={showPassword ? "text" : "password"}
                 name="currentPassword"
                 value={profile.currentPassword}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-                placeholder="Enter current password"
+                placeholder="Current Password"
+                className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
               />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="text-gray-400 hover:text-blue-400 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                New Password
-              </label>
+            <div className="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+              <Lock className="text-gray-400" size={20} />
               <input
                 type={showPassword ? "text" : "password"}
                 name="newPassword"
                 value={profile.newPassword}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-500"
-                placeholder="Enter new password"
+                placeholder="New Password"
+                className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none"
               />
-            </div>
-            <div className="flex mt-4">
-              <input
-                data-hs-toggle-password='{"target": "#hs-toggle-password-with-checkbox"}'
-                onClick={togglePasswordVisibility}
-                id="hs-toggle-password-checkbox"
-                type="checkbox"
-                className="shrink-0  border-gray-100 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-              />
-              <label
-                htmlFor="hs-toggle-password-checkbox"
-                className="text-sm text-gray-500 ms-3 dark:text-neutral-400"
-              >
-                Show passwords
-              </label>
             </div>
           </div>
         </div>
-        {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
-        {message && (
-          <div className="text-green-600 text-sm mt-4">{message}</div>
-        )}
-        <div className="pt-6">
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+
+        {/* Status Messages */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 bg-red-500/20 text-red-300 rounded-lg border border-red-500/50"
           >
-            Save Changes
-          </button>
-        </div>
+            {error}
+          </motion.div>
+        )}
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 bg-green-500/20 text-green-300 rounded-lg border border-green-500/50"
+          >
+            {message}
+          </motion.div>
+        )}
+
+        <button
+          type="submit"
+          className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg font-semibold text-white transition-all shadow-lg hover:shadow-blue-500/30"
+        >
+          Save Changes
+        </button>
       </form>
-    </div>
+    </motion.div>
   );
+
 };
 
 export default ProfileEdit;

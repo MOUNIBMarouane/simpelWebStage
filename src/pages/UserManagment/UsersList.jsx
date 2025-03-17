@@ -11,6 +11,7 @@ import {
   Eye,
   MailIcon,
   MailsIcon,
+  Pen,
 } from "lucide-react";
 import FormSelect from "../../components/inputs/FormSelect";
 import axios from "axios";
@@ -53,6 +54,24 @@ const UsersList = () => {
     roleName: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  // Handle individual user selection
+  const handleUserSelect = (userId) => {
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  // Handle select all/none
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedUsers(filteredUsers.map((user) => user.id));
+    } else {
+      setSelectedUsers([]);
+    }
+  };
   const [passwordValidations, setPasswordValidations] = useState({
     length: false,
     uppercase: false,
@@ -349,9 +368,15 @@ const UsersList = () => {
       roleName: "",
     }); // Clear form
   };
-  const deleteUsers = (id) => {
-    setUsers(Users.filter((user) => user.id !== id));
-    DeletUser(id);
+  const deleteUsers = (ids) => {
+    if (!Array.isArray(ids)) ids = [ids];
+
+    // Update UI first
+    setUsers((prev) => prev.filter((user) => !ids.includes(user.id)));
+    setSelectedUsers((prev) => prev.filter((id) => !ids.includes(id)));
+
+    // Send delete requests
+    ids.forEach((id) => DeletUser(id));
   };
 
   const editUsers = (user) => {
@@ -476,7 +501,15 @@ const UsersList = () => {
             <thead className="bg-blue-700 text-white h-1/12">
               <tr>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
-                  <input type="checkbox" className="w-6 h-6 rounded-lg" />
+                  <input
+                    type="checkbox"
+                    className="w-6 h-6 rounded-lg"
+                    checked={
+                      selectedUsers.length === filteredUsers.length &&
+                      filteredUsers.length > 0
+                    }
+                    onChange={handleSelectAll}
+                  />
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
                   User Name
@@ -506,7 +539,12 @@ const UsersList = () => {
                     className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
                   >
                     <td className="p-4">
-                      <input type="checkbox" className="w-6 h-6 rounded-lg" />
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 rounded-lg"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={() => handleUserSelect(user.id)}
+                      />
                     </td>
                     <td
                       className="p-4"
@@ -531,14 +569,14 @@ const UsersList = () => {
                       >
                         <Eye size={18} />
                       </div>
+                      <div
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                        onClick={() => handleUserClick(user, "details")}
+                      >
+                        <Pen size={18} />
+                      </div>
 
                       {/* Delete Button */}
-                      <div
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
-                        onClick={() => deleteUsers(user.id)}
-                      >
-                        <Trash size={18} />
-                      </div>
                     </td>
                   </motion.tr>
                 ))
@@ -552,12 +590,17 @@ const UsersList = () => {
             </tbody>
           </motion.table>
         </div>
-        <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border  flex justify-end items-center p-6 absolute bottom-0 rounded-lg backdrop-blur-sm">
-          <div className="bg-red-500/90 flex gap-2 text-white px-4 py-2 hover:bg-red-600 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30">
-            <Trash />
-            <p>Delete</p>
+        {selectedUsers.length > 0 && (
+          <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 rounded-lg backdrop-blur-sm">
+            <div
+              className="bg-red-500/90 flex gap-2 text-white px-4 py-2 hover:bg-red-600 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
+              onClick={() => deleteUsers(selectedUsers)}
+            >
+              <Trash />
+              <p>Delete ({selectedUsers.length})</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {showFormNew && (
