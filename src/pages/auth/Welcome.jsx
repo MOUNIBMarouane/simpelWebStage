@@ -59,7 +59,7 @@ const WelcomeEmd = () => {
 
           <div className="flex flex-col items-center gap-4">
             <Link
-              to="/login"
+              to="/"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all duration-300 transform hover:scale-105"
             >
               Continue to Login

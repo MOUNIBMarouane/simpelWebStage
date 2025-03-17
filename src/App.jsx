@@ -19,7 +19,7 @@ import VerificationWelcome from "./pages/auth/VerificationWelcome";
 import Welcome from "./pages/auth/Welcome";
 import WelcomeEmd from "./pages/auth/Welcome";
 import UserDetails from "./pages/UserManagment/UserDetails";
-
+import UsersUpdate from "./pages/UserManagment/UsersUpdate";
 // Define the routes
 const router = createBrowserRouter([
   {
@@ -130,7 +130,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/users-profile",
+        path: "/user-profile",
         element: (
           // <ProtectedRoute>
           <ProfileEdit />
@@ -142,6 +142,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <UserDetails />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/user-update/:userId",
+        element: (
+          // <ProtectedRoute>
+          <UsersUpdate />
           // </ProtectedRoute>
         ),
       },

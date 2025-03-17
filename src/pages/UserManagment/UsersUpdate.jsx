@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
-import FormInput from "../components/FormInputs";
-import FormSelectRole from "../components/inputs/FormSelectRole";
+import FormInput from "../../components/FormInputs";
+import FormSelectRole from "../../components/inputs/FormSelectRole";
 
 const UsersUpdate = () => {
   const { userId } = useParams();
@@ -21,7 +21,7 @@ const UsersUpdate = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const response = await axios.get(
-          `http://localhost:5204/api/Admin/users/${userId}`,
+          `http://192.168.1.94:5204/api/Admin/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -37,7 +37,7 @@ const UsersUpdate = () => {
         });
       } catch (error) {
         console.error("Error fetching user:", error);
-        navigate("/users");
+        navigate("/users-list");
       }
     };
 
@@ -49,7 +49,7 @@ const UsersUpdate = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       await axios.put(
-        `http://localhost:5204/api/Admin/users/${userId}`,
+        `http://192.168.1.94:5204/api/Admin/users/${userId}`,
         formData,
         {
           headers: {

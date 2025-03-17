@@ -22,7 +22,7 @@ const VerificationWelcome = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Account/resend-code",
+        "http://192.168.1.94:5204/api/Account/resend-code",
         { email },
         { headers: { "Content-Type": "application/json" } }
       );

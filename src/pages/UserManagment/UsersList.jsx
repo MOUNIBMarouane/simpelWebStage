@@ -168,7 +168,7 @@ const UsersList = () => {
       console.log(userData);
       console.log(accessToken);
       const response = await axios.post(
-        "http://localhost:5204/api/Admin/users",
+        "http://192.168.1.94:5204/api/Admin/users",
         userData,
         {
           headers: {
@@ -407,7 +407,7 @@ const UsersList = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://localhost:5204/api/Admin/users",
+        "http://192.168.1.94:5204/api/Admin/users",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -469,9 +469,9 @@ const UsersList = () => {
         <h2 className=" text-2xl font-bold w-full text-left pl-6 ">
           Users List
         </h2>
-        <div className="w-full flex h-1/12 flex-row px-6 py-3 gap-2.5 bg-amber-400">
+        <div className="w-full flex  flex-row px-6 py-3 gap-2.5">
           <div className="w-5/12 h-full flex flex-row justify-between gap-2.5 ">
-            <div className="flex w-9/12 items-centert bg-blue-950/30 rounded-lg  focus-within:border-amber-200">
+            <div className="flex w-9/12 items-centert  rounded-lg  focus-within:border-amber-200">
               {/* <Search className="text-gray-400 mr-2" />Z */}
               <FormInput
                 id="searchUser"
@@ -485,7 +485,7 @@ const UsersList = () => {
             </div>
             <div
               onClick={() => setShowFormNew(true)}
-              className="bg-green-500 h-full text-white px-4 py-2 hover:bg-green-600 transition rounded-lg cursor-pointer"
+              className="bg-green-500 w-4/12 text-white px-4 py-2 hover:bg-green-600 transition rounded-lg cursor-pointer"
             >
               <Add />
               Add Users
@@ -561,25 +561,20 @@ const UsersList = () => {
                         <FormControlLabel control={<Switch />} />
                       </FormGroup>
                     </td>
+                    
                     <td className="p-4 flex items-center justify-center space-x-3">
                       {/* Toggle Button */}
-
                       {/* View Button */}
                       <Link to={`/user-details/${user.id}`}>
-                        <div
-                          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
-                          onClick={() => handleUserClick(user, "details")}
-                        >
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
                           <Eye size={18} />
                         </div>
                       </Link>
-                      <div
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
-                        onClick={() => handleUserClick(user, "details")}
-                      >
-                        <Pen size={18} />
-                      </div>
-
+                      <Link to={`/user-update/${user.id}`}>
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
+                          <Pen size={18} />
+                        </div>
+                      </Link>
                       {/* Delete Button */}
                     </td>
                   </motion.tr>
@@ -597,7 +592,7 @@ const UsersList = () => {
         {selectedUsers.length > 0 && (
           <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 rounded-lg backdrop-blur-sm">
             <div
-              className="bg-red-500/90 flex gap-2 text-white px-4 py-2 hover:bg-red-600 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
+              className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
               onClick={() => deleteUsers(selectedUsers)}
             >
               <Trash />

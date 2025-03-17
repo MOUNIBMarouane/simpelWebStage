@@ -192,7 +192,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Auth/register",
+        "http://192.168.1.94:5204/api/Auth/register",
         userData,
         {
           headers: {
@@ -203,7 +203,7 @@ const SignUp = () => {
       );
 
       if (response.status === 200) {
-        navigate(`/verify/${formData.email}`);
+        navigate(`/welcome-verify/${formData.email}`);
       }
     } catch (error) {
       if (

@@ -1,28 +1,3 @@
-// AuthContext.js - Fixed version
-
-// RefreshToken.js - Fixed version
-
-
-// ProtectedRoute.js - Fixed version
-
-
-// PublicRoute.js - Fixed version
-
-
-// SignIn.js - Fixed version
-
-
-// App.js - Fixed version
-// AuthContext.jsx - Fixed version without useNavigate
-
-
-// App.js - Fixed structure with proper Router context
-
-
-// Layout.js - Wrap your Layout component with AuthProvider
-
-
-// SignIn.js - Modified to work with the new AuthContext
 import React, { useState, useContext } from "react";
 import "./globales.css";
 import { useNavigate, Link } from "react-router-dom";
@@ -61,7 +36,7 @@ const SignIn = () => {
       console.error("Login error:", error);
       setError(
         error.response?.data?.message ||
-        "Unvalide Login or password. Please try again."
+          "Unvalide Login or password. Please try again."
       );
     } finally {
       setIsLoading(false);
