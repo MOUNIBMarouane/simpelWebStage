@@ -26,6 +26,7 @@ import Switch from "@mui/material/Switch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Add, Search } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
@@ -352,6 +353,7 @@ const UsersList = () => {
   const handleChange = (e) => {
     setNewUsers({ ...newUsers, [e.target.name]: e.target.value });
   };
+
   const handleSave = async () => {
     // Call API or update state with new user data
     console.log("Saving user data:", formData);
@@ -563,12 +565,14 @@ const UsersList = () => {
                       {/* Toggle Button */}
 
                       {/* View Button */}
-                      <div
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
-                        onClick={() => handleUserClick(user, "details")}
-                      >
-                        <Eye size={18} />
-                      </div>
+                      <Link to={`/user-details/${user.id}`}>
+                        <div
+                          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                          onClick={() => handleUserClick(user, "details")}
+                        >
+                          <Eye size={18} />
+                        </div>
+                      </Link>
                       <div
                         className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
                         onClick={() => handleUserClick(user, "details")}

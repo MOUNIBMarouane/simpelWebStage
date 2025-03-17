@@ -87,7 +87,7 @@ export const FindUserName = async (username) => {
       return true;
     } else return false;
   } catch (error) {
-    console.error("Error checking username:", error.response?.data || error);
+    console.error("Error checking username:", error.response?.data);
     return false;
   }
 };

@@ -3,21 +3,22 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // import { AuthProvider } from "./Auth/AuthContext";
 // import ProtectedRoute from "./Auth/ProtectedRoute";
 // import PublicRoute from "./Auth/PublicRoute";
-import SignIn from "./pages/Signin";
-import SignUp from "./pages/signup";
+import SignIn from "./pages/auth/Signin";
+import SignUp from "./pages/auth/Signup";
 import Dashboard from "./pages/Dashboard";
-import VerificationP from "./pages/Verification";
-import ResetPassword from "./pages/RestPassword";
-import UpdatePassword from "./pages/UpdatePassword";
+import VerificationP from "./pages/auth/Verification";
+import ResetPassword from "./pages/auth/RestPassword";
+import UpdatePassword from "./pages/auth/UpdatePassword";
 import Layout from "./components/dashboard/layout/layout";
 import Documents from "./pages/Document";
 import UsersList from "./pages/UserManagment/UsersList";
 import ProfileEdit from "./pages/editProfile";
 import DocumentDetail from "./pages/DocumentDetail";
 import LineDetail from "./pages/LineDetail";
-import VerificationWelcome from "./pages/VerificationWelcome";
-import Welcome from "./pages/Welcome";
-import WelcomeEmd from "./pages/Welcome";
+import VerificationWelcome from "./pages/auth/VerificationWelcome";
+import Welcome from "./pages/auth/Welcome";
+import WelcomeEmd from "./pages/auth/Welcome";
+import UserDetails from "./pages/UserManagment/UserDetails";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -133,6 +134,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <ProfileEdit />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/user-details/:userId",
+        element: (
+          // <ProtectedRoute>
+          <UserDetails />
           // </ProtectedRoute>
         ),
       },
