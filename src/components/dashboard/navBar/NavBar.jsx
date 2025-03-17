@@ -14,7 +14,7 @@ const NavBar = ({ userRole, onLogout }) => {
   const [showDocumentsSublinks, setShowDocumentsSublinks] = useState(false);
 
   return (
-    <nav className="h-full w-full space-y-3">
+    <nav className="h-full w-full space-y-3 ">
       <div className="h-full w-full flex flex-col justify-between">
         <ul className="space-y-2">
           {/* Show "Users" only if the user is an Admin or FullUser */}

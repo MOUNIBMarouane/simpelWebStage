@@ -11,7 +11,7 @@ import ResetPassword from "./pages/RestPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import Layout from "./components/dashboard/layout/layout";
 import Documents from "./pages/Document";
-import UsersList from "./pages/UsersList";
+import UsersList from "./pages/UserManagment/UsersList";
 import ProfileEdit from "./pages/editProfile";
 import DocumentDetail from "./pages/DocumentDetail";
 import LineDetail from "./pages/LineDetail";

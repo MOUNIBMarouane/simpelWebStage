@@ -24,7 +24,11 @@
 
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    /* background-color: #cc0606; */
+    background-image: url("../src/assets/bg/bg-dash2.jpg");
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-size: 100% 100%;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -89,9 +93,6 @@ button:focus-visible {
         color: #747bff;
     }
 
-    button {
-        /* background-color: #f9f9f9; */
-    }
 }
 
 /* Custom scrollbar styles */
@@ -117,3 +118,10 @@ button:focus-visible {
     background: #2563eb;
     /* Lighter blue on hover */
 }
+
+/* .bg-dash {
+    background-image: url("../src/assets/bg/bg-dash2.jpg");
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-size: 100% 100%;
+} */
