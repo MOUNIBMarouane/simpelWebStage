@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, Login, Logout, ShieldAlert } from "lucide-react";
+import { ArrowLeft, LogIn, LogOut, ShieldAlert } from "lucide-react";
 import { getLogs } from "../../service/authService";
 
 const UserDetails = () => {
@@ -18,7 +18,7 @@ const UserDetails = () => {
 
     if (lowerAction.includes("login")) {
       return {
-        icon: <Login size={16} className="text-green-400" />,
+        icon: <LogIn size={16} className="text-green-400" />,
         color: "border-green-500",
         textColor: "text-green-400",
       };
@@ -26,7 +26,7 @@ const UserDetails = () => {
 
     if (lowerAction.includes("logout")) {
       return {
-        icon: <Logout size={16} className="text-red-400" />,
+        icon: <LogOut size={16} className="text-red-400" />,
         color: "border-red-500",
         textColor: "text-red-400",
       };
@@ -70,7 +70,7 @@ const UserDetails = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const userResponse = await axios.get(
-          `http://192.168.1.94:5204/api/Admin/users/${userId}`,
+          `http://localhost:5204/api/Admin/users/${userId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         setUser(userResponse.data);

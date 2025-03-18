@@ -168,7 +168,7 @@ const UsersList = () => {
       console.log(userData);
       console.log(accessToken);
       const response = await axios.post(
-        "http://192.168.1.94:5204/api/Admin/users",
+        "http://localhost:5204/api/Admin/users",
         userData,
         {
           headers: {
@@ -407,7 +407,7 @@ const UsersList = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://192.168.1.94:5204/api/Admin/users",
+        "http://localhost:5204/api/Admin/users",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -561,7 +561,7 @@ const UsersList = () => {
                         <FormControlLabel control={<Switch />} />
                       </FormGroup>
                     </td>
-                    
+
                     <td className="p-4 flex items-center justify-center space-x-3">
                       {/* Toggle Button */}
                       {/* View Button */}

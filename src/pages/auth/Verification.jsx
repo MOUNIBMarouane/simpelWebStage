@@ -50,7 +50,7 @@ const Verification = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.94:5204/api/Auth/verify-email",
+        "http://localhost:5204/api/Auth/verify-email",
         {
           email: email,
           verificationCode,
@@ -90,7 +90,7 @@ const Verification = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.94:5204/api/Account/resend-code",
+        "http://localhost:5204/api/Account/resend-code",
         { email },
         {
           headers: {

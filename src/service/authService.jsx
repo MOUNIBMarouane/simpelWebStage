@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.1.94:5204/api";
+const API_BASE_URL = "http://localhost:5204/api";
 
 export const getUserRole = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -11,7 +11,7 @@ export const getUserRole = async () => {
   }
   try {
     const response = await axios.get(
-      "http://192.168.1.94:5204/api/Account/user-role",
+      "http://localhost:5204/api/Account/user-role",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -32,8 +32,10 @@ export const getUserAccount = async () => {
   }
 
   try {
+    console.log(accessToken);
+
     const response = await axios.get(
-      "http://192.168.1.94:5204/api/Account/user-info",
+      "http://localhost:5204/api/Account/user-info",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -150,7 +152,7 @@ export const getLogs = async (userId) => {
     const response = await axios.get(`${API_BASE_URL}/Admin/logs/${userId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    
+
     console.log("User logs retrieved successfully:", response.data);
     return response.data;
   } catch (error) {
