@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./usersStyles.css";
 import { motion } from "framer-motion";
 import FormInput from "../../components/FormInputs";
 import {
@@ -17,7 +18,7 @@ import FormSelect from "../../components/inputs/FormSelect";
 import axios from "axios";
 
 import {} from "lucide-react";
-import { DeletUser, UpdateUser } from "../../service/authService";
+import { DeletUser, updateStatus, UpdateUser } from "../../service/authService";
 import { a } from "framer-motion/client";
 import FormSelectRole from "../../components/inputs/FormSelectRole";
 import FormGroup from "@mui/material/FormGroup";
@@ -81,15 +82,40 @@ const UsersList = () => {
     specialChar: false,
   });
   const toggleUserStatus = async (user) => {
-    const updatedUser = { ...user, isActive: !user.isActive };
+    const originalUser = user;
+    const updatedStatus = !user.isActive;
 
     try {
-      await updateUserStatusOnServer(updatedUser); // Call backend API
-      setFilteredUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === user.id ? updatedUser : u))
+      // Optimistic UI update
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u.id === user.id ? { ...u, isActive: updatedStatus } : u
+        )
+      );
+
+      // Call API service
+      await updateStatus(user.id, updatedStatus);
+      toast.dismiss()
+      toast.success(
+        `User ${updatedStatus ? "activated" : "blocked"} successfully`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
     } catch (error) {
-      console.error("Error updating user status:", error);
+      console.error("Status update failed:", error);
+
+      // Revert UI on error
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => (u.id === originalUser.id ? originalUser : u))
+      );
+
+      // Show error toast
+      toast.error(`Failed to ${updatedStatus ? "activate" : "block"} user`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
   const handleInputChange = (e) => {
@@ -350,41 +376,52 @@ const UsersList = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setNewUsers({ ...newUsers, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    // Call API or update state with new user data
-    console.log("Saving user data:", formData);
-    UpdateUser(formData);
-    // Close the form after saving
-  };
-  const handleClose = () => {
-    setShowFormDetails(false);
-    setFormData({
-      userId: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      roleName: "",
-    }); // Clear form
-  };
   const deleteUsers = (ids) => {
     if (!Array.isArray(ids)) ids = [ids];
 
-    // Update UI first
-    setUsers((prev) => prev.filter((user) => !ids.includes(user.id)));
-    setSelectedUsers((prev) => prev.filter((id) => !ids.includes(id)));
+    toast.info(
+      <div className="p-4">
+        <p className="font-semibold">
+          Delete {ids.length} user{ids.length > 1 ? "s" : ""}?
+        </p>
+        <div className="flex gap-4 mt-4 text-white">
+          <div
+            className="px-4 py-2 bg-red-500 rounded hover:bg-red-600"
+            onClick={() => {
+              // Update UI first
+              setUsers((prev) => prev.filter((user) => !ids.includes(user.id)));
+              setSelectedUsers((prev) =>
+                prev.filter((id) => !ids.includes(id))
+              );
 
-    // Send delete requests
-    ids.forEach((id) => DeletUser(id));
-  };
+              // Send delete requests
+              ids.forEach((id) => DeletUser(id));
 
-  const editUsers = (user) => {
-    setNewUsers(user);
-    setEditingUsers(user.id);
-    setShowFormNew(true);
+              toast.dismiss();
+              toast.success(
+                `${ids.length} user${ids.length > 1 ? "s" : ""} deleted`
+              );
+            }}
+          >
+            Confirm
+          </div>
+          <div
+            className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600"
+            onClick={() => toast.dismiss()}
+          >
+            Cancel
+          </div>
+        </div>
+      </div>,
+      {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+        toastId: "delete-confirmation",
+      }
+    );
   };
 
   const roleName = (idrole) => {
@@ -397,10 +434,6 @@ const UsersList = () => {
       case 3:
         return "FullUser";
     }
-  };
-  const activeSatus = (status) => {
-    if (status) return "Active";
-    return "Unactive";
   };
 
   const fetchUsers = async () => {
@@ -437,24 +470,6 @@ const UsersList = () => {
     }
   }, [selectedUser, showFormDetails]);
 
-  const handleUserClick = (user, option) => {
-    console.log("selected: ", user);
-    setSelectedUser(user);
-
-    // setShowFormUpdate(true); // Show the update form
-    if (option === "update") {
-      // Update form data with selected user details
-      setFormData({
-        userId: user.id || "",
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        username: user.username || "",
-        email: user.email || "",
-        roleName: user.roleId || "",
-      });
-    } else setShowFormDetails(true);
-  };
-
   const filteredUsers = Users.filter((user) =>
     Object.values(user).some(
       (value) =>
@@ -465,6 +480,18 @@ const UsersList = () => {
 
   return (
     <div className="w-full h-full flex-col justify-center items-center text-white rounded-lg pt-3 ">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        // pauseOnHover
+        // theme="colored"
+      />
       <div className=" w-full h-full backdrop-blur-md shadow-lg rounded-lg">
         <h2 className=" text-2xl font-bold w-full text-left pl-6 ">
           Users List
@@ -523,7 +550,7 @@ const UsersList = () => {
                   Role
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
-                  Activate{" "}
+                  Status{" "}
                 </th>
                 <th className="p-4 text-center uppercase text-sm tracking-wide">
                   Actions
@@ -548,18 +575,46 @@ const UsersList = () => {
                         onChange={() => handleUserSelect(user.id)}
                       />
                     </td>
-                    <td
-                      className="p-4"
-                      onClick={() => handleUserClick(user, "update")}
-                    >
-                      {user.username}
-                    </td>
+                    <td className="p-4">{user.username}</td>
                     <td className="p-4">{user.email}</td>
-                    <td className="p-4">{roleName(user.roleId)}</td>
+                    <td className="p-4">{roleName(user.roleId)} </td>
                     <td className="p-4 items-center">
-                      <FormGroup>
-                        <FormControlLabel control={<Switch />} />
-                      </FormGroup>
+                      <div className="flex items-center gap-3">
+                        <label
+                          htmlFor=""
+                          style={{
+                            color: user.isActive ? "#4CAF50" : "#FF3B30",
+                            fontWeight: 600,
+                            transition: "color 0.3s ease",
+                          }}
+                        >
+                          {user.isActive ? "Active" : "Blocked"}
+                        </label>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={user.isActive}
+                                onChange={() => toggleUserStatus(user)}
+                                sx={{
+                                  "& .MuiSwitch-switchBase.Mui-checked": {
+                                    color: "#4CAF50",
+                                    "& + .MuiSwitch-track": {
+                                      backgroundColor: "#4CAF50",
+                                    },
+                                  },
+                                  "& .MuiSwitch-switchBase": {
+                                    color: "#FF3B30",
+                                    "& + .MuiSwitch-track": {
+                                      backgroundColor: "#FF3B30",
+                                    },
+                                  },
+                                }}
+                              />
+                            }
+                          />
+                        </FormGroup>
+                      </div>
                     </td>
 
                     <td className="p-4 flex items-center justify-center space-x-3">
@@ -601,7 +656,6 @@ const UsersList = () => {
           </div>
         )}
       </div>
-
       {showFormNew && (
         <div
           onClick={(e) => {

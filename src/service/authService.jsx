@@ -160,3 +160,33 @@ export const getLogs = async (userId) => {
     return null;
   }
 };
+
+export const updateStatus = async (userId, isActive) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    console.warn("No access token found. User is not logged in.");
+    return null;
+  }
+
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/Admin/users/${userId}`,
+      { isActive }, // Send the new status in request body
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    if (error.response) {
+      // Handle specific HTTP error codes
+      console.error("Server responded with:", error.response.status);
+    }
+    throw error; // Re-throw to allow error handling in components
+  }
+};
