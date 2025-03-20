@@ -77,7 +77,7 @@ export const getDocumentLines = async (id) => {
       }
     );
     if (response.status === 200) {
-      console.log("response.data", response.data);
+      console.log("response.data----doclines", response.data);
       return response.data; // Returns an array of Lines
     }
   } catch (error) {

@@ -357,7 +357,7 @@ const DocumentList = () => {
                   {filteredDocuments.length > 0 ? (
                     filteredDocuments.map((doc) => (
                       <motion.tr
-                        key={doc.id}
+                        key={doc.documentKey}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
@@ -370,7 +370,7 @@ const DocumentList = () => {
                             checked={selectedDocs.includes(doc.id)}
                             onChange={() => handleSelectDoc(doc.id)}
                           />
-                          <p>DOC-{doc.id}</p>
+                          <p>{doc.documentKey}</p>
                         </td>
                         <td
                           className="p-4"
