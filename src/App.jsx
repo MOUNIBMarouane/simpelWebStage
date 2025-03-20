@@ -20,6 +20,7 @@ import Welcome from "./pages/auth/Welcome";
 import WelcomeEmd from "./pages/auth/Welcome";
 import UserDetails from "./pages/UserManagment/UserDetails";
 import UsersUpdate from "./pages/UserManagment/UsersUpdate";
+import AddDocumentType from "./pages/DocumentTypes";
 // Define the routes
 const router = createBrowserRouter([
   {
@@ -102,6 +103,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <Documents />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/type-document",
+        element: (
+          // <ProtectedRoute>
+          <AddDocumentType />
           // </ProtectedRoute>
         ),
       },

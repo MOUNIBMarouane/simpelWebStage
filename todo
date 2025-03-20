@@ -6,7 +6,7 @@
  
 ✔ after verified a message welcome @done(25-03-19 07:38)
  
-✔ message significative @done(25-03-19 10:47)
+✔ message signi ficative @done(25-03-19 10:47)
  
 ✔ exit button @done(25-03-19 07:38)
  
@@ -16,15 +16,17 @@
 
 ✔ log status for admin @done(25-03-19 10:47)
 
+✔ modification of users @done(25-03-20 02:18)
+ 
+✔ role update @done(25-03-20 02:18)
+
+✔ refrech table when i add new user @done(25-03-20 06:50)
+
 ☐ add page to create a new type of document
 
 ☐ add foreing keydoc and add in the type
 
-☐ modification of users
-
 ☐ search list should be generale
-
-☐ role update
 
 ☐ actions should be out the list (in the top)
 

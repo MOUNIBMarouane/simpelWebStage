@@ -17,7 +17,7 @@ const UserDetails = () => {
     const lowerAction = action.toLowerCase();
 
     if (lowerAction.includes("login")) {
-      return {
+      return { 
         icon: <LogIn size={16} className="text-green-400" />,
         color: "border-green-500",
         textColor: "text-green-400",

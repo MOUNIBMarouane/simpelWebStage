@@ -14,13 +14,13 @@ import {
   MailsIcon,
   Pen,
 } from "lucide-react";
-import FormSelect from "../../components/inputs/FormSelect";
+
 import axios from "axios";
 
 import {} from "lucide-react";
 import { DeletUser, updateStatus, UpdateUser } from "../../service/authService";
-import { a } from "framer-motion/client";
-import FormSelectRole from "../../components/inputs/FormSelectRole";
+
+import RoleSelect from "../../components/inputs/RoleSelect";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
@@ -35,6 +35,9 @@ const UsersList = () => {
   const [showFormDetails, setShowFormDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editingUsers, setEditingUsers] = useState(null);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const allRoles = ["Admin", "FullUser", "SimpleUser"];
+  const [initialRole, setInitialRole] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [newUsers, setNewUsers] = useState({
     username: "",
@@ -66,6 +69,9 @@ const UsersList = () => {
     );
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
   // Handle select all/none
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -95,7 +101,7 @@ const UsersList = () => {
 
       // Call API service
       await updateStatus(user.id, updatedStatus);
-      toast.dismiss()
+      toast.dismiss();
       toast.success(
         `User ${updatedStatus ? "activated" : "blocked"} successfully`,
         {
@@ -206,7 +212,20 @@ const UsersList = () => {
       if (response.status === 201) {
         console.log("User succusful saved");
         setShowFormNew(false);
-        // navigate(`/verify/${formData.email}`);
+        await fetchUsers();
+        setFormData({
+          userId: "",
+          firstName: "",
+          lastName: "",
+          username: "",
+          email: "",
+          PasswordHash: "",
+          cpassword: "",
+          roleName: "",
+        });
+        setStep(1);
+        // Show success toast
+        toast.success("User created successfully");
       } else {
         console.log(response.status);
         // console.error("Registration failed:", response.statusText);
@@ -349,26 +368,21 @@ const UsersList = () => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Role of User</h3>
-            <FormSelectRole
+            <select
               id="roleName"
               value={formData.roleName}
-              onChange={handleInputChange}
-              options={options}
-              icon={(props) => (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  {...props}
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              )}
-            />
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-gray-800 dark:border-gray-600 dark:text-white transition-colors duration-300 ease"
+            >
+              <option value="" disabled>
+                Select Role
+              </option>
+              {allRoles.map((role) => (
+                <option key={role} value={role}>
+                  {role.replace(/([A-Z])/g, " $1").trim()}
+                </option>
+              ))}
+            </select>
           </div>
         );
       default:
@@ -459,25 +473,63 @@ const UsersList = () => {
   }, []);
 
   useEffect(() => {
+    const roleMapping = {
+      1: "Admin",
+      2: "FullUser",
+      3: "SimpleUser",
+    };
+
+    // Get current role ID from selected user
+    const currentRoleId = selectedUser?.roleId || "";
+    const currentRole = roleMapping[currentRoleId] || "";
+
+    setInitialRole(currentRole);
+    setAvailableRoles(allRoles.filter((role) => role !== currentRole));
+
     if (selectedUser) {
       setFormData({
         userId: selectedUser.id || "",
         firstName: selectedUser.firstName || "",
         lastName: selectedUser.lastName || "",
         email: selectedUser.email || "",
-        roleName: selectedUser.roleId || "",
+        roleName: currentRole, // Use the mapped role name instead of ID
       });
     }
   }, [selectedUser, showFormDetails]);
 
-  const filteredUsers = Users.filter((user) =>
-    Object.values(user).some(
-      (value) =>
-        typeof value === "string" &&
-        value.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const filteredUsers = Users.filter((user) => {
+    const searchLower = searchQuery.toLowerCase();
 
+    // Combine first and last name for full name search
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+
+    // Convert role ID to role name
+    const roleName = (idrole) => {
+      switch (idrole) {
+        case 1:
+          return "Admin";
+        case 2:
+          return "FullUser";
+        case 3:
+          return "SimpleUser";
+        default:
+          return "Unknown Role";
+      }
+    };
+
+    // Convert status to string
+    const status = user.isActive ? "active" : "blocked";
+
+    return (
+      user.firstName.toLowerCase().includes(searchLower) ||
+      user.lastName.toLowerCase().includes(searchLower) ||
+      fullName.includes(searchLower) ||
+      user.username.toLowerCase().includes(searchLower) ||
+      user.email.toLowerCase().includes(searchLower) ||
+      // role.includes(searchLower) ||
+      status.includes(searchLower)
+    );
+  });
   return (
     <div className="w-full h-full flex-col justify-center items-center text-white rounded-lg pt-3 ">
       <ToastContainer
