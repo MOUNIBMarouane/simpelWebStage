@@ -15,16 +15,16 @@ const UserDetails = () => {
   // Helper function to get action details
   const getActionDetails = (action) => {
     // Handle undefined/null action by defaulting to an empty string
-    const lowerAction = action?.toLowerCase() ?? '';
-  
+    const lowerAction = action?.toLowerCase() ?? "";
+
     if (lowerAction.includes("login")) {
-      return { 
+      return {
         icon: <LogIn size={16} className="text-green-400" />,
         color: "border-green-500",
         textColor: "text-green-400",
       };
     }
-  
+
     if (lowerAction.includes("logout")) {
       return {
         icon: <LogOut size={16} className="text-red-400" />,
@@ -32,7 +32,7 @@ const UserDetails = () => {
         textColor: "text-red-400",
       };
     }
-  
+
     // Default case for unknown actions
     return {
       icon: <ShieldAlert size={16} className="text-blue-400" />,
@@ -97,7 +97,7 @@ const UserDetails = () => {
   return (
     <div className="p-6 text-white">
       <button
-        onClick={() => navigate("/user-List")}
+        onClick={() => navigate("/users-list")}
         className="mb-4 flex items-center gap-2 hover:text-blue-300"
       >
         <ArrowLeft size={20} /> Back to Users

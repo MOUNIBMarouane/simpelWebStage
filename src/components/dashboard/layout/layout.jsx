@@ -54,7 +54,7 @@ function Layout() {
       <div className="h-full w-2/12 rounded-lg bg-blue-950/55">
         <div className="w-full h-3/12 flex flex-col justify-center space-y-2 space-x-2">
           <div className="w-full flex flex-col justify-center items-center">
-            <Link to="/users-profile">
+            <Link to="/user-profile">
               <Avatar
                 sx={{ width: 56, height: 56 }}
                 src={user?.profilePicture}
@@ -111,7 +111,7 @@ function Layout() {
 
               {/* Profile Section */}
               <div className="flex items-center gap-2 bg-white/50 p-1 rounded-full">
-                <Link to="/users-profile" className="flex items-center gap-2">
+                <Link to="/user-profile" className="flex items-center gap-2">
                   <Avatar
                     sx={{ width: 36, height: 36 }}
                     src={user?.profilePicture}

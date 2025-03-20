@@ -6,6 +6,7 @@ import FormSelect from "../../inputs/FormSelect";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle, FileText, X, CheckCircle } from "lucide-react";
+import ProgressBar from "./ProgressBar";
 
 const AddDocs = ({ onDocumentAdded }) => {
   const [user, setUser] = useState(null);
@@ -60,7 +61,24 @@ const AddDocs = ({ onDocumentAdded }) => {
     fetchUser();
     fetchDocumentTypes();
   }, [navigate]);
-
+  const StepIndicators = ({ steps, currentStep }) => {
+    return (
+      <div className="flex justify-between w-full mb-4">
+        {Array.from({ length: steps }, (_, i) => (
+          <div
+            key={i}
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+              i + 1 === currentStep
+                ? "bg-blue-500 text-white"
+                : "bg-slate-700/50 text-gray-400"
+            }`}
+          >
+            {i + 1}
+          </div>
+        ))}
+      </div>
+    );
+  };
   const [showForm, setShowForm] = useState(false);
   const [newDoc, setNewDoc] = useState({
     title: "",
@@ -105,15 +123,19 @@ const AddDocs = ({ onDocumentAdded }) => {
       setError("Title is required.");
       return;
     }
-    if (step === 2 && !newDoc.content.trim()) {
+    // if (step === 2 && !newDoc.title.trim()) {
+    //   setError("Title is required.");
+    //   return;
+    // }
+    if (step === 3 && !newDoc.content.trim()) {
       setError("Content cannot be empty.");
       return;
     }
-    if (step === 3 && !newDoc.date) {
+    if (step === 4 && !newDoc.date) {
       setError("Please select a date .");
       return;
     }
-    if (step === 4 && !newDoc.type) {
+    if (step === 5 && !newDoc.type) {
       setError("Please select a document type.");
       return;
     }
@@ -150,7 +172,14 @@ const AddDocs = ({ onDocumentAdded }) => {
 
         onDocumentAdded(addedDoc);
         setShowForm(false);
-        setNewDoc({ title: "",prefix:"", content: "", date: "", type: "", typeName: "" });
+        setNewDoc({
+          title: "",
+          prefix: "",
+          content: "",
+          date: "",
+          type: "",
+          typeName: "",
+        });
         setStep(1);
       }
     } catch (err) {
@@ -191,7 +220,18 @@ const AddDocs = ({ onDocumentAdded }) => {
             exit={{ opacity: 0 }}
             className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
             onClick={(e) => {
-              if (e.target === e.currentTarget) setShowForm(false);
+              if (e.target === e.currentTarget) {
+                setNewDoc({
+                  title: "",
+                  prefix: "",
+                  content: "",
+                  date: "",
+                  type: "",
+                  typeName: "",
+                });
+                setStep(1);
+                setShowForm(false);
+              }
             }}
           >
             <motion.div
@@ -214,6 +254,9 @@ const AddDocs = ({ onDocumentAdded }) => {
                 </div>
               </div>
 
+              {/* Combined Step Progress */}
+              <ProgressBar steps={5} currentStep={step} />
+
               {error && (
                 <div className="bg-rose-500/20 border border-rose-500/50 text-rose-200 px-3 py-2 rounded mb-4 text-sm">
                   {error}
@@ -223,7 +266,6 @@ const AddDocs = ({ onDocumentAdded }) => {
               {/* Step 1: Title */}
               {step === 1 && (
                 <div>
-                  
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Title
                   </label>
@@ -233,21 +275,28 @@ const AddDocs = ({ onDocumentAdded }) => {
                     value={newDoc.title}
                     onChange={handleChange}
                     className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  /><label className="block text-sm font-medium text-gray-300 mb-1">
-                  Document Prefix
-                </label>
-                <input
-                  type="text"
-                  name="prefix"
-                  value={newDoc.prefix}
-                  onChange={handleChange}
-                  className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                />
+                  />
                 </div>
               )}
 
-              {/* Step 2: Content */}
+              {/* Step 2: Prefix */}
               {step === 2 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Document Prefix
+                  </label>
+                  <input
+                    type="text"
+                    name="prefix"
+                    value={newDoc.prefix}
+                    onChange={handleChange}
+                    className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+                  />
+                </div>
+              )}
+
+              {/* Step 3: Content */}
+              {step === 3 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Content
@@ -256,14 +305,14 @@ const AddDocs = ({ onDocumentAdded }) => {
                     name="content"
                     value={newDoc.content}
                     onChange={handleChange}
-                    rows={4}
+                    rows={2}
                     className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none resize-none"
                   />
                 </div>
               )}
 
-              {/* Step 3: Date */}
-              {step === 3 && (
+              {/* Step 4: Date */}
+              {step === 4 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Date
@@ -278,8 +327,8 @@ const AddDocs = ({ onDocumentAdded }) => {
                 </div>
               )}
 
-              {/* Step 4: Document Type */}
-              {step === 4 && (
+              {/* Step 5: Document Type */}
+              {step === 5 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Document Type
@@ -318,7 +367,7 @@ const AddDocs = ({ onDocumentAdded }) => {
                     Back
                   </button>
                 )}
-                {step < 4 ? (
+                {step < 5 ? (
                   <button onClick={handleNext} className="btn">
                     Next
                   </button>
@@ -367,11 +416,20 @@ const AddDocs = ({ onDocumentAdded }) => {
               </div>
 
               <div className="space-y-3 text-sm">
-                <DetailItem label="Created By" value={submittedDoc.createdBy.username} />
+                <DetailItem
+                  label="Created By"
+                  value={submittedDoc.createdBy.username}
+                />
                 <DetailItem label="Title" value={submittedDoc.title} />
                 <DetailItem label="Prefix" value={submittedDoc.documentKey} />
-                <DetailItem label="Type" value={submittedDoc.documentType.typeName} />
-                <DetailItem label="Date" value={new Date(submittedDoc.docDate).toLocaleDateString()} />
+                <DetailItem
+                  label="Type"
+                  value={submittedDoc.documentType.typeName}
+                />
+                <DetailItem
+                  label="Date"
+                  value={new Date(submittedDoc.docDate).toLocaleDateString()}
+                />
                 <div className="border-t border-slate-700 pt-3">
                   <p className="text-gray-400 mb-1">Content:</p>
                   <p className="text-gray-200 whitespace-pre-wrap">
@@ -390,7 +448,6 @@ const AddDocs = ({ onDocumentAdded }) => {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 };
@@ -398,7 +455,7 @@ const AddDocs = ({ onDocumentAdded }) => {
 const DetailItem = ({ label, value }) => (
   <div className="flex justify-between items-center">
     <span className="text-gray-400">{label}:</span>
-    <span className="text-white">{value || '-'}</span>
+    <span className="text-white">{value || "-"}</span>
   </div>
 );
 

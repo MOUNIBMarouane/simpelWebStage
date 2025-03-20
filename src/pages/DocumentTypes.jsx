@@ -3,17 +3,18 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Save, FileText } from "lucide-react";
 
+
 const AddDocumentType = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState(1); // Track current step
   const [formData, setFormData] = useState({
     typeKey: "",
     typeName: "",
     typeAttr: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [documentTypes, setDocumentTypes] = useState([]); // State to store document types
+  const [documentTypes, setDocumentTypes] = useState([]);
 
   // Fetch document types when the component mounts
   useEffect(() => {
@@ -39,6 +40,14 @@ const AddDocumentType = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const handleNext = () => {
+    if (step < 3) setStep((prev) => prev + 1); // Move to next step
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep((prev) => prev - 1); // Move to previous step
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -60,6 +69,7 @@ const AddDocumentType = () => {
       if (response.status === 201) {
         setFormData({ typeKey: "", typeName: "", typeAttr: "" }); // Reset form
         fetchDocumentTypes(); // Refresh document list after adding
+        setStep(1); // Reset to step 1
       }
     } catch (err) {
       console.error("Error adding document type:", err);
@@ -70,9 +80,9 @@ const AddDocumentType = () => {
   };
 
   return (
-    <div className="p-6 text-white flex gap-6">
+    <div className="p-6 h-full text-white flex gap-6">
       {/* Sidebar: List of Document Types */}
-      <div className="w-1/3 bg-gray-800 rounded-2xl shadow-2xl p-6 border border-gray-700">
+      <div className="w-1/3 max-h-12/12 bg-gray-800 rounded-2xl shadow-2xl p-6 border border-gray-700 overflow-scroll">
         <h2 className="text-2xl font-bold text-blue-400">Document Types</h2>
         <ul className="mt-4 space-y-3">
           {documentTypes.length > 0 ? (
@@ -112,54 +122,88 @@ const AddDocumentType = () => {
 
           {error && <p className="mt-4 text-red-500">{error}</p>}
 
+          {/* Step Progress Indicator */}
+          <StepProgress steps={3} currentStep={step} />
+
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">
-                Type Key
-              </label>
-              <input
-                id="typeKey"
-                value={formData.typeKey}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+            {/* Step 1: Type Key */}
+            {step === 1 && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  Type Key
+                </label>
+                <input
+                  id="typeKey"
+                  value={formData.typeKey}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">
-                Type Name
-              </label>
-              <input
-                id="typeName"
-                value={formData.typeName}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+            {/* Step 2: Type Name */}
+            {step === 2 && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  Type Name
+                </label>
+                <input
+                  id="typeName"
+                  value={formData.typeName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">
-                Type Attribute
-              </label>
-              <input
-                id="typeAttr"
-                value={formData.typeAttr}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+            {/* Step 3: Type Attribute */}
+            {step === 3 && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  Type Attribute
+                </label>
+                <input
+                  id="typeAttr"
+                  value={formData.typeAttr}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            )}
 
-            <button
-              type="submit"
-              className="w-full px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2"
-              disabled={loading}
-            >
-              <Save size={20} />
-              {loading ? "Saving..." : "Save Document Type"}
-            </button>
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all"
+                >
+                  Back
+                </button>
+              )}
+              {step < 3 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-all"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                  disabled={loading}
+                >
+                  <Save size={20} />
+                  {loading ? "Saving..." : "Save Document Type"}
+                </button>
+              )}
+            </div>
           </form>
         </div>
       </div>

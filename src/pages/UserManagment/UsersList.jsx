@@ -34,8 +34,14 @@ const UsersList = () => {
   const [showFormNew, setShowFormNew] = useState(false);
   const [showFormDetails, setShowFormDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [editingUsers, setEditingUsers] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
   const [availableRoles, setAvailableRoles] = useState([]);
+
+  const roleNameToId = {
+    Admin: "Admin",
+    SimpleUser: "SimpleUser",
+    FullUser: "FullUser",
+  };
   const allRoles = ["Admin", "FullUser", "SimpleUser"];
   const [initialRole, setInitialRole] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,6 +73,47 @@ const UsersList = () => {
         ? prev.filter((id) => id !== userId)
         : [...prev, userId]
     );
+  };
+
+  const handleBulkRoleChange = async (e) => {
+    const newRole = e.target.value;
+    if (!newRole) return;
+
+    if (
+      !window.confirm(
+        `Change role of ${selectedUsers.length} users to ${newRole}?`
+      )
+    ) {
+      setSelectedRole("");
+      return;
+    }
+
+    try {
+      // Get numeric role ID from mapping
+      const newRoleId = roleNameToId[newRole];
+
+      // Optimistic update with correct role ID
+      const updatedUsers = Users.map((user) =>
+        selectedUsers.includes(user.id) ? { ...user, roleId: newRoleId } : user
+      );
+      setUsers(updatedUsers);
+
+      // Send proper role ID in update request
+      await Promise.all(
+        selectedUsers.map((id) => {
+          const updatedData = { userId: id, roleName: newRole };
+          return UpdateUser(updatedData);
+        })
+      );
+      await fetchUsers();
+      toast.success(`Roles updated to ${newRole}`);
+    } catch (error) {
+      // Revert on error
+      setUsers([...Users]);
+      toast.error("Failed to update roles");
+    } finally {
+      setSelectedRole("");
+    }
   };
 
   const handleChange = (e) => {
@@ -461,7 +508,7 @@ const UsersList = () => {
           },
         }
       );
-      console.log(response.data);
+      console.log("user all ----:", response.data);
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -480,8 +527,10 @@ const UsersList = () => {
     };
 
     // Get current role ID from selected user
-    const currentRoleId = selectedUser?.roleId || "";
+    const currentRoleId = selectedUser?.role.roleId || "";
+    console.log("Current role id ----", currentRoleId);
     const currentRole = roleMapping[currentRoleId] || "";
+    console.log("Current role ----", currentRole);
 
     setInitialRole(currentRole);
     setAvailableRoles(allRoles.filter((role) => role !== currentRole));
@@ -503,22 +552,9 @@ const UsersList = () => {
     // Combine first and last name for full name search
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
 
-    // Convert role ID to role name
-    const roleName = (idrole) => {
-      switch (idrole) {
-        case 1:
-          return "Admin";
-        case 2:
-          return "FullUser";
-        case 3:
-          return "SimpleUser";
-        default:
-          return "Unknown Role";
-      }
-    };
-
     // Convert status to string
     const status = user.isActive ? "active" : "blocked";
+    console.log("Users-------1111", user);
 
     return (
       user.firstName.toLowerCase().includes(searchLower) ||
@@ -526,7 +562,7 @@ const UsersList = () => {
       fullName.includes(searchLower) ||
       user.username.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
-      // role.includes(searchLower) ||
+      user.role.roleName.toLowerCase().includes(searchLower) ||
       status.includes(searchLower)
     );
   });
@@ -629,7 +665,7 @@ const UsersList = () => {
                     </td>
                     <td className="p-4">{user.username}</td>
                     <td className="p-4">{user.email}</td>
-                    <td className="p-4">{roleName(user.roleId)} </td>
+                    <td className="p-4">{user.role.roleName} </td>
                     <td className="p-4 items-center">
                       <div className="flex items-center gap-3">
                         <label
@@ -696,14 +732,31 @@ const UsersList = () => {
             </tbody>
           </motion.table>
         </div>
+        {/** actions part */}
         {selectedUsers.length > 0 && (
           <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 rounded-lg backdrop-blur-sm">
-            <div
-              className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
-              onClick={() => deleteUsers(selectedUsers)}
-            >
-              <Trash />
-              <p>Delete ({selectedUsers.length})</p>
+            <div className="flex gap-4">
+              <select
+                value={selectedRole}
+                onChange={handleBulkRoleChange}
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg cursor-pointer hover:bg-gray-600 transition-colors"
+              >
+                <option value="" disabled>
+                  Change Role
+                </option>
+                {allRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+              <div
+                className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
+                onClick={() => deleteUsers(selectedUsers)}
+              >
+                <Trash />
+                <p>Delete d ({selectedUsers.length})</p>
+              </div>
             </div>
           </div>
         )}
