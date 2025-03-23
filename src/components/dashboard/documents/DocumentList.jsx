@@ -119,7 +119,7 @@ const DocumentList = () => {
               if (!undo) {
                 try {
                   await axios.delete(
-                    `http://localhost:5204/api/Documents/${id}`,
+                    `http://192.168.1.94:5204/api/Documents/${id}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
                   console.log("Document deleted successfully:", id);
@@ -143,7 +143,7 @@ const DocumentList = () => {
     setTimeout(async () => {
       if (!undo) {
         try {
-          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
+          await axios.delete(`http://192.168.1.94:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log("Document permanently deleted:", id);
@@ -176,7 +176,7 @@ const DocumentList = () => {
       // Delete from the database
       await Promise.all(
         selectedDocs.map((id) =>
-          axios.delete(`http://localhost:5204/api/Documents/${id}`, {
+          axios.delete(`http://192.168.1.94:5204/api/Documents/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
           })
         )
@@ -378,7 +378,10 @@ const DocumentList = () => {
                         >
                           {doc.title}
                         </td>
-                        <td className="p-4">{doc.docDate}</td>
+                        <td className="p-4">
+                          {" "}
+                          {new Date(doc.docDate).toLocaleDateString("sv-SE")}
+                        </td>
                         <td className="p-4">{doc.documentType.typeName}</td>
                         <td className="p-4 items-center ">
                           <FormGroup className="items-center">

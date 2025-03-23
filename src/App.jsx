@@ -1,8 +1,5 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import { AuthProvider } from "./Auth/AuthContext";
-// import ProtectedRoute from "./Auth/ProtectedRoute";
-// import PublicRoute from "./Auth/PublicRoute";
 import SignIn from "./pages/auth/Signin";
 import SignUp from "./pages/auth/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -21,6 +18,8 @@ import WelcomeEmd from "./pages/auth/Welcome";
 import UserDetails from "./pages/UserManagment/UserDetails";
 import UsersUpdate from "./pages/UserManagment/UsersUpdate";
 import AddDocumentType from "./pages/DocumentTypes";
+import Profile from "./pages/UserManagment/Profile";
+
 // Define the routes
 const router = createBrowserRouter([
   {
@@ -142,7 +141,7 @@ const router = createBrowserRouter([
         path: "/user-profile",
         element: (
           // <ProtectedRoute>
-          <ProfileEdit />
+          <Profile />
           // </ProtectedRoute>
         ),
       },

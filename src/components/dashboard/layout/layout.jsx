@@ -1,14 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Avatar } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../navBar/NavBar";
 import { authLogout, getUserAccount } from "../../../service/authService";
 import { Link } from "react-router-dom";
 import { ExpandMore, Notifications, Search } from "@mui/icons-material";
+import { Typography } from "@mui/material";
+import { Settings, History, LogOut, UserCircle } from "lucide-react";
+import { RxAvatar } from "react-icons/rx";
+
+import {
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Button,
+} from "@material-tailwind/react";
 
 function Layout() {
   const [user, setUser] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   const navigate = useNavigate();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -125,10 +149,89 @@ function Layout() {
                   </div>
                   {/* <ExpandMore className="text-white" /> */}
                 </Link>
-                <ExpandMore
-                  sx={{ width: 36, height: 36 }}
-                  className="text-white bg-gray-500 rounded-full"
-                />
+                <Menu
+                  animate={{
+                    mount: {
+                      y: 0,
+                      opacity: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 20,
+                      },
+                    },
+                    unmount: {
+                      y: 25,
+                      opacity: 0,
+                      transition: {
+                        duration: 0.15,
+                        ease: "easeIn",
+                      },
+                    },
+                  }}
+                  placement="bottom-end"
+                >
+                  <MenuHandler>
+                    <div
+                      aria-label="User menu"
+                      className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-200"
+                    >
+                      <ExpandMore
+                        className="text-white"
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          transition: "transform 200ms ease-in-out",
+                        }}
+                      />
+                    </div>
+                  </MenuHandler>
+
+                  <MenuList className="min-w-[200px] p-2 bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl rounded-xl dark:bg-gray-800/90 dark:border-gray-600">
+                    <div className="flex flex-col gap-1">
+                      <MenuItem
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
+                        onClick={() => console.log("Settings")}
+                      >
+                        <Settings
+                          size={18}
+                          className="text-gray-600 dark:text-gray-300"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          Settings
+                        </span>
+                      </MenuItem>
+
+                      <MenuItem
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
+                        onClick={() => navigate("/user-profile")}
+                      >
+                        <UserCircle
+                          size={18}
+                          className="text-gray-600 dark:text-gray-300"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          Profile
+                        </span>
+                      </MenuItem>
+
+                      <hr className="my-1 border-t border-white/20 dark:border-gray-600" />
+
+                      <MenuItem
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/30 transition-colors"
+                        onClick={handleLogout}
+                      >
+                        <LogOut
+                          size={18}
+                          className="text-red-500 dark:text-red-400"
+                        />
+                        <span className="text-sm font-medium text-red-600 dark:text-red-400">
+                          Log Out
+                        </span>
+                      </MenuItem>
+                    </div>
+                  </MenuList>
+                </Menu>
               </div>
             </div>
           </div>

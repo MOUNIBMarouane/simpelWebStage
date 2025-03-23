@@ -1,47 +1,68 @@
-✔ password in register -Valide @done(25-03-19 07:38)
- 
-✔ resend button : resend vereficaton code @done(25-03-19 07:38)
- 
-✔ after register should show a message @done(25-03-19 07:38)
- 
-✔ after verified a message welcome @done(25-03-19 07:38)
- 
-✔ message signi ficative @done(25-03-19 10:47)
- 
-✔ exit button @done(25-03-19 07:38)
- 
-✔ active button add the activation status @done(25-03-19 09:41)
+todo:
+    ✔ password in register -Valide @done(25-03-19 07:38)
+    
+    ✔ resend button : resend vereficaton code @done(25-03-19 07:38)
+    
+    ✔ after register should show a message @done(25-03-19 07:38)
+    
+    ✔ after verified a message welcome @done(25-03-19 07:38)
+    
+    ✔ message signi ficative @done(25-03-19 10:47)
+    
+    ✔ exit button @done(25-03-19 07:38)
+    
+    ✔ active button add the activation status @done(25-03-19 09:41)
 
-✔ select list Delete @done(25-03-19 10:47)
+    ✔ select list Delete @done(25-03-19 10:47)
 
-✔ log status for admin @done(25-03-19 10:47)
+    ✔ log status for admin @done(25-03-19 10:47)
 
-✔ modification of users @done(25-03-20 02:18)
- 
-✔ role update @done(25-03-20 02:18)
+    ✔ modification of users @done(25-03-20 02:18)
+    
+    ✔ role update @done(25-03-20 02:18)
 
-✔ refrech table when i add new user @done(25-03-20 06:50)
+    ✔ refrech table when i add new user @done(25-03-20 06:50)
 
-✔ add document every singel input in one step - and show steps with a dotes claire @started(25-03-20 13:24) @done(25-03-20 14:19) @lasted(55m40s)
+    ✔ add document every singel input in one step - and show steps with a dotes claire @started(25-03-20 13:24) @done(25-03-20 14:19) @lasted(55m40s)
 
-✔ creation step by step and improvement of the css @done(25-03-20 14:20)
+    ✔ creation step by step and improvement of the css @done(25-03-20 14:20)
 
-☐ add page to create a new type of document
+    ✔ filter the view of date @done(25-03-21 13:45)
 
-☐ add foreing keydoc and add in the type
+    ✔ choose a beter templete and colors @done(25-03-21 13:53)
+    
+    ☐ add setting option - sublist on top
 
-☐ search list should be generale
+    ☐ adding lines and sublines - step by step
 
-☐ actions should be out the list (in the top)
+    ☐ modification should be in another form
 
-☐ after creation of doc should be viewed
+    ☐ select items opton and delete like userlist
 
-☐ modify and delete document from view
+    ☐ search lines and sub lines by all
 
-☐ choose a beter templete and colors
+    ☐ document search by everyting
 
-☐ table en tete serqui => code, descriptif, boolen(active, desactive)
+    ☐ add setting page
 
-☐ line serqui => code, numline, titre, descriptif
+    ☐ add page to create a new type of document
 
-☐ add button status to change serqui
+    ☐ add foreing keydoc and add in the type
+
+    ☐ search list should be generale
+
+    ☐ actions should be out the list (in the top)
+
+    ☐ after creation of doc should be viewed
+
+    ☐ modify and delete document from view
+        
+    ☐ table en tete circuit => code, descriptif, boolen(active, desactive)
+
+    ☐ line circuit => code, numline, titre, descriptif
+
+    ☐ add button status to change circuit
+
+    ☐ user view be like user Update profile
+    
+    ☐ update view details user 

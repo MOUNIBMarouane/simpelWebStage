@@ -72,7 +72,7 @@ const UserDetails = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const userResponse = await axios.get(
-          `http://localhost:5204/api/Admin/users/${userId}`,
+          `http://192.168.1.94:5204/api/Admin/users/${userId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         setUser(userResponse.data);
@@ -114,11 +114,9 @@ const UserDetails = () => {
           <DetailItem label="Role" value={roleName(user.roleId)} />
           <DetailItem label="Status" value={activeStatus(user.isActive)} />
         </div>
-
-        {/* Logs Card */}
+        
         <div className="bg-gray-800 rounded-lg p-6 w-1/2">
           <h3 className="text-xl font-semibold mb-4">Activity Logs</h3>
-
           {isLoadingLogs ? (
             <div className="text-gray-400">Loading logs...</div>
           ) : logs.length === 0 ? (

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { title } from "framer-motion/client";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.94:5204/api";
 
 export const getDocuments = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -24,7 +24,7 @@ export const getDocuments = async () => {
     return [];
   }
 };
-export const addDocument = async (title,prefix, content, date, type) => {
+export const addDocument = async (title, prefix, content, date, type) => {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -52,7 +52,7 @@ export const addDocument = async (title,prefix, content, date, type) => {
       `${API_BASE_URL}/Documents`,
       {
         title: safeTitle,
-        documentAlias:safePrefix,
+        documentAlias: safePrefix,
         content: safeContent,
         docDate: safeDate,
         typeId: safeType,
@@ -140,5 +140,3 @@ export const updateDocument = async (idDoc, updatedData) => {
     return null;
   }
 };
-
-
