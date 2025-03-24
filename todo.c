@@ -94,7 +94,7 @@
 //     // Delete from the database
 //     await Promise.all(
 //       selectedDocs.map((id) =>
-//         axios.delete(`http://192.168.1.94:5204/api/Documents/${id}`, {
+//         axios.delete(`http://localhost:5204/api/Documents/${id}`, {
 //           headers: { Authorization: `Bearer ${accessToken}` },
 //         })
 //       )
@@ -250,7 +250,7 @@
 //               if (!undo) {
 //                 try {
 //                   await axios.delete(
-//                     `http://192.168.1.94:5204/api/Documents/${id}`,
+//                     `http://localhost:5204/api/Documents/${id}`,
 //                     { headers: { Authorization: `Bearer ${accessToken}` } }
 //                   );
 //                   console.log("Document deleted successfully:", id);
@@ -274,7 +274,7 @@
 //     setTimeout(async () => {
 //       if (!undo) {
 //         try {
-//           await axios.delete(`http://192.168.1.94:5204/api/Documents/${id}`, {
+//           await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
 //             headers: { Authorization: `Bearer ${accessToken}` },
 //           });
 //           console.log("Document permanently deleted:", id);
@@ -306,7 +306,7 @@
 //       // Delete from the database
 //       await Promise.all(
 //         selectedDocs.map((id) =>
-//           axios.delete(`http://192.168.1.94:5204/api/Documents/${id}`, {
+//           axios.delete(`http://localhost:5204/api/Documents/${id}`, {
 //             headers: { Authorization: `Bearer ${accessToken}` },
 //           })
 //         )

@@ -189,18 +189,20 @@ function Layout() {
 
                   <MenuList className="min-w-[200px] p-2 bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl rounded-xl dark:bg-gray-800/90 dark:border-gray-600">
                     <div className="flex flex-col gap-1">
-                      <MenuItem
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
-                        onClick={() => console.log("Settings")}
-                      >
-                        <Settings
-                          size={18}
-                          className="text-gray-600 dark:text-gray-300"
-                        />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                          Settings
-                        </span>
-                      </MenuItem>
+                      <Link to="settings">
+                        <MenuItem
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
+                          onClick={() => console.log("Settings")}
+                        >
+                          <Settings
+                            size={18}
+                            className="text-gray-600 dark:text-gray-300"
+                          />
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            Settings
+                          </span>
+                        </MenuItem>
+                      </Link>
 
                       <MenuItem
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"

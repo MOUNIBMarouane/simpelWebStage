@@ -34,7 +34,7 @@ const AddDocumentType = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://192.168.1.94:5204/api/Documents/Types",
+        "http://localhost:5204/api/Documents/Types",
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setDocumentTypes(response.data);
@@ -80,11 +80,9 @@ const AddDocumentType = () => {
     setLoading(true);
     try {
       const accessToken = localStorage.getItem("accessToken");
-      await axios.post(
-        "http://192.168.1.94:5204/api/Documents/Types",
-        formData,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      await axios.post("http://localhost:5204/api/Documents/Types", formData, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       setFormData({ typeKey: "", typeName: "", typeAttr: "" });
       fetchDocumentTypes();
       setStep(1);

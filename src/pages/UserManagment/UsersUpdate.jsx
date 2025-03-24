@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Save } from "lucide-react";
 import FormInput from "../../components/FormInputs";
-import RoleSelect from "../../components/inputs/RoleSelect";
 
 const UsersUpdate = () => {
   const { userId } = useParams();
@@ -27,7 +26,7 @@ const UsersUpdate = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const response = await axios.get(
-          `http://192.168.1.94:5204/api/Admin/users/${userId}`,
+          `http://localhost:5204/api/Admin/users/${userId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         const roleMapping = {
@@ -69,7 +68,7 @@ const UsersUpdate = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       await axios.put(
-        `http://192.168.1.94:5204/api/Admin/users/${userId}`,
+        `http://localhost:5204/api/Admin/users/${userId}`,
         formData,
         {
           headers: {

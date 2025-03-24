@@ -19,6 +19,8 @@ import UserDetails from "./pages/UserManagment/UserDetails";
 import UsersUpdate from "./pages/UserManagment/UsersUpdate";
 import AddDocumentType from "./pages/DocumentTypes";
 import Profile from "./pages/UserManagment/Profile";
+import AccountSettings from "./pages/UserManagment/SettingsPage";
+import SettingsPage from "./pages/UserManagment/SettingsPage";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -94,6 +96,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <Dashboard />
+          // </ProtectedRoute>vbrf
+        ),
+      },
+      {
+        path: "/settings",
+        element: (
+          // <ProtectedRoute>
+          <SettingsPage />
           // </ProtectedRoute>vbrf
         ),
       },

@@ -31,7 +31,7 @@ todo:
 
     ✔ choose a beter templete and colors @done(25-03-21 13:53)
     
-    ☐ add setting option - sublist on top
+    ✔ add setting option - sublist on top @done(25-03-24 06:03)
 
     ☐ adding lines and sublines - step by step
 
@@ -45,13 +45,11 @@ todo:
 
     ☐ add setting page
 
-    ☐ add page to create a new type of document
+    ✔ add page to create a new type of document @done(25-03-24 06:32)
 
-    ☐ add foreing keydoc and add in the type
+    ✘ add foreing keydoc and add in the type @cancelled(25-03-24 06:34)
 
-    ☐ search list should be generale
-
-    ☐ actions should be out the list (in the top)
+    ✔ actions should be out the list (in the top) @done(25-03-24 06:34)
 
     ☐ after creation of doc should be viewed
 
