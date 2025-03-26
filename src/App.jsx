@@ -21,6 +21,7 @@ import AddDocumentType from "./pages/DocumentTypes";
 import Profile from "./pages/UserManagment/Profile";
 import AccountSettings from "./pages/UserManagment/SettingsPage";
 import SettingsPage from "./pages/UserManagment/SettingsPage";
+import CircuitManagement from "./pages/CircuitManagement";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -120,6 +121,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <AddDocumentType />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/circuit",
+        element: (
+          // <ProtectedRoute>
+          <CircuitManagement />
           // </ProtectedRoute>
         ),
       },

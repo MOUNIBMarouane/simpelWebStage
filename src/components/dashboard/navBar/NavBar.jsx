@@ -81,6 +81,13 @@ const NavBar = ({ userRole, onLogout }) => {
                     </label>
                   </div>
                 </Link>
+                <Link to="/circuit">
+                  <div className="bg-slate-700/50 hover:bg-slate-600/50 p-2 rounded-sm flex items-center hover:text-sky-50">
+                    <label htmlFor="img" className="w-full cursor-pointer">
+                      Circuits
+                    </label>
+                  </div>
+                </Link>
               </div>
             )}
           </div>
