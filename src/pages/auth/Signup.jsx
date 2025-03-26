@@ -532,17 +532,17 @@ const SignUp = () => {
 
           <div className="flex justify-between mt-6">
             {step > 1 && (
-              <button
-                type="button"
+              <div
+                type="div"
                 onClick={handleBack}
                 className="px-4 py-2 border border-white rounded hover:bg-white hover:text-black transition-colors"
               >
                 Back
-              </button>
+              </div>
             )}
             {step < 3 ? (
-              <button
-                type="button"
+              <div
+                type="div"
                 onClick={handleNext}
                 className={`px-4 py-2 rounded transition-colors ml-auto ${
                   isNextDisabled()
@@ -552,14 +552,14 @@ const SignUp = () => {
                 disabled={isNextDisabled()}
               >
                 Next
-              </button>
+              </div>
             ) : (
-              <button
+              <div
                 onClick={handleSubmit}
                 className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
               >
                 Signup
-              </button>
+              </div>
             )}
           </div>
         </div>

@@ -138,13 +138,13 @@ const SettingsPage = () => {
   return (
     <div className="p-6 text-white">
       <div className="max-w-7xl mx-auto">
-        <button
+        <div
           onClick={() => navigate(-1)}
           className="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
         >
           <ArrowLeft size={20} className="inline-block" />
           <span className="text-lg font-semibold">Back</span>
-        </button>
+        </div>
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation */}
@@ -158,7 +158,7 @@ const SettingsPage = () => {
                   {["Security", "Notification", "Billing", "Integration"].map(
                     (item) => (
                       <li key={item}>
-                        <button
+                        <div
                           onClick={() => setActiveTab(item.toLowerCase())}
                           className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                             activeTab === item.toLowerCase()
@@ -167,7 +167,7 @@ const SettingsPage = () => {
                           }`}
                         >
                           {item}
-                        </button>
+                        </div>
                       </li>
                     )
                   )}
@@ -180,7 +180,7 @@ const SettingsPage = () => {
                 </h3>
                 <ul className="space-y-2">
                   <li>
-                    <button
+                    <div
                       onClick={() => setActiveTab("personal")}
                       className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                         activeTab === "personal"
@@ -189,7 +189,7 @@ const SettingsPage = () => {
                       }`}
                     >
                       Information
-                    </button>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -211,13 +211,13 @@ const SettingsPage = () => {
               {renderForm()}
 
               <div className="pt-6 border-t border-gray-700">
-                <button
+                <div
                   type="submit"
                   className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
                   <Save size={20} />
                   <span>Save Changes</span>
-                </button>
+                </div>
               </div>
             </form>
           </div>

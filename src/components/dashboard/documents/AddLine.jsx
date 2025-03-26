@@ -1,43 +1,99 @@
 import React, { useState } from "react";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AddLine = ({ onLineAdded }) => {
   const [showForm, setShowForm] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   const [newLine, setNewLine] = useState({
     title: "",
     article: "",
     prix: "",
   });
+  const [errors, setErrors] = useState({});
+
+  const steps = [
+    { id: 1, name: "Title", field: "title" },
+    { id: 2, name: "Article", field: "article" },
+    { id: 3, name: "Price", field: "prix" },
+  ];
+
+  const handleNext = () => {
+    const currentField = steps[currentStep - 1].field;
+    if (!validateField(currentField)) return;
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const validateField = (field) => {
+    if (!newLine[field]) {
+      setErrors({ ...errors, [field]: "This field is required" });
+      return false;
+    }
+    setErrors({ ...errors, [field]: "" });
+    return true;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewLine((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors({ ...errors, [name]: "" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    onLineAdded(newLine);
-    setShowForm(false);
-    setNewLine({ title: "", article: "", prix: "" });
+    if (currentStep === steps.length) {
+      onLineAdded(newLine);
+      setShowForm(false);
+      setNewLine({ title: "", article: "", prix: "" });
+      setCurrentStep(1);
+    }
   };
+const getCurrentStepContent = () => {
+  const current = steps[currentStep - 1];
+  return (
+    <div className="mt-4">
+      <label className="block text-sm font-medium text-gray-300 mb-1">
+        {current.name}
+      </label>
+      <input
+        type="text"
+        name={current.field}
+        value={newLine[current.field]}
+        onChange={handleChange}
+        className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+      />
+      {errors[current.field] && (
+        <p className="text-red-400 text-sm mt-1">{errors[current.field]}</p>
+      )}
+    </div>
+  );
+};
 
   return (
-    <div>
-      <motion.div
-        onClick={() => setShowForm(true)}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.95 }}
-        className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center p-2 w-2/3 rounded-lg cursor-pointer transition border border-slate-700 h-full"
-      >
-        <div className="flex flex-row items-center">
-          <PlusCircle size={24} className="text-blue-400" />
-          <p className="text-gray-200 font-medium text-center pl-2">
-            Add New Line
-          </p>
-        </div>
-      </motion.div>
-
+    <div className="w-full h-full">
+      <div>
+        <motion.div
+          onClick={() => setShowForm(true)}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-gradient-to-br  from-blue-500/20 to-purple-500/20 grid place-items-center p-2 w-2/3 rounded-lg cursor-pointer transition border border-slate-700 h-full"
+        >
+          <div className="flex flex-row items-center">
+            <PlusCircle size={24} className="text-blue-400" />
+            <p className="text-gray-200 font-medium text-center pl-2">
+              Add New Line
+            </p>
+          </div>
+        </motion.div>
+      </div>
       {showForm && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -101,16 +157,16 @@ const AddLine = ({ onLineAdded }) => {
               </div>
 
               <div className="flex justify-end mt-6">
-                <button
-                  type="button"
+                <div
+                  type="div"
                   onClick={() => setShowForm(false)}
                   className="btn"
                 >
                   Cancel
-                </button>
-                <button type="submit" className="btn">
+                </div>
+                <div type="submit" className="btn">
                   Add Line
-                </button>
+                </div>
               </div>
             </form>
           </motion.div>

@@ -1,7 +1,7 @@
 todo:
     ✔ password in register -Valide @done(25-03-19 07:38)
     
-    ✔ resend button : resend vereficaton code @done(25-03-19 07:38)
+    ✔ resend div : resend vereficaton code @done(25-03-19 07:38)
     
     ✔ after register should show a message @done(25-03-19 07:38)
     
@@ -9,9 +9,9 @@ todo:
     
     ✔ message signi ficative @done(25-03-19 10:47)
     
-    ✔ exit button @done(25-03-19 07:38)
+    ✔ exit div @done(25-03-19 07:38)
     
-    ✔ active button add the activation status @done(25-03-19 09:41)
+    ✔ active div add the activation status @done(25-03-19 09:41)
 
     ✔ select list Delete @done(25-03-19 10:47)
 
@@ -33,34 +33,34 @@ todo:
     
     ✔ add setting option - sublist on top @done(25-03-24 06:03)
 
-    ☐ adding lines and sublines - step by step
-
-    ☐ modification should be in another form
-
-    ☐ select items opton and delete like userlist
-
-    ☐ search lines and sub lines by all
-
-    ☐ document search by everyting
-
-    ☐ add setting page
-
+    ✔ select items opton and delete like userlist @done(25-03-24 13:55)
+    
+    ✔ document search by everyting @done(25-03-24 13:54)
+    
+    ✔ add setting page @done(25-03-24 13:54)
+    
     ✔ add page to create a new type of document @done(25-03-24 06:32)
-
+    
     ✘ add foreing keydoc and add in the type @cancelled(25-03-24 06:34)
-
+    
     ✔ actions should be out the list (in the top) @done(25-03-24 06:34)
+    
+    ✔ after creation of doc should be viewed @done(25-03-24 13:55)
+    
+    ☐ adding lines and sublines - step by step @started(25-03-24 13:55)
 
-    ☐ after creation of doc should be viewed
+    ☐ modification should be in another form @started(25-03-24 13:55)
 
-    ☐ modify and delete document from view
+    ☐ modify and delete document from view @started(25-03-24 13:55)
         
     ☐ table en tete circuit => code, descriptif, boolen(active, desactive)
 
     ☐ line circuit => code, numline, titre, descriptif
 
-    ☐ add button status to change circuit
+    ☐ add div status to change circuit
 
     ☐ user view be like user Update profile
     
     ☐ update view details user 
+
+    ☐ // magnet:?xt=urn:btih:8a9f7f9e92254e4833aa2647e9f07e01df280dc2&dn=Mosh%20Hamedani%20-%20All%20Courses%20Pack

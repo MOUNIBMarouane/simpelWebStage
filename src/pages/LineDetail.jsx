@@ -226,12 +226,12 @@ const LineDetail = () => {
                 }
                 className="p-2 rounded-lg bg-gray-700 text-white"
               />
-              <button
+              <div
                 type="submit"
                 className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600 transition duration-200"
               >
                 Add Subline
-              </button>
+              </div>
             </div>
           </form>
 
@@ -381,12 +381,12 @@ const LineDetail = () => {
             >
               <span>{notification.message}</span>
               {notification.undo && (
-                <button
+                <div
                   onClick={() => handleUndo(notification)}
                   className="underline hover:text-gray-200"
                 >
                   Undo
-                </button>
+                </div>
               )}
             </motion.div>
           ))}

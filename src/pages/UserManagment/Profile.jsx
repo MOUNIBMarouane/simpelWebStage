@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Mail, Phone, Calendar, Clock, Edit,Pen } from "lucide-react";
+import { User, Mail, Phone, Calendar, Clock, Edit, Pen } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Profile = ({ user }) => {
@@ -7,13 +7,13 @@ const Profile = ({ user }) => {
     <div className="flex gap-6 p-6 w-full text-white">
       {/* Profile Card */}
       <div className="bg-gray-800 rounded-2xl shadow-lg p-6 w-1/3 border border-gray-700">
-      <div className="w-full flex justify-end">
-    <Link to={"/user-update/emal."}>
-          <button className=" bg-white p-2 rounded-full text-gray-700 hover:bg-gray-600 transition-colors">
-            <Pen size={16} />
-          </button>
-    </Link>
-      </div>
+        <div className="w-full flex justify-end">
+          <Link to={"/user-update/emal."}>
+            <div className=" bg-white p-2 rounded-full text-gray-700 hover:bg-gray-600 transition-colors">
+              <Pen size={16} />
+            </div>
+          </Link>
+        </div>
         <div className="flex flex-col items-center text-center">
           <div className="relative w-32 h-32">
             <img
@@ -21,9 +21,9 @@ const Profile = ({ user }) => {
               className="w-32 h-32 rounded-full border-4 border-gray-700 shadow-lg"
               alt="Profile"
             />
-            <button className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white shadow-sm hover:bg-blue-500 transition-colors">
+            <div className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white shadow-sm hover:bg-blue-500 transition-colors">
               <Edit size={16} />
-            </button>
+            </div>
           </div>
           <h2 className="text-2xl font-bold mt-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             {user?.name || "User Name"}
@@ -44,12 +44,12 @@ const Profile = ({ user }) => {
             </div>
           </div>
           <div className="w-full mt-6 space-y-3">
-            {/* <button className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
+            {/* <div className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
               Send Message
-            </button> */}
-            <button className="w-full px-4 py-2.5 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg font-medium text-red-400 transition-colors duration-200">
+            </div> */}
+            <div className="w-full px-4 py-2.5 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg font-medium text-red-400 transition-colors duration-200">
               Delete Account
-            </button>
+            </div>
           </div>
         </div>
       </div>

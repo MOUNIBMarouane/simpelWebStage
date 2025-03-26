@@ -479,7 +479,7 @@ const UsersList = () => {
         autoClose: false,
         closeOnClick: false,
         draggable: false,
-        closeButton: false,
+        closediv: false,
         toastId: "delete-confirmation",
       }
     );
@@ -706,8 +706,8 @@ const UsersList = () => {
                     </td>
 
                     <td className="p-4 flex items-center justify-center space-x-3">
-                      {/* Toggle Button */}
-                      {/* View Button */}
+                      {/* Toggle div */}
+                      {/* View div */}
                       <Link to={`/user-details/${user.id}`}>
                         <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
                           <Eye size={18} />
@@ -718,7 +718,7 @@ const UsersList = () => {
                           <Pen size={18} />
                         </div>
                       </Link>
-                      {/* Delete Button */}
+                      {/* Delete div */}
                     </td>
                   </motion.tr>
                 ))
@@ -792,30 +792,30 @@ const UsersList = () => {
 
               <div className="flex justify-between mt-6">
                 {step > 1 && (
-                  <button
-                    type="button"
+                  <div
+                    type="div"
                     onClick={handleBack}
                     className="px-4 py-2 border border-white rounded hover:bg-white hover:text-black transition-colors"
                   >
                     Back
-                  </button>
+                  </div>
                 )}
                 {step < 3 ? (
-                  <button
-                    type="button"
+                  <div
+                    type="div"
                     onClick={handleNext}
                     className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors ml-auto"
                   >
                     Next
-                  </button>
+                  </div>
                 ) : (
-                  <button
+                  <div
                     type="submit"
                     onClick={handleSubmit}
                     className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
                   >
                     Complete Signup
-                  </button>
+                  </div>
                 )}
               </div>
             </div>

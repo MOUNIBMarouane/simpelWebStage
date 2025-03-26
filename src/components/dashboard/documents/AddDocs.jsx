@@ -5,8 +5,9 @@ import { addDocument } from "../../../service/docSrvice";
 import FormSelect from "../../inputs/FormSelect";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { PlusCircle, FileText, X, CheckCircle } from "lucide-react";
+import { PlusCircle, FileText, X, CheckCircle, Edit } from "lucide-react";
 import ProgressBar from "./ProgressBar";
+import { format } from "date-fns";
 
 const AddDocs = ({ onDocumentAdded }) => {
   const [user, setUser] = useState(null);
@@ -80,11 +81,11 @@ const AddDocs = ({ onDocumentAdded }) => {
     );
   };
   const [showForm, setShowForm] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [newDoc, setNewDoc] = useState({
     title: "",
-    prefix: "",
     content: "",
-    date: "",
+    date: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
     type: "",
     typeName: "",
   });
@@ -118,80 +119,82 @@ const AddDocs = ({ onDocumentAdded }) => {
     if (error) setError("");
   };
 
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        return !!newDoc.title.trim();
+      case 2:
+        return !!newDoc.type;
+      case 3:
+        return !!newDoc.content.trim();
+      case 4:
+        return !!newDoc.date;
+      default:
+        return true;
+    }
+  };
+  const handleEditField = (field) => {
+    const fieldSteps = {
+      title: 1,
+      type: 2,
+      content: 3,
+      date: 4,
+    };
+    setStep(fieldSteps[field]);
+    setShowReview(false);
+  };
+
   const handleNext = () => {
-    if (step === 1 && !newDoc.title.trim()) {
-      setError("Title is required.");
-      return;
-    }
-    // if (step === 2 && !newDoc.title.trim()) {
-    //   setError("Title is required.");
-    //   return;
-    // }
-    if (step === 3 && !newDoc.content.trim()) {
-      setError("Content cannot be empty.");
-      return;
-    }
-    if (step === 4 && !newDoc.date) {
-      setError("Please select a date .");
-      return;
-    }
-    if (step === 5 && !newDoc.type) {
-      setError("Please select a document type.");
+    if (!validateStep()) {
+      setError("Please fill in all required fields");
       return;
     }
     setError("");
-    setStep((prev) => prev + 1);
-  };
 
-  const handleBack = () => {
-    setStep((prev) => prev - 1);
+    if (step === 4) {
+      setShowReview(true);
+    } else {
+      setStep((prev) => prev + 1);
+    }
   };
+  const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-
-    // Validate type selection
-    if (!newDoc.type) {
-      setError("Please select a document type.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    console.log("Submitting document:", newDoc);
     try {
       const addedDoc = await addDocument(
         newDoc.title,
-        newDoc.prefix,
-        newDoc.content,
         newDoc.date,
-        newDoc.type // This should be the numeric ID
+        newDoc.content,
+        newDoc.type
       );
-      console.log("Document added - handleSubmit:", addedDoc);
       if (addedDoc) {
-        setSubmittedDoc(addedDoc); // Store the submitted document
-
         onDocumentAdded(addedDoc);
+        resetForm();
         setShowForm(false);
-        setNewDoc({
-          title: "",
-          prefix: "",
-          content: "",
-          date: "",
-          type: "",
-          typeName: "",
-        });
-        setStep(1);
       }
     } catch (err) {
-      console.error("Full error details:", err);
-      console.error("Error response:", err.response);
-      setError(
-        err.response?.data?.message ||
-          "An error occurred while saving your document."
-      );
+      setError(err.response?.data?.message || "Error saving document");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setNewDoc({
+      title: "",
+      date: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+      content: "",
+      type: "",
+      typeName: "",
+    });
+    setStep(1);
+    setShowReview(false);
+  };
+
+  const handleEdit = () => {
+    setShowReview(false);
+    setStep(4); // Return to last step
   };
 
   return (
@@ -199,12 +202,10 @@ const AddDocs = ({ onDocumentAdded }) => {
       {(user?.role === "Admin" || user?.role === "FullUser") && (
         <motion.div
           onClick={() => setShowForm(true)}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center p-2  w-2/3  rounded-lg cursor-pointer transition border border-slate-700 h-full"
+          className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 grid place-items-center p-2 w-2/3 rounded-lg cursor-pointer border border-slate-700 h-full"
         >
           <div className="flex flex-row items-center">
-            <PlusCircle size={48 / 2} className="text-blue-400 " />
+            <PlusCircle size={24} className="text-blue-400" />
             <p className="text-gray-200 font-medium text-center pl-2">
               Add New Document
             </p>
@@ -218,232 +219,198 @@ const AddDocs = ({ onDocumentAdded }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setNewDoc({
-                  title: "",
-                  prefix: "",
-                  content: "",
-                  date: "",
-                  type: "",
-                  typeName: "",
-                });
-                setStep(1);
-                setShowForm(false);
-              }
-            }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center"
+            onClick={(e) => e.target === e.currentTarget && resetForm()}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", damping: 25 }}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
               className="bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-md mx-4 border border-slate-700"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white flex items-center">
-                  <FileText size={20} className="mr-2 text-blue-400" />
-                  New Document - Step {step}/4
-                </h2>
-                <div
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-400 hover:text-white transition cursor-pointer"
-                >
-                  <X size={20} />
-                </div>
-              </div>
-
-              {/* Combined Step Progress */}
-              <ProgressBar steps={5} currentStep={step} />
-
-              {error && (
-                <div className="bg-rose-500/20 border border-rose-500/50 text-rose-200 px-3 py-2 rounded mb-4 text-sm">
-                  {error}
-                </div>
-              )}
-
-              {/* Step 1: Title */}
-              {step === 1 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Document Title
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={newDoc.title}
-                    onChange={handleChange}
-                    className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  />
-                </div>
-              )}
-
-              {/* Step 2: Prefix */}
-              {step === 2 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Document Prefix
-                  </label>
-                  <input
-                    type="text"
-                    name="prefix"
-                    value={newDoc.prefix}
-                    onChange={handleChange}
-                    className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  />
-                </div>
-              )}
-
-              {/* Step 3: Content */}
-              {step === 3 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Document Content
-                  </label>
-                  <textarea
-                    name="content"
-                    value={newDoc.content}
-                    onChange={handleChange}
-                    rows={2}
-                    className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none resize-none"
-                  />
-                </div>
-              )}
-
-              {/* Step 4: Date */}
-              {step === 4 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Document Date
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={newDoc.date}
-                    onChange={handleChange}
-                    className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  />
-                </div>
-              )}
-
-              {/* Step 5: Document Type */}
-              {step === 5 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Document Type
-                  </label>
-                  {isLoadingTypes ? (
-                    <div className="text-gray-400">Loading types...</div>
-                  ) : (
-                    <FormSelect
-                      id="type"
-                      value={newDoc.type}
-                      onChange={handleTypeChange}
-                      options={documentTypes}
-                      icon={(props) => (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          {...props}
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      )}
+              {!showReview ? (
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                      <FileText size={20} className="mr-2 text-blue-400" />
+                      New Document - Step {step}/4
+                    </h2>
+                    <X
+                      size={20}
+                      className="text-gray-400 hover:text-white cursor-pointer"
+                      onClick={resetForm}
                     />
+                  </div>
+
+                  <ProgressBar steps={4} currentStep={step} />
+
+                  {error && (
+                    <div className="bg-rose-500/20 border border-rose-500/50 text-rose-200 px-3 py-2 rounded mb-4 text-sm">
+                      {error}
+                    </div>
                   )}
+
+                  {step === 1 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Document Title
+                      </label>
+                      <input
+                        type="text"
+                        name="title"
+                        value={newDoc.title}
+                        onChange={handleChange}
+                        className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  )}
+
+                  {step === 2 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Document Type
+                      </label>
+                      {isLoadingTypes ? (
+                        <div className="text-gray-400">Loading types...</div>
+                      ) : (
+                        <FormSelect
+                          value={newDoc.type}
+                          onChange={handleTypeChange}
+                          options={documentTypes}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {step === 3 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Document Content
+                      </label>
+                      <textarea
+                        name="content"
+                        value={newDoc.content}
+                        onChange={handleChange}
+                        rows={4}
+                        className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none resize-none"
+                      />
+                    </div>
+                  )}
+
+                  {step === 4 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Document Date
+                      </label>
+                      <input
+                        type="date"
+                        name="date"
+                        value={newDoc.date}
+                        onChange={handleChange}
+                        className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex justify-between mt-6">
+                    {step > 1 && (
+                      <button
+                        onClick={handleBack}
+                        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+                      >
+                        Back
+                      </button>
+                    )}
+                    <div className="flex-grow" />
+                    <button
+                      onClick={handleNext}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                    >
+                      {step === 4 ? "Review" : "Next"}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                      <CheckCircle size={20} className="mr-2 text-green-400" />
+                      Review Document
+                    </h2>
+                    <X
+                      size={20}
+                      className="text-gray-400 hover:text-white cursor-pointer"
+                      onClick={resetForm}
+                    />
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center group">
+                      <span className="text-gray-400">Title:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white">{newDoc.title}</span>
+                        <Edit
+                          size={16}
+                          className="text-gray-400 hover:text-blue-400 cursor-pointer invisible group-hover:visible"
+                          onClick={() => handleEditField("title")}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center group">
+                      <span className="text-gray-400">Type:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white">{newDoc.typeName}</span>
+                        <Edit
+                          size={16}
+                          className="text-gray-400 hover:text-blue-400 cursor-pointer invisible group-hover:visible"
+                          onClick={() => handleEditField("type")}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center group">
+                      <span className="text-gray-400">Content:</span>
+                      <Edit
+                        size={16}
+                        className="text-gray-400 hover:text-blue-400 cursor-pointer invisible group-hover:visible"
+                        onClick={() => handleEditField("content")}
+                      />
+                    </div>
+                    <p className="text-gray-200 whitespace-pre-wrap border border-slate-700 p-2 rounded">
+                      {newDoc.content}
+                    </p>
+
+                    <div className="flex justify-between items-center group">
+                      <span className="text-gray-400">Date:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white">{newDoc.date}</span>
+                        <Edit
+                          size={16}
+                          className="text-gray-400 hover:text-blue-400 cursor-pointer invisible group-hover:visible"
+                          onClick={() => handleEditField("date")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      onClick={() => setShowReview(false)}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+                    >
+                      Back to Form
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                    >
+                      {isSubmitting ? "Submitting..." : "Confirm & Submit"}
+                    </button>
+                  </div>
                 </div>
               )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-6">
-                {step > 1 && (
-                  <button onClick={handleBack} className="btn">
-                    Back
-                  </button>
-                )}
-                {step < 5 ? (
-                  <button onClick={handleNext} className="btn">
-                    Next
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSubmit}
-                    className="btn"
-                    disabled={isLoadingTypes}
-                  >
-                    {isSubmitting ? "Saving..." : "Save"}
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {/* Success card */}
-        {submittedDoc && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
-            onClick={() => setSubmittedDoc(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-md mx-4 border border-slate-700"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white flex items-center">
-                  <CheckCircle size={20} className="mr-2 text-green-400" />
-                  Document Created Successfully
-                </h2>
-                <div
-                  onClick={() => setSubmittedDoc(null)}
-                  className="text-gray-400 hover:text-white transition cursor-pointer"
-                >
-                  <X size={20} />
-                </div>
-              </div>
-
-              <div className="space-y-3 text-sm">
-                <DetailItem
-                  label="Created By"
-                  value={submittedDoc.createdBy.username}
-                />
-                <DetailItem label="Title" value={submittedDoc.title} />
-                <DetailItem label="Prefix" value={submittedDoc.documentKey} />
-                <DetailItem
-                  label="Type"
-                  value={submittedDoc.documentType.typeName}
-                />
-                <DetailItem
-                  label="Date"
-                  value={new Date(submittedDoc.docDate).toLocaleDateString()}
-                />
-                <div className="border-t border-slate-700 pt-3">
-                  <p className="text-gray-400 mb-1">Content:</p>
-                  <p className="text-gray-200 whitespace-pre-wrap">
-                    {submittedDoc.content}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setSubmittedDoc(null)}
-                className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-              >
-                Close
-              </button>
+              
             </motion.div>
           </motion.div>
         )}

@@ -86,7 +86,7 @@ const NavBar = ({ userRole, onLogout }) => {
           </div>
         </ul>
 
-        {/* Logout Button */}
+        {/* Logout div */}
         <div
           onClick={onLogout}
           className="bg-red-600/95 hover:bg-red-600 w-full p-2 rounded-sm flex items-center cursor-pointer"

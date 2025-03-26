@@ -128,7 +128,7 @@ const UpdatePassword = () => {
         )}
 
         <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-center place-items-center">
-          <button
+          <div
             type="submit"
             onClick={handleSubmit}
             className={`btn ${
@@ -137,7 +137,7 @@ const UpdatePassword = () => {
             disabled={validationErrors.length > 0}
           >
             RESET
-          </button>
+          </div>
         </div>
       </div>
     </div>

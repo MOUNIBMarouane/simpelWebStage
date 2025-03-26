@@ -1,5 +1,5 @@
 // when entring the email in forgot password == > message A link is sent to your email
-//                                                      resend verification button
+//                                                      resend verification div
 //                                                          when Administrative Access is invalid should be a warning
 
 /**
@@ -20,7 +20,7 @@
  * !!
  * !!add foreing keydoc and add in the type
  * !!
- * !!active button add the activation status
+ * !!active div add the activation status
  * !!
  * !!select list
  * !!
@@ -47,14 +47,14 @@
  * !!
  * !!line serqui => code, numline, titre, descriptif
  * !!
- * !!add button status to change serqui
+ * !!add div status to change serqui
  * !!
  * !!
  * !!Fa1
  */
 
 // when entring the email in forgot password ==> message A link is sent to your email
-// resend verification button
+// resend verification div
 // when Administrative Access is invalid should be a warning
 
 // const [selectedDocs, setSelectedDocs] = useState([]);
@@ -115,7 +115,7 @@
 //   }
 // };
 
-// Add a button to trigger the bulk delete:
+// Add a div to trigger the bulk delete:
 
 // javascript
 // Copy
@@ -380,7 +380,7 @@
 //               </div>
 //             </div>
 //             <div className=" flex w-full justify-between">
-//               {/* Add document button/card */}
+//               {/* Add document div/card */}
 //               <div className="w-4/12">
 //                 <AddDocs onDocumentAdded={handleDocumentAdded} />
 //               </div>
@@ -519,16 +519,16 @@
 //                           </FormGroup>
 //                         </td>
 //                         <td className="p-4 flex items-center justify-center space-x-3">
-//                           {/* Toggle Button */}
+//                           {/* Toggle div */}
 
-//                           {/* View Button */}
+//                           {/* View div */}
 //                           <Link to={`/DocumentDetail/${doc.id}`}>
 //                             <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
 //                               <Eye size={18} />
 //                             </div>
 //                           </Link>
 
-//                           {/* Delete Button */}
+//                           {/* Delete div */}
 //                           <div
 //                             className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
 //                             onClick={() => handleDelete(doc.id)}

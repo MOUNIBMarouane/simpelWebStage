@@ -24,7 +24,7 @@ export const getDocuments = async () => {
     return [];
   }
 };
-export const addDocument = async (title, prefix, content, date, type) => {
+export const addDocument = async (title, date, content, type) => {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -35,14 +35,12 @@ export const addDocument = async (title, prefix, content, date, type) => {
   try {
     // Ensure primitive values are passed
     const safeTitle = title.toString();
-    const safePrefix = prefix.toString();
     const safeContent = content.toString();
     const safeDate = date.toString();
     const safeType = Number(type); // Convert to number if it's an ID
 
     console.log("Adding document...", {
       safeTitle,
-      safePrefix,
       safeContent,
       safeDate,
       safeType,
@@ -52,7 +50,6 @@ export const addDocument = async (title, prefix, content, date, type) => {
       `${API_BASE_URL}/Documents`,
       {
         title: safeTitle,
-        documentAlias: safePrefix,
         content: safeContent,
         docDate: safeDate,
         typeId: safeType,
@@ -140,3 +137,29 @@ export const updateDocument = async (idDoc, updatedData) => {
     return null;
   }
 };
+
+export const TypeDocExist = async (name) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) return null;
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Documents/valide-type`,
+      {
+        typeName: name,
+      },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating document:", error);
+    return null;
+  }
+};
+
+// export const DeleteDocType = async (id) =>{
+//   const accessToken = localStorage.get("accessToken")
+//   if (!accessToken) return null;
+
+//   try
+// }

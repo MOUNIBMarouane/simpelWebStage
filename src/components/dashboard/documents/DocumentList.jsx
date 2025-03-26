@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText,
@@ -23,6 +23,7 @@ import "react-toastify/dist/ReactToastify.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { div } from "framer-motion/client";
 
 const DocumentList = () => {
   const [documents, setDocuments] = useState([]);
@@ -38,19 +39,27 @@ const DocumentList = () => {
   const [statuscontole, setStatusControl] = useState("Opened");
   const [activedel, setActiveDel] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState([]);
+  const headerCheckboxRef = useRef(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUserAccount();
-      if (userData) {
-        setUser(userData);
-      } else {
-        navigate("/");
-      }
-    };
+  // Update the filteredDocuments calculation
+  const filteredDocuments = documents.filter((doc) => {
+    const searchLower = searchQuery.toLowerCase();
 
-    fetchUser();
-  }, [navigate]);
+    // Convert all searchable fields to strings
+    const documentKey = doc.documentKey?.toString().toLowerCase() || "";
+    const docId = doc.id?.toString().toLowerCase() || "";
+    const docType = doc.documentType?.typeName.toLowerCase() || "";
+    const docStatus = doc.status?.toString().toLowerCase() || "";
+
+    return (
+      doc.title.toLowerCase().includes(searchLower) ||
+      doc.content.toLowerCase().includes(searchLower) ||
+      documentKey.includes(searchLower) ||
+      docId.includes(searchLower) ||
+      docType.includes(searchLower) ||
+      docStatus.includes(searchLower)
+    );
+  });
 
   const fetchDocuments = async () => {
     try {
@@ -68,8 +77,34 @@ const DocumentList = () => {
   };
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUserAccount();
+      if (userData) {
+        setUser(userData);
+      } else {
+        navigate("/");
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
+
+  useEffect(() => {
     fetchDocuments();
   }, []);
+
+  useEffect(() => {
+    if (headerCheckboxRef.current) {
+      const allSelected =
+        selectedDocs.length === filteredDocuments.length &&
+        filteredDocuments.length > 0;
+      const someSelected =
+        selectedDocs.length > 0 &&
+        selectedDocs.length < filteredDocuments.length;
+      headerCheckboxRef.current.checked = allSelected;
+      headerCheckboxRef.current.indeterminate = someSelected;
+    }
+  }, [selectedDocs, filteredDocuments]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -92,67 +127,53 @@ const DocumentList = () => {
     const deletedDoc = documents.find((doc) => doc.id === id);
     setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
 
-    let undo = false;
-
-    // Custom Toast Notification
-    const toastId = toast.warn(
-      <div className="flex flex-col mt-2">
-        <p className="font-semibold text-yellow-500 flex items-center gap-1">
-          <File size={24} className="text-yellow-500" />
-          Document deleted! Undo?
+    toast.info(
+      <div className="p-4">
+        <p className="font-semibold flex items-center gap-2">
+          <Trash size={18} />
+          Delete document "{deletedDoc.title}"?
         </p>
-        <div className="flex justify-end gap-3 m-2">
+        <div className="flex gap-4 mt-4 text-white">
           <div
-            className="px-4 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition flex items-center"
-            onClick={() => {
-              setDocuments((prevDocs) => [deletedDoc, ...prevDocs]);
-              undo = true;
-              toast.dismiss(toastId);
+            className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 cursor-pointer"
+            onClick={async () => {
+              try {
+                await axios.delete(
+                  `http://localhost:5204/api/Documents/${id}`,
+                  {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                  }
+                );
+                toast.dismiss();
+                toast.success("Document deleted successfully");
+              } catch (err) {
+                console.error("Delete failed:", err);
+                setDocuments((prevDocs) => [...prevDocs, deletedDoc]);
+                toast.error("Failed to delete document");
+              }
             }}
           >
-            <Undo size={16} className="mr-1" />
-            Undo
+            Confirm
           </div>
           <div
-            className="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-500 transition flex items-center"
-            onClick={async () => {
-              if (!undo) {
-                try {
-                  await axios.delete(
-                    `http://localhost:5204/api/Documents/${id}`,
-                    { headers: { Authorization: `Bearer ${accessToken}` } }
-                  );
-                  console.log("Document deleted successfully:", id);
-                } catch (err) {
-                  console.error("Failed to delete from database:", err);
-                  setDocuments((prevDocs) => [deletedDoc, ...prevDocs]); // Restore on failure
-                }
-              }
-              toast.dismiss(toastId);
+            className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600 cursor-pointer"
+            onClick={() => {
+              setDocuments((prevDocs) => [...prevDocs, deletedDoc]);
+              toast.dismiss();
             }}
           >
-            <Check size={16} className="mr-1" />
-            Confirm
+            Cancel
           </div>
         </div>
       </div>,
-      { autoClose: 5000, closeOnClick: false, pauseOnHover: true }
-    );
-
-    // Auto-delete if not undone
-    setTimeout(async () => {
-      if (!undo) {
-        try {
-          await axios.delete(`http://localhost:5204/api/Documents/${id}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          console.log("Document permanently deleted:", id);
-        } catch (err) {
-          console.error("Failed to delete document:", err);
-          setDocuments((prevDocs) => [deletedDoc, ...prevDocs]); // Restore on failure
-        }
+      {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        toastId: `delete-doc-${id}`,
       }
-    }, 5000);
+    );
   };
 
   const handleSelectDoc = (id) => {
@@ -172,54 +193,74 @@ const DocumentList = () => {
       return;
     }
 
-    try {
-      // Delete from the database
-      await Promise.all(
-        selectedDocs.map((id) =>
-          axios.delete(`http://localhost:5204/api/Documents/${id}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          })
-        )
-      );
-
-      // Remove from the state
-      setDocuments((prevDocs) =>
-        prevDocs.filter((doc) => !selectedDocs.includes(doc.id))
-      );
-
-      // Clear selected documents
-      setSelectedDocs([]);
-
-      toast.success("Selected documents deleted successfully!");
-    } catch (err) {
-      console.error("Failed to delete documents:", err);
-      toast.error("Failed to delete documents. Please try again.");
-    }
+    toast.info(
+      <div className="p-4">
+        <p className="font-semibold">
+          Delete {selectedDocs.length} document
+          {selectedDocs.length > 1 ? "s" : ""}?
+        </p>
+        <div className="flex gap-4 mt-4 text-white">
+          <div
+            className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 cursor-pointer"
+            onClick={async () => {
+              try {
+                await Promise.all(
+                  selectedDocs.map((id) =>
+                    axios.delete(`http://localhost:5204/api/Documents/${id}`, {
+                      headers: { Authorization: `Bearer ${accessToken}` },
+                    })
+                  )
+                );
+                setDocuments((prevDocs) =>
+                  prevDocs.filter((doc) => !selectedDocs.includes(doc.id))
+                );
+                setSelectedDocs([]);
+                toast.dismiss();
+                toast.success(
+                  `${selectedDocs.length} document${
+                    selectedDocs.length > 1 ? "s" : ""
+                  } deleted`
+                );
+              } catch (err) {
+                console.error("Bulk delete failed:", err);
+                toast.error("Failed to delete documents");
+              }
+            }}
+          >
+            Confirm
+          </div>
+          <div
+            className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600 cursor-pointer"
+            onClick={() => {
+              toast.dismiss();
+            }}
+          >
+            Cancel
+          </div>
+        </div>
+      </div>,
+      {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        toastId: "bulk-delete-docs",
+      }
+    );
   };
-
-  // Filtering logic (search, status, and date)
-  const filteredDocuments = documents.filter((doc) => {
-    const matchesSearch =
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.content.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesFilter =
-      filterStatus === "all" || doc.status.toString() === filterStatus;
-
-    const docDate = new Date(doc.docDate).toISOString().split("T")[0]; // Format to YYYY-MM-DD
-
-    const matchesDate =
-      (!startDate || docDate >= startDate) && (!endDate || docDate <= endDate);
-
-    return matchesSearch && matchesFilter && matchesDate;
-  });
 
   return (
     <div className="w-full h-full max-h-full mx-auto py-2 px-4">
       <div className="w-full flex justify-between items-center mb-4 ">
         <ToastContainer
-          position="top-center"
-          toastStyle={{ textAlign: "center" }}
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
         />
       </div>
 
@@ -242,7 +283,7 @@ const DocumentList = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Search documents..."
+                  placeholder="Search documents "
                   className="pl-10 pr-4 py-2 bg-gray-700 text-white rounded-md w-full focus:outline-none focus:ring focus:ring-blue-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -250,7 +291,7 @@ const DocumentList = () => {
               </div>
             </div>
             <div className=" flex w-full justify-between">
-              {/* Add document button/card */}
+              {/* Add document div/card */}
               <div className="w-4/12">
                 <AddDocs onDocumentAdded={handleDocumentAdded} />
               </div>
@@ -258,7 +299,7 @@ const DocumentList = () => {
                 {/* Start Date Filter */}
                 <div className="flex items-center gap-2">
                   <p>Start date: </p>
-                  <div className="relative ">
+                  <div className="relative">
                     <Calendar
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       size={20}
@@ -318,7 +359,23 @@ const DocumentList = () => {
                 <thead className="bg-blue-700 text-white">
                   <tr>
                     <th className="p-4 text-left uppercase text-sm tracking-wide">
-                      #
+                      <input
+                        type="checkbox"
+                        ref={headerCheckboxRef}
+                        onChange={() => {
+                          if (
+                            selectedDocs.length === filteredDocuments.length
+                          ) {
+                            setSelectedDocs([]);
+                          } else {
+                            const allIds = filteredDocuments.map(
+                              (doc) => doc.id
+                            );
+                            setSelectedDocs(allIds);
+                          }
+                        }}
+                        className="w-6 h-6 rounded-lg"
+                      />
                     </th>
                     <th className="p-4 text-left uppercase text-sm tracking-wide">
                       Title
@@ -342,13 +399,6 @@ const DocumentList = () => {
                           }`}
                           size={28}
                         />
-                      </div>
-                      <div
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
-                        onClick={handleBulkDelete}
-                      >
-                        <Trash size={18} />
-                        Delete Selected
                       </div>
                     </th>
                   </tr>
@@ -392,16 +442,16 @@ const DocumentList = () => {
                           </FormGroup>
                         </td>
                         <td className="p-4 flex items-center justify-center space-x-3">
-                          {/* Toggle Button */}
+                          {/* Toggle div */}
 
-                          {/* View Button */}
+                          {/* View div */}
                           <Link to={`/DocumentDetail/${doc.id}`}>
                             <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
                               <Eye size={18} />
                             </div>
                           </Link>
 
-                          {/* Delete Button */}
+                          {/* Delete div */}
                           <div
                             className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
                             onClick={() => handleDelete(doc.id)}
@@ -420,6 +470,19 @@ const DocumentList = () => {
                   )}
                 </tbody>
               </motion.table>
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedDocs.length > 0 && (
+        <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 left-0 rounded-lg backdrop-blur-sm">
+          <div className="flex gap-4">
+            <div
+              className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
+              onClick={handleBulkDelete}
+            >
+              <Trash />
+              <p>Delete d ({selectedDocs.length})</p>
             </div>
           </div>
         </div>

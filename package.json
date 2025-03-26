@@ -18,6 +18,7 @@
     "@mui/styles": "^6.4.8",
     "@tailwindcss/vite": "^4.0.7",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",

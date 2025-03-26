@@ -64,19 +64,19 @@ const ResetPassword = () => {
           )}
 
           <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-center place-items-center">
-            <button type="submit" onClick={handleSubmit} className="btn">
+            <div type="submit" onClick={handleSubmit} className="btn">
               RESET
-            </button>
+            </div>
           </div>
 
           {message && (
             <div className="flex justify-center mt-4">
-              <button
+              <div
                 className="text-blue-400 underline"
                 onClick={() => navigate("/")}
               >
                 Back to Login
-              </button>
+              </div>
             </div>
           )}
         </div>

@@ -10,8 +10,7 @@ import {
 import AddLine from "../components/dashboard/documents/AddLine";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Trash, Edit } from "lucide-react";
-import {ArrowLeft ,FileText,CheckCircle,X,Info, List} from "lucide-react";
-
+import { ArrowLeft, FileText, CheckCircle, X, Info, List } from "lucide-react";
 
 const DocumentDetail = () => {
   const { idDoc } = useParams();
@@ -149,13 +148,16 @@ const DocumentDetail = () => {
 
   return (
     <div className="w-full h-full flex-col justify-center bg-slate-900 items-center text-white rounded-lg p-3  relative ">
-      {/* Back Button */}
+      {/* Back div */}
       <div className="h-1/12">
-        <Link 
-          to="/documents" 
+        <Link
+          to="/documents"
           className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors group"
         >
-          <ArrowLeft className="group-hover:-translate-x-1 transition-transform" size={18} />
+          <ArrowLeft
+            className="group-hover:-translate-x-1 transition-transform"
+            size={18}
+          />
           Back to Documents
         </Link>
       </div>
@@ -168,31 +170,43 @@ const DocumentDetail = () => {
             <FileText size={20} />
             Document Details
           </h2>
-          
+
           <div className="space-y-4">
-            <DetailItem 
-              label="Created By" 
-              value={<span className="font-medium">{document.createdBy.username}</span>} 
+            <DetailItem
+              label="Created By"
+              value={
+                <span className="font-medium">
+                  {document.createdBy.username}
+                </span>
+              }
             />
             <DetailItem label="Title" value={document.title} />
             <DetailItem label="Prefix" value={document.documentKey} />
-            <DetailItem label="Type" value={
-              <span className="px-2 py-1 bg-slate-700/50 rounded-md text-sm">
-                {document.documentType.typeName}
-              </span>
-            } />
-            <DetailItem label="Date" value={
-              new Date(document.docDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })
-            } />
-            
+            <DetailItem
+              label="Type"
+              value={
+                <span className="px-2 py-1 bg-slate-700/50 rounded-md text-sm">
+                  {document.documentType.typeName}
+                </span>
+              }
+            />
+            <DetailItem
+              label="Date"
+              value={new Date(document.docDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            />
+
             <div className="pt-4 border-t border-slate-700/50">
-              <h3 className="text-sm font-semibold text-slate-400 mb-2">Content</h3>
+              <h3 className="text-sm font-semibold text-slate-400 mb-2">
+                Content
+              </h3>
               <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">
-                {document.content || <span className="italic text-slate-500">No content</span>}
+                {document.content || (
+                  <span className="italic text-slate-500">No content</span>
+                )}
               </p>
             </div>
           </div>
@@ -208,13 +222,13 @@ const DocumentDetail = () => {
                 Document Lines
               </h2>
               <div className="w-1/2">
-              <AddLine onLineAdded={handleAddLine} />
+                <AddLine onLineAdded={handleAddLine} />
               </div>
             </div>
 
             {/* Table Container */}
             <div className="flex-1 overflow-hidden">
-              <motion.div 
+              <motion.div
                 className="h-full overflow-auto custom-scrollbar"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -223,14 +237,16 @@ const DocumentDetail = () => {
                 <table className="w-full relative border-collapse">
                   <thead className="sticky top-0 z-10">
                     <tr className="bg-slate-700/80 backdrop-blur-sm">
-                      {['Line ID', 'Article', 'Price', 'Actions'].map((header) => (
-                        <th 
-                          key={header}
-                          className="px-4 py-3 text-left text-sm font-semibold text-slate-300 first:rounded-tl-lg last:rounded-tr-lg"
-                        >
-                          {header}
-                        </th>
-                      ))}
+                      {["Line ID", "Article", "Price", "Actions"].map(
+                        (header) => (
+                          <th
+                            key={header}
+                            className="px-4 py-3 text-left text-sm font-semibold text-slate-300 first:rounded-tl-lg last:rounded-tr-lg"
+                          >
+                            {header}
+                          </th>
+                        )
+                      )}
                     </tr>
                   </thead>
 
@@ -263,7 +279,9 @@ const DocumentDetail = () => {
                                 className="w-full bg-slate-700/50 border border-slate-600 rounded px-2 py-1 text-white focus:ring-2 focus:ring-blue-500 outline-none"
                               />
                             ) : (
-                              <span className="text-slate-300">{line.article}</span>
+                              <span className="text-slate-300">
+                                {line.article}
+                              </span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -294,37 +312,45 @@ const DocumentDetail = () => {
                             <div className="flex items-center gap-2">
                               {editingLine === line.id ? (
                                 <>
-                                  <button
-                                    onClick={() => handleUpdateLine(line.id, line)}
+                                  <div
+                                    onClick={() =>
+                                      handleUpdateLine(line.id, line)
+                                    }
                                     className="p-1.5 rounded-md bg-green-600/30 hover:bg-green-600/50 transition-colors tooltip"
                                     data-tooltip="Save"
                                   >
-                                    <CheckCircle size={18} className="text-green-400" />
-                                  </button>
-                                  <button
+                                    <CheckCircle
+                                      size={18}
+                                      className="text-green-400"
+                                    />
+                                  </div>
+                                  <div
                                     onClick={() => setEditingLine(null)}
                                     className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
                                     data-tooltip="Cancel"
                                   >
                                     <X size={18} className="text-slate-300" />
-                                  </button>
+                                  </div>
                                 </>
                               ) : (
                                 <>
-                                  <button
+                                  <div
                                     onClick={() => setEditingLine(line.id)}
                                     className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
                                     data-tooltip="Edit"
                                   >
-                                    <Edit size={18} className="text-slate-300" />
-                                  </button>
-                                  <button
+                                    <Edit
+                                      size={18}
+                                      className="text-slate-300"
+                                    />
+                                  </div>
+                                  <div
                                     onClick={() => handleDeleteLine(line.id)}
                                     className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip"
                                     data-tooltip="Delete"
                                   >
                                     <Trash size={18} className="text-red-400" />
-                                  </button>
+                                  </div>
                                 </>
                               )}
                             </div>
@@ -333,7 +359,10 @@ const DocumentDetail = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="p-4 text-center text-slate-500">
+                        <td
+                          colSpan="4"
+                          className="p-4 text-center text-slate-500"
+                        >
                           No lines found.
                         </td>
                       </tr>
@@ -364,12 +393,12 @@ const DocumentDetail = () => {
               )}
               <span className="text-sm">{notification.message}</span>
               {notification.undo && (
-                <button
+                <div
                   onClick={() => handleUndo(notification)}
                   className="text-blue-400 hover:text-blue-300 text-sm font-medium underline"
                 >
                   Undo
-                </button>
+                </div>
               )}
             </motion.div>
           ))}
@@ -381,7 +410,7 @@ const DocumentDetail = () => {
 const DetailItem = ({ label, value }) => (
   <div className="flex justify-between items-center">
     <span className="text-gray-400">{label}:</span>
-    <span className="text-white">{value || '-'}</span>
+    <span className="text-white">{value || "-"}</span>
   </div>
 );
 export default DocumentDetail;

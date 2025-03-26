@@ -316,13 +316,13 @@ const ProfileEdit = () => {
                     placeholder="Current Password"
                     className="w-full bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-lg p-2"
                   />
-                  <button
-                    type="button"
+                  <div
+                    type="div"
                     onClick={togglePasswordVisibility}
                     className="text-gray-400 hover:text-blue-400 transition-colors p-1"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 bg-gray-700/30 p-3 rounded-xl hover:bg-gray-700/50 transition-colors">
                   <input
@@ -370,8 +370,8 @@ const ProfileEdit = () => {
             )}
           </div>
 
-          {/* Submit Button */}
-          <motion.button
+          {/* Submit div */}
+          <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
@@ -379,7 +379,7 @@ const ProfileEdit = () => {
           >
             <span className="relative z-10">Save Changes</span>
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 hover:opacity-20 transition-opacity" />
-          </motion.button>
+          </motion.div>
         </form>
       </div>
     </motion.div>

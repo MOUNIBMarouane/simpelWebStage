@@ -96,12 +96,12 @@ const UserDetails = () => {
 
   return (
     <div className="p-6 text-white">
-      <button
+      <div
         onClick={() => navigate("/users-list")}
         className="mb-4 flex items-center gap-2 hover:text-blue-300"
       >
         <ArrowLeft size={20} /> Back to Users
-      </button>
+      </div>
 
       <h2 className="text-3xl font-bold mb-6">User Details</h2>
       <div className="w-full flex gap-6">

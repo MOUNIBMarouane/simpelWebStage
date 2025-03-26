@@ -89,13 +89,13 @@ const UsersUpdate = () => {
   return (
     <div className="p-6 text-white">
       <div className="max-w-4xl mx-auto">
-        <button
+        <div
           onClick={() => navigate("/users-list")}
           className="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
         >
           <ArrowLeft size={20} className="inline-block" />
           <span className="text-lg font-semibold">Back to Users</span>
-        </button>
+        </div>
 
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
           <div className="mb-8">
@@ -161,13 +161,13 @@ const UsersUpdate = () => {
             </div>
 
             <div className="pt-6 border-t border-gray-700">
-              <button
+              <div
                 type="submit"
                 className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
               >
                 <Save size={20} />
                 <span>Save Changes</span>
-              </button>
+              </div>
             </div>
           </form>
         </div>
