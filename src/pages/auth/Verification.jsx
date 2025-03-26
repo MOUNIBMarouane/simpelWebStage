@@ -158,6 +158,7 @@ const Verification = () => {
           <div className="flex flex-col items-center gap-4">
             <div
               type="submit"
+              onClick={handleSubmit}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={code.join("").length !== 6 || isLoading}
             >

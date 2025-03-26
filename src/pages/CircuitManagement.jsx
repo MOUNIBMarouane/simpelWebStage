@@ -14,7 +14,8 @@ import {
   Key,
   Info,
   Check,
-  Edit
+  Edit,
+  Network,
 } from "lucide-react";
 import FormInput from "../components/FormInputs";
 
@@ -57,7 +58,7 @@ const CircuitManagement = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get("http://localhost:5204/api/circuit", {
-        headers: { Authorization: `Bearer ${accessToken}` }
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
       setCircuits(response.data);
     } catch (error) {
@@ -80,11 +81,11 @@ const CircuitManagement = () => {
 
   const handleNext = () => {
     if (!validateStep()) return;
-    setStep(prev => Math.min(prev + 1, 3));
+    setStep((prev) => Math.min(prev + 1, 3));
   };
 
   const handleBack = () => {
-    setStep(prev => Math.max(prev - 1, 1));
+    setStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleSubmit = async () => {
@@ -133,7 +134,7 @@ const CircuitManagement = () => {
       circuitKey: "",
       title: "",
       descriptif: "",
-      isActive: true
+      isActive: true,
     });
     setStep(1);
     setShowReview(false);
@@ -153,7 +154,7 @@ const CircuitManagement = () => {
               try {
                 const accessToken = localStorage.getItem("accessToken");
                 await axios.delete(`http://localhost:5204/api/circuit/${id}`, {
-                  headers: { Authorization: `Bearer ${accessToken}` }
+                  headers: { Authorization: `Bearer ${accessToken}` },
                 });
                 toast.success("Circuit deleted");
                 fetchCircuits();
@@ -357,7 +358,7 @@ const CircuitManagement = () => {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <Key size={18} className="text-blue-400" />
+                        <Network size={18} className="text-blue-400" />
                         <span className="font-semibold">{circuit.title}</span>
                         {circuit.isActive && (
                           <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
@@ -375,6 +376,7 @@ const CircuitManagement = () => {
                       </p>
                     </div>
                     {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"> */}
+                    <div className="flex gap-3">
                       <div
                         className="p-2 hover:bg-gray-800 rounded-lg text-blue-400"
                         onClick={() => handleModifyCircuit(circuit.id)}
@@ -386,7 +388,8 @@ const CircuitManagement = () => {
                         onClick={() => handleDeleteCircuit(circuit.id)}
                       >
                         <Trash size={18} />
-                      {/* </div> */}
+                        {/* </div> */}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
