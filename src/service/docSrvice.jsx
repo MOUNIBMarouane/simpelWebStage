@@ -121,6 +121,7 @@ export const updateDocumentStatus = async (idDoc, newStatus, document) => {
     return null;
   }
 };
+
 export const updateDocument = async (idDoc, updatedData) => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) return null;

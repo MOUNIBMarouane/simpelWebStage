@@ -12,68 +12,118 @@ const FormSelect = ({
   options,
   required = false,
   icon: Icon,
+  label = "Select",
 }) => {
   const handleChange = (e) => {
-    // Extract the selected value and pass it directly to the onChange handler
-    const selectedValue = e.target.value;
-    onChange(selectedValue);
+    onChange(e.target.value);
   };
 
   return (
-    <div className="w-full space-y-2">
-      <div className="relative">
-        <Box>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Type</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id={id}
-              value={value}
-              label="Age"
-              onChange={handleChange}
-              required={required}
+    <Box sx={{ minWidth: 120 }}>
+      <FormControl fullWidth>
+        <InputLabel
+          id={`${id}-label`}
+          sx={{
+            color: "rgb(148 163 184)",
+            fontSize: "1rem",
+            transform: "translate(14px, 10px) scale(1)",
+            "&.Mui-focused": {
+              // opacity: 0,
+              
+              color: "#3b82f6",
+              transform: "translate(20px, -18px) scale(0.85)",
+            },
+            "&.MuiInputLabel-shrink": {
+              transform: "translate(20px, -18px) scale(0.85)",
+              color: "rgb(148 163 184)",
+            },
+          }}
+        >
+          {label}
+        </InputLabel>
+        <Select
+          labelId={`${id}-label`}
+          id={id}
+          value={value}
+          onChange={handleChange}
+          required={required}
+          variant="outlined"
+          IconComponent={
+            Icon
+              ? () => <Icon style={{ fill: "white", right: "8px" }} />
+              : undefined
+          }
+          sx={{
+            fontSize: "0.875rem",
+            borderRadius: "6px",
+            backgroundColor: "rgb(51 65 85 / 0.5)",
+            color: "white",
+            border: "1px solid rgb(71 85 105)",
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: "none",
+            },
+            "&:hover": {
+              borderColor: "rgb(100 116 139)",
+            },
+            "&.Mui-focused": {
+              borderColor: "#3b82f6",
+              boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.5)",
+            },
+            "& .MuiSelect-select": {
+              padding: "10px",
+              paddingRight: "32px",
+            },
+            "& .MuiSvgIcon-root": {
+              color: "white",
+            },
+          }}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                marginTop: "6px",
+                borderRadius: "6px",
+                backgroundColor: "rgb(51 65 85)",
+                border: "1px solid rgb(71 85 105)",
+                boxShadow: "none",
+                "& .MuiMenuItem-root": {
+                  fontSize: "0.875rem",
+                  color: "white",
+                  padding: "10px",
+                  "&:hover": {
+                    backgroundColor: "rgb(71 85 105)",
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "rgb(29 78 216)",
+                    "&:hover": {
+                      backgroundColor: "rgb(30 64 175)",
+                    },
+                  },
+                },
+              },
+            },
+          }}
+        >
+          {options.map((option) => (
+            <MenuItem
+              key={option.value}
+              value={option.value}
               sx={{
-                fontSize: "0.875rem", // text-sm
-                borderRadius: "0.5rem", // rounded-lg
-                border: "1px solid",
-                borderColor: "gray.300", // border-gray-300
-                backgroundColor: "white", // bg-white
-                color: "gray.900", // text-gray-900
-                padding: "4px 4px", // px-4 py-2.5
-                transition: "border-color 0.3s ease, box-shadow 0.3s ease",
-                boxShadow: "0px 1px 3px rgba(0,0,0,0.1)", // shadow-sm
-                "&:hover": {
-                  borderColor: "slategray", // hover:border-slate-300
+                "&:first-of-type": {
+                  borderTopLeftRadius: "6px",
+                  borderTopRightRadius: "6px",
                 },
-                "&.Mui-focused": {
-                  borderColor: "#3B82F6", // focus:border-blue-500
-                  outline: "none",
-                  boxShadow: "0px 0px 8px rgba(59, 130, 246, 0.2)", // focus:ring-2 focus:ring-blue-500/20
-                },
-                "&.MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "gray.300",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "slategray",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#3B82F6",
-                    boxShadow: "0px 0px 8px rgba(59, 130, 246, 0.2)",
-                  },
+                "&:last-child": {
+                  borderBottomLeftRadius: "6px",
+                  borderBottomRightRadius: "6px",
                 },
               }}
             >
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </div>
-    </div>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Box>
   );
 };
 

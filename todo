@@ -46,6 +46,20 @@ todo:
     ✔ actions should be out the list (in the top) @done(25-03-24 06:34)
     
     ✔ after creation of doc should be viewed @done(25-03-24 13:55)
+
+    ✔ css - selecte list @done(25-03-26 11:34)
+
+    ✔ rederiction to details when the add is done - document @done(25-03-26 11:57)
+
+    ☐ Edit document types @started(25-03-26 13:11)
+
+    ☐ Edit document details
+
+    ☐ handler close form add - document 
+
+    ☐ add step for cerqui
+
+    ☐ add option in select - other - rederect to add new element 
     
     ☐ adding lines and sublines - step by step @started(25-03-24 13:55)
 
@@ -62,5 +76,6 @@ todo:
     ☐ user view be like user Update profile
     
     ☐ update view details user 
+
 
     ☐ // magnet:?xt=urn:btih:8a9f7f9e92254e4833aa2647e9f07e01df280dc2&dn=Mosh%20Hamedani%20-%20All%20Courses%20Pack

@@ -10,6 +10,7 @@ import ProgressBar from "./ProgressBar";
 import { format } from "date-fns";
 
 const AddDocs = ({ onDocumentAdded }) => {
+
   const [user, setUser] = useState(null);
   const [submittedDoc, setSubmittedDoc] = useState(null);
 
@@ -62,24 +63,7 @@ const AddDocs = ({ onDocumentAdded }) => {
     fetchUser();
     fetchDocumentTypes();
   }, [navigate]);
-  const StepIndicators = ({ steps, currentStep }) => {
-    return (
-      <div className="flex justify-between w-full mb-4">
-        {Array.from({ length: steps }, (_, i) => (
-          <div
-            key={i}
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-              i + 1 === currentStep
-                ? "bg-blue-500 text-white"
-                : "bg-slate-700/50 text-gray-400"
-            }`}
-          >
-            {i + 1}
-          </div>
-        ))}
-      </div>
-    );
-  };
+
   const [showForm, setShowForm] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [newDoc, setNewDoc] = useState({
@@ -172,6 +156,7 @@ const AddDocs = ({ onDocumentAdded }) => {
         onDocumentAdded(addedDoc);
         resetForm();
         setShowForm(false);
+        navigate("/DocumentDetail/" + addedDoc.id);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Error saving document");
@@ -190,6 +175,7 @@ const AddDocs = ({ onDocumentAdded }) => {
     });
     setStep(1);
     setShowReview(false);
+    setShowForm(false);
   };
 
   const handleEdit = () => {
@@ -410,7 +396,6 @@ const AddDocs = ({ onDocumentAdded }) => {
                   </div>
                 </div>
               )}
-              
             </motion.div>
           </motion.div>
         )}
