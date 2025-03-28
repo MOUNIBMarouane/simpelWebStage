@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   ArrowLeft,
@@ -16,8 +16,10 @@ import {
   Check,
   Edit,
   Network,
+  View,
 } from "lucide-react";
 import FormInput from "../components/FormInputs";
+import { RxEyeOpen } from "react-icons/rx";
 
 const CircuitManagement = () => {
   const navigate = useNavigate();
@@ -377,6 +379,14 @@ const CircuitManagement = () => {
                     </div>
                     {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"> */}
                     <div className="flex gap-3">
+                      <Link to={`/circuit-details/${circuit.id}`}>
+                        <div
+                          className="p-2 hover:bg-gray-800 rounded-lg text-blue-400"
+                          onClick={() => handleModifyCircuit(circuit.id)}
+                        >
+                          <RxEyeOpen size={18} />
+                        </div>
+                      </Link>
                       <div
                         className="p-2 hover:bg-gray-800 rounded-lg text-blue-400"
                         onClick={() => handleModifyCircuit(circuit.id)}

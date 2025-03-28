@@ -9,7 +9,7 @@ import {
 } from "../service/Lines";
 import AddLine from "../components/dashboard/documents/AddLine";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Trash, Edit } from "lucide-react";
+import { Eye, Trash, Edit, EyeIcon } from "lucide-react";
 import { ArrowLeft, FileText, CheckCircle, X, Info, List } from "lucide-react";
 import FormSelect from "../components/inputs/FormSelect";
 
@@ -23,6 +23,12 @@ const DocumentDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedDocument, setEditedDocument] = useState(null);
   const [documentTypes, setDocumentTypes] = useState([]);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    article: "",
+    prix: "",
+  });
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -35,9 +41,9 @@ const DocumentDetail = () => {
       }
       setLoading(false);
     };
+    
     const fetchDocumentTypes = async () => {
       const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axios.get(
           "http://localhost:5204/api/Documents/Types",
@@ -139,31 +145,135 @@ const DocumentDetail = () => {
     }
   };
 
-  const handleUpdateLine = async (id, updatedLine) => {
+  const handleUpdateLine = async () => {
     try {
       const updated = await updateDocumentLine(
-        id,
-        updatedLine.title,
-        updatedLine.article,
-        updatedLine.prix
+        editingLine.id,
+        editFormData.title,
+        editFormData.article,
+        editFormData.prix
       );
+
       if (updated) {
         setLines((prevLines) =>
-          prevLines.map((line) => (line.id === id ? updated : line))
+          prevLines.map((line) => (line.id === editingLine.id ? updated : line))
         );
-        setEditingLine(null);
+        setShowEditForm(false);
         addNotification({
           id: Date.now(),
-          message: `Line LINE-${id} updated successfully!`,
+          message: `Line LINE-${editingLine.id} updated successfully!`,
         });
       }
     } catch (error) {
       addNotification({
         id: Date.now(),
-        message: `Failed to update line LINE-${id}.`,
+        message: `Failed to update line LINE-${editingLine.id}.`,
       });
     }
   };
+
+  // Edit form modal component
+  const EditLineForm = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
+      onClick={() => setShowEditForm(false)}
+    >
+      <motion.div
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        className="bg-slate-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-slate-700"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-white">
+            Edit Line {editingLine?.lingeKey}
+          </h2>
+          <button
+            onClick={() => setShowEditForm(false)}
+            className="text-gray-400 hover:text-white"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateLine();
+          }}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Title
+              </label>
+              <input
+                type="text"
+                value={editFormData.title}
+                onChange={(e) =>
+                  setEditFormData((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
+                className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Article
+              </label>
+              <input
+                type="text"
+                value={editFormData.article}
+                onChange={(e) =>
+                  setEditFormData((prev) => ({
+                    ...prev,
+                    article: e.target.value,
+                  }))
+                }
+                className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={editFormData.prix}
+                onChange={(e) =>
+                  setEditFormData((prev) => ({
+                    ...prev,
+                    prix: e.target.value,
+                  }))
+                }
+                className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={() => setShowEditForm(false)}
+              className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
 
   const handleDeleteLine = (id) => {
     const lineToDelete = lines.find((line) => line.id === id);
@@ -203,7 +313,6 @@ const DocumentDetail = () => {
 
   const handleDocumentSave = async () => {
     try {
-      
       const updatedDoc = await updateDocument(document.id, editedDocument);
       setDocument(updatedDoc);
       setIsEditing(false);
@@ -227,6 +336,16 @@ const DocumentDetail = () => {
   return (
     <div className="w-full h-full flex-col justify-center bg-slate-900 items-center text-white rounded-lg p-3  relative ">
       {/* Back div */}
+      {showEditForm && (
+        <EditLineForm
+          editingLine={editingLine}
+          editFormData={editFormData}
+          setEditFormData={setEditFormData}
+          handleUpdateLine={handleUpdateLine}
+          setShowEditForm={setShowEditForm}
+        />
+      )}
+
       <div className="h-1/12">
         <Link
           to="/documents"
@@ -412,96 +531,55 @@ const DocumentDetail = () => {
                             {line.lingeKey}
                           </td>
                           <td className="px-4 py-3">
-                            {editingLine === line.id ? (
-                              <input
-                                type="text"
-                                value={line.article}
-                                onChange={(e) =>
-                                  setLines((prevLines) =>
-                                    prevLines.map((l) =>
-                                      l.id === line.id
-                                        ? { ...l, article: e.target.value }
-                                        : l
-                                    )
-                                  )
-                                }
-                                className="w-full bg-slate-700/50 border border-slate-600 rounded px-2 py-1 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                              />
-                            ) : (
-                              <span className="text-slate-300">
-                                {line.article}
-                              </span>
-                            )}
+                            <span className="text-slate-300">
+                              {line.article}
+                            </span>
                           </td>
                           <td className="px-4 py-3">
-                            {editingLine === line.id ? (
-                              <input
-                                type="number"
-                                min="0"
-                                step="any"
-                                value={line.prix}
-                                onChange={(e) =>
-                                  setLines((prevLines) =>
-                                    prevLines.map((l) =>
-                                      l.id === line.id
-                                        ? { ...l, prix: e.target.value }
-                                        : l
-                                    )
-                                  )
-                                }
-                                className="w-full bg-slate-700/50 border border-slate-600 rounded px-2 py-1 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                              />
-                            ) : (
-                              <span className="text-slate-300">
-                                ${parseFloat(line.prix).toFixed(2)}
-                              </span>
-                            )}
+                            <span className="text-slate-300">
+                              ${parseFloat(line.prix).toFixed(2)}
+                            </span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              {editingLine === line.id ? (
-                                <>
+                              <>
+                                <Link
+                                  to={`/DocumentDetail/${document.id}/${line.id}`}
+                                >
                                   <div
-                                    onClick={() =>
-                                      handleUpdateLine(line.id, line)
-                                    }
-                                    className="p-1.5 rounded-md bg-green-600/30 hover:bg-green-600/50 transition-colors tooltip"
-                                    data-tooltip="Save"
+                                    className="p-1.5 rounded-md bg-red-blue/30 hover:bg-blue-600/50 transition-colors tooltip"
+                                    data-tooltip="View"
                                   >
-                                    <CheckCircle
+                                    <EyeIcon
                                       size={18}
-                                      className="text-green-400"
+                                      className="text-blue-600"
                                     />
                                   </div>
-                                  <div
-                                    onClick={() => setEditingLine(null)}
-                                    className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
-                                    data-tooltip="Cancel"
-                                  >
-                                    <X size={18} className="text-slate-300" />
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div
-                                    onClick={() => setEditingLine(line.id)}
-                                    className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
-                                    data-tooltip="Edit"
-                                  >
-                                    <Edit
-                                      size={18}
-                                      className="text-slate-300"
-                                    />
-                                  </div>
-                                  <div
-                                    onClick={() => handleDeleteLine(line.id)}
-                                    className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip"
-                                    data-tooltip="Delete"
-                                  >
-                                    <Trash size={18} className="text-red-400" />
-                                  </div>
-                                </>
-                              )}
+                                </Link>
+                                <div
+                                  onClick={() => {
+                                    setEditingLine(line); // Pass the whole line object
+                                    setEditFormData({
+                                      title: line.title,
+                                      article: line.article,
+                                      prix: line.prix,
+                                    });
+                                    setShowEditForm(true);
+                                  }}
+                                  className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
+                                  data-tooltip="Edit"
+                                >
+                                  <Edit size={18} className="text-slate-300" />
+                                </div>
+
+                                <div
+                                  onClick={() => handleDeleteLine(line.id)}
+                                  className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip"
+                                  data-tooltip="Delete"
+                                >
+                                  <Trash size={18} className="text-red-400" />
+                                </div>
+                              </>
                             </div>
                           </td>
                         </motion.tr>

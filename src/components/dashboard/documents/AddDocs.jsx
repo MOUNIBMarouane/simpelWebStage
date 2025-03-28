@@ -10,7 +10,6 @@ import ProgressBar from "./ProgressBar";
 import { format } from "date-fns";
 
 const AddDocs = ({ onDocumentAdded }) => {
-
   const [user, setUser] = useState(null);
   const [submittedDoc, setSubmittedDoc] = useState(null);
 
@@ -69,7 +68,7 @@ const AddDocs = ({ onDocumentAdded }) => {
   const [newDoc, setNewDoc] = useState({
     title: "",
     content: "",
-    date: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+    date: format(new Date(), "yyyy-MM-dd"),
     type: "",
     typeName: "",
   });

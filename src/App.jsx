@@ -22,6 +22,7 @@ import Profile from "./pages/UserManagment/Profile";
 import AccountSettings from "./pages/UserManagment/SettingsPage";
 import SettingsPage from "./pages/UserManagment/SettingsPage";
 import CircuitManagement from "./pages/CircuitManagement";
+import CircuitDetail from "./pages/CircuitDetails";
 
 // Define the routes
 const router = createBrowserRouter([
@@ -129,6 +130,14 @@ const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <CircuitManagement />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/circuit-details/:circuitId",
+        element: (
+          // <ProtectedRoute>
+          <CircuitDetail />
           // </ProtectedRoute>
         ),
       },
