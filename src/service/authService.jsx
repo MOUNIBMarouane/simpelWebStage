@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5204/api";
+const API_BASE_URL = "http://192.168.1.94:5204/api";
 
 export const getUserRole = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -11,7 +11,7 @@ export const getUserRole = async () => {
   }
   try {
     const response = await axios.get(
-      "http://localhost:5204/api/Account/user-role",
+      "http://192.168.1.94:5204/api/Account/user-role",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -35,7 +35,7 @@ export const getUserAccount = async () => {
     console.log(accessToken);
 
     const response = await axios.get(
-      "http://localhost:5204/api/Account/user-info",
+      "http://192.168.1.94:5204/api/Account/user-info",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }

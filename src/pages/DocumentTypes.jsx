@@ -67,7 +67,7 @@ const AddDocumentType = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://localhost:5204/api/Documents/Types",
+        "http://192.168.1.94:5204/api/Documents/Types",
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setDocumentTypes(response.data);
@@ -145,8 +145,8 @@ const AddDocumentType = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const url = editingType
-        ? `http://localhost:5204/api/Documents/Types/${editingType.id}`
-        : "http://localhost:5204/api/Documents/Types";
+        ? `http://192.168.1.94:5204/api/Documents/Types/${editingType.id}`
+        : "http://192.168.1.94:5204/api/Documents/Types";
 
       const method = editingType ? "put" : "post";
 
@@ -183,7 +183,7 @@ const AddDocumentType = () => {
               try {
                 const accessToken = localStorage.getItem("accessToken");
                 await axios.delete(
-                  `http://localhost:5204/api/Documents/Types/${id}`,
+                  `http://192.168.1.94:5204/api/Documents/Types/${id}`,
                   {
                     headers: { Authorization: `Bearer ${accessToken}` },
                   }
@@ -238,7 +238,7 @@ const AddDocumentType = () => {
                 await Promise.all(
                   selectedDocs.map((id) =>
                     axios.delete(
-                      `http://localhost:5204/api/Documents/Types/${id}`,
+                      `http://192.168.1.94:5204/api/Documents/Types/${id}`,
                       {
                         headers: { Authorization: `Bearer ${accessToken}` },
                       }

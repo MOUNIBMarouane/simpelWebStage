@@ -23,21 +23,206 @@ import {
   CheckCircle,
   AlertTriangle,
   Info,
+  Clock,
+  DollarSign,
+  Tag,
+  ShoppingCart,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
 
+// Redesigned SubLineModal with modern style
+const SubLineModal = ({ isOpen, onClose, subLine, onSave, mode }) => {
+  const [formData, setFormData] = useState({
+    title: subLine?.title || "",
+    attribute: subLine?.attribute || "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Reset form data when subLine changes
+  useEffect(() => {
+    if (subLine) {
+      setFormData({
+        title: subLine.title || "",
+        attribute: subLine.attribute || "",
+      });
+    } else {
+      setFormData({
+        title: "",
+        attribute: "",
+      });
+    }
+  }, [subLine]);
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.title.trim()) {
+      errors.title = "Title is required";
+    }
+    if (!formData.attribute.trim()) {
+      errors.attribute = "Attribute is required";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear validation error when user types
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await onSave(formData);
+      onClose();
+    } catch (error) {
+      console.error(`Failed to ${mode} subline:`, error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-md z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, y: 10 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 10 }}
+        className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md border border-slate-700/50 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="border-b border-slate-700/50 bg-slate-700/30 px-5 py-4 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            {mode === "add" ? (
+              <Plus size={18} className="text-green-400" />
+            ) : (
+              <Edit size={18} className="text-blue-400" />
+            )}
+            {mode === "add" ? "Add New Subline" : "Edit Subline"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md hover:bg-slate-700/50 transition-colors"
+          >
+            <X
+              size={20}
+              className="text-slate-400 hover:text-white transition-colors"
+            />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5">
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-slate-300 mb-1 flex items-center"
+              >
+                Title <span className="text-red-400 ml-1">*</span>
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Enter subline title"
+                className={`w-full p-2.5 bg-slate-700/50 border ${
+                  validationErrors.title ? "border-red-500" : "border-slate-600"
+                } text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors`}
+              />
+              {validationErrors.title && (
+                <p className="mt-1 text-sm text-red-400 flex items-center gap-1">
+                  <span className="inline-block w-4 h-4 rounded-full bg-red-500/20 flex-shrink-0 flex items-center justify-center">
+                    <span className="text-xs">!</span>
+                  </span>
+                  {validationErrors.title}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="attribute"
+                className="block text-sm font-medium text-slate-300 mb-1 flex items-center"
+              >
+                Attribute <span className="text-red-400 ml-1">*</span>
+              </label>
+              <input
+                id="attribute"
+                name="attribute"
+                type="text"
+                value={formData.attribute}
+                onChange={handleChange}
+                placeholder="Enter attribute value"
+                className={`w-full p-2.5 bg-slate-700/50 border ${
+                  validationErrors.attribute
+                    ? "border-red-500"
+                    : "border-slate-600"
+                } text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors`}
+              />
+              {validationErrors.attribute && (
+                <p className="mt-1 text-sm text-red-400 flex items-center gap-1">
+                  <span className="inline-block w-4 h-4 rounded-full bg-red-500/20 flex-shrink-0 flex items-center justify-center">
+                    <span className="text-xs">!</span>
+                  </span>
+                  {validationErrors.attribute}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              className={`flex-1 py-3 ${
+              className={`flex-1 py-2.5 px-4 ${
                 isSubmitting
                   ? "bg-blue-600/70"
-                  : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400"
-              } text-white rounded-lg transition-all duration-200 flex justify-center items-center shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30`}
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white rounded-lg transition-colors flex justify-center items-center`}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
                   <svg
-                    className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -58,15 +243,14 @@ import {
                   </svg>
                   Saving...
                 </>
-              ) : mode === "add" ? (
-                <>
-                  <Plus size={18} className="mr-1" />
-                  Add Subline
-                </>
               ) : (
                 <>
-                  <Save size={18} className="mr-1" />
-                  Save Changes
+                  {mode === "add" ? (
+                    <Plus size={18} className="mr-2" />
+                  ) : (
+                    <Save size={18} className="mr-2" />
+                  )}
+                  {mode === "add" ? "Add Subline" : "Save Changes"}
                 </>
               )}
             </button>
@@ -77,35 +261,53 @@ import {
   );
 };
 
-// Improved DetailCard component for reusability
-const DetailCard = ({ title, details }) => (
-  <div className="bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-800/60 p-6 rounded-xl shadow-lg border border-slate-700/50 w-full h-full backdrop-blur-sm">
-    <h2 className="text-xl font-bold mb-4 text-blue-400 flex items-center gap-2">
-      {title === "Document Details" ? <FileText size={20} /> : <List size={20} />}
-      {title}
-    </h2>
-    <div className="space-y-4">
-      {Object.entries(details).map(([key, value], index) => (
-        <motion.div 
-          key={key} 
-          className="flex flex-col p-2 rounded-lg hover:bg-slate-700/20 transition-colors"
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05, duration: 0.3 }}
-        >
-          <span className="text-gray-400 text-sm mb-1">{key}</span>
-          <span className={`font-medium ${
-            key.includes('ID') ? 'text-blue-300 font-mono' : 
-            key === 'Status' ? (value === 'Opened' ? 'text-yellow-300' : 'text-green-300') :
-            key === 'Price' ? 'text-emerald-300' : 'text-white'
-          }`}>
+// Modern detail card with icon and better spacing
+const DetailCard = ({ title, icon, details }) => (
+  <div className="bg-slate-800/60 rounded-xl shadow-lg border border-slate-700/50 h-full overflow-auto">
+    <div className="border-b border-slate-700/50 bg-slate-800/80 p-4">
+      <h2 className="text-lg font-bold text-blue-400 flex items-center gap-2">
+        {icon}
+        {title}
+      </h2>
+    </div>
+    <div className="p-4 divide-y divide-slate-700/30">
+      {Object.entries(details).map(([key, value]) => (
+        <div key={key} className="py-3 first:pt-0 last:pb-0 flex flex-col">
+          <span className="text-slate-400 text-xs mb-1">{key}</span>
+          <span className="text-white font-medium text-sm">
             {value !== undefined && value !== null ? value : "-"}
           </span>
-        </motion.div>
+        </div>
       ))}
     </div>
   </div>
 );
+
+// Modern status badge component
+const StatusBadge = ({ status }) => {
+  let bgColor, textColor, icon, text;
+
+  if (status === 0) {
+    bgColor = "bg-blue-500/20";
+    textColor = "text-blue-400";
+    icon = <Eye size={14} />;
+    text = "Opened";
+  } else {
+    bgColor = "bg-green-500/20";
+    textColor = "text-green-400";
+    icon = <CheckCircle size={14} />;
+    text = "Activated";
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${bgColor} ${textColor} text-xs font-medium`}
+    >
+      {icon}
+      {text}
+    </span>
+  );
+};
 
 // Main component
 const LineDetail = () => {
@@ -115,7 +317,6 @@ const LineDetail = () => {
   const [subLines, setSubLines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [editingSubLine, setEditingSubLine] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -139,7 +340,7 @@ const LineDetail = () => {
       addNotification({
         id: Date.now(),
         message: `Failed to load data: ${error.message || "Unknown error"}`,
-        type: 'error'
+        type: "error",
       });
     } finally {
       setLoading(false);
@@ -159,15 +360,15 @@ const LineDetail = () => {
         formData.title,
         formData.attribute
       );
-      
+
       if (addedSubLine) {
         setSubLines((prevSubLines) => [...prevSubLines, addedSubLine]);
         addNotification({
           id: Date.now(),
-          message: `SubLine ${addedSubLine.title} added successfully!`,
-          type: 'success'
+          message: `SubLine "${addedSubLine.title}" added successfully!`,
+          type: "success",
         });
-        
+
         // Refresh to ensure data consistency
         await fetchData();
         return true;
@@ -177,7 +378,7 @@ const LineDetail = () => {
       addNotification({
         id: Date.now(),
         message: `Failed to add SubLine: ${error.message || "Unknown error"}`,
-        type: 'error'
+        type: "error",
       });
       throw error;
     }
@@ -189,28 +390,25 @@ const LineDetail = () => {
       if (!selectedSubLine) {
         throw new Error("No subline selected for update");
       }
-      
-      const updated = await updateDocumentSubLine(
-        selectedSubLine.id, 
-        { 
-          title: formData.title, 
-          attribute: formData.attribute 
-        }
-      );
-      
+
+      const updated = await updateDocumentSubLine(selectedSubLine.id, {
+        title: formData.title,
+        attribute: formData.attribute,
+      });
+
       if (updated) {
         setSubLines((prevSubLines) =>
-          prevSubLines.map((subLine) => 
-            (subLine.id === selectedSubLine.id ? updated : subLine)
+          prevSubLines.map((subLine) =>
+            subLine.id === selectedSubLine.id ? updated : subLine
           )
         );
-        
+
         addNotification({
           id: Date.now(),
-          message: `SubLine ${updated.title} updated successfully!`,
-          type: 'success'
+          message: `SubLine "${updated.title}" updated successfully!`,
+          type: "success",
         });
-        
+
         // Refresh to ensure data consistency
         await fetchData();
         return true;
@@ -219,8 +417,10 @@ const LineDetail = () => {
       console.error("Error updating subline:", error);
       addNotification({
         id: Date.now(),
-        message: `Failed to update SubLine: ${error.message || "Unknown error"}`,
-        type: 'error'
+        message: `Failed to update SubLine: ${
+          error.message || "Unknown error"
+        }`,
+        type: "error",
       });
       throw error;
     }
@@ -230,15 +430,15 @@ const LineDetail = () => {
   const handleDeleteSubLine = (id) => {
     const subLineToDelete = subLines.find((subLine) => subLine.id === id);
     if (!subLineToDelete) return;
-    
+
     setSubLines((prevSubLines) =>
       prevSubLines.filter((subLine) => subLine.id !== id)
     );
 
     addNotification({
       id: Date.now(),
-      message: `SubLine ${subLineToDelete.title} deleted.`,
-      type: 'info',
+      message: `SubLine "${subLineToDelete.title}" deleted.`,
+      type: "info",
       undo: () => {
         setSubLines((prev) => [...prev, subLineToDelete]);
       },
@@ -252,8 +452,10 @@ const LineDetail = () => {
           setSubLines((prev) => [...prev, subLineToDelete]);
           addNotification({
             id: Date.now(),
-            message: `Failed to delete SubLine: ${error.message || "Unknown error"}`,
-            type: 'error'
+            message: `Failed to delete SubLine: ${
+              error.message || "Unknown error"
+            }`,
+            type: "error",
           });
         }
       },
@@ -267,14 +469,14 @@ const LineDetail = () => {
       addNotification({
         id: Date.now(),
         message: "Data refreshed successfully!",
-        type: 'success'
+        type: "success",
       });
     } catch (error) {
       console.error("Error refreshing data:", error);
       addNotification({
         id: Date.now(),
         message: `Failed to refresh data: ${error.message || "Unknown error"}`,
-        type: 'error'
+        type: "error",
       });
     }
   };
@@ -312,48 +514,73 @@ const LineDetail = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
   };
 
-  if (loading)
+  // Loading state
+  if (loading) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-slate-900">
-        <div className="flex flex-col items-center text-white">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p>Loading line details...</p>
+      <div className="w-full min-h-screen flex justify-center items-center bg-slate-900">
+        <div className="flex flex-col items-center gap-4 p-8 text-white">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-t-2 border-blue-500 animate-spin"></div>
+            <div className="absolute inset-3 rounded-full border-2 border-blue-500/30"></div>
+          </div>
+          <p className="text-slate-300">Loading line details...</p>
         </div>
       </div>
     );
-    
-  if (!document || !line)
+  }
+
+  // Not found state
+  if (!document || !line) {
     return (
-      <div className="w-full h-screen flex justify-center items-center bg-slate-900">
-        <div className="text-white text-center p-6 bg-red-500/20 rounded-lg border border-red-500/50">
+      <div className="w-full min-h-screen flex justify-center items-center bg-slate-900 p-4">
+        <div className="text-white text-center p-6 bg-red-500/20 rounded-lg border border-red-500/50 max-w-md">
+          <AlertTriangle size={40} className="mx-auto mb-4 text-red-400" />
           <h2 className="text-xl font-bold mb-2">Not Found</h2>
-          <p>Document or line not found</p>
-          <Link to="/documents" className="mt-4 inline-block px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors">
+          <p className="mb-6 text-slate-300">
+            The document or line you're looking for doesn't exist or you don't
+            have permission to view it.
+          </p>
+          <Link
+            to="/documents"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
+          >
+            <ArrowLeft size={16} />
             Return to Documents
           </Link>
         </div>
       </div>
     );
+  }
 
   // Format document details for the card
   const documentDetails = {
-    "Document ID": `DOC-${document.id}`,
-    "Title": document.title,
-    "Date": document.docDate,
-    "Type": document.typeId,
-    "Status": document.status === 0 ? "Opened" : "Activated"
+    "Document ID": <span className="font-mono">{`DOC-${document.id}`}</span>,
+    Title: document.title,
+    Date: new Date(document.docDate).toLocaleDateString(),
+    Type: (
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-xs">
+        {document.documentType?.typeName || document.typeId}
+      </span>
+    ),
+    Status: <StatusBadge status={document.status} />,
   };
 
   // Format line details for the card
   const lineDetails = {
-    "Line ID": `LINE-${line.id}`,
-    "Title": line.title,
-    "Article": line.article,
-    "Price": `$${parseFloat(line.prix).toFixed(2)}`
+    "Line ID": <span className="font-mono">{`LINE-${line.id}`}</span>,
+    Title: line.title || (
+      <span className="text-slate-500 italic">Not specified</span>
+    ),
+    Article: <span className="font-medium">{line.article}</span>,
+    Price: (
+      <span className="text-green-400 font-semibold">{`$${parseFloat(
+        line.prix
+      ).toFixed(2)}`}</span>
+    ),
   };
 
   return (
-    <div className="w-full h-screen bg-slate-900 text-white p-6 overflow-hidden flex flex-col">
+    <div className="w-full h-full bg-slate-900 text-white flex flex-col overflow-hidden">
       {/* Add Subline Modal */}
       <AnimatePresence>
         {showAddModal && (
@@ -383,269 +610,299 @@ const LineDetail = () => {
       </AnimatePresence>
 
       {/* Header with navigation and refresh */}
-      <div className="mb-4 flex justify-between items-center bg-slate-800/60 rounded-lg p-3 backdrop-blur-sm">
-        <Link
-          to={`/DocumentDetail/${idDoc}`}
-          className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors group px-3 py-1.5 bg-slate-700/40 hover:bg-slate-700/70 rounded-lg"
-        >
-          <ArrowLeft
-            className="group-hover:-translate-x-1 transition-transform"
-            size={18}
-          />
-          Back to Document
-        </Link>
-        
-        <div className="flex items-center">
-          <div className="text-md text-slate-400 mr-3 hidden md:block">
-            <span className="text-blue-400 font-semibold">{line.title}</span> | Line {line.id}
-          </div>
-          <button
-            onClick={handleRefresh}
-            className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors px-3 py-1.5 rounded-md hover:bg-slate-800 bg-slate-700/40"
-            disabled={refreshing}
-          >
-            <RefreshCw
-              size={16}
-              className={`${refreshing ? "animate-spin" : ""}`}
-            />
-            {refreshing ? "Refreshing..." : "Refresh"}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content Grid - Flex with overflow */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
-        {/* Left section: Info cards */}
-        <div className="lg:col-span-1 space-y-4 overflow-auto pr-2 custom-scrollbar">
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            <DetailCard title="Document Details" details={documentDetails} />
-          </motion.div>
-          
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            <DetailCard title="Line Details" details={lineDetails} />
-          </motion.div>
-          
-          {/* Stats Card */}
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-gradient-to-br from-slate-800/90 to-slate-800/60 p-4 rounded-xl border border-slate-700/50 shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-blue-400 mb-3">Quick Stats</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-slate-700/30 p-3 rounded-lg">
-                <div className="text-slate-400 text-xs mb-1">Total Sublines</div>
-                <div className="text-2xl font-bold text-white">{subLines.length}</div>
-              </div>
-              <div className="bg-slate-700/30 p-3 rounded-lg">
-                <div className="text-slate-400 text-xs mb-1">Last Updated</div>
-                <div className="text-sm font-medium text-white">
-                  {new Date().toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Right section: Sublines with fixed header and scrollable content */}
-        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
-          <motion.div 
-            className="bg-slate-800/90 rounded-xl border border-slate-700/50 shadow-xl flex flex-col h-full overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="flex justify-between items-center p-4 border-b border-slate-700/50 sticky top-0 bg-slate-800 z-10">
-              <h2 className="text-xl font-bold text-blue-400 flex items-center gap-2">
-                <List size={20} />
-                Sublines
-              </h2>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-gradient-to-r from-green-600/80 to-emerald-600/80 hover:from-green-600 hover:to-emerald-600 rounded-lg transition-all duration-300 inline-flex items-center gap-2 shadow-lg"
+      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Link
+                to={`/DocumentDetail/${idDoc}`}
+                className="group flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
               >
-                <Plus size={16} />
-                Add Subline
-              </button>
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 group-hover:bg-slate-700 transition-colors">
+                  <ArrowLeft
+                    className="group-hover:-translate-x-0.5 transition-transform"
+                    size={16}
+                  />
+                </div>
+                <span className="font-medium">Back to Document</span>
+              </Link>
+              <div className="hidden md:flex items-center text-slate-500 ml-2">
+                <ChevronRight size={16} />
+                <span className="ml-2 text-slate-400 text-sm truncate max-w-[200px]">
+                  {line.article}
+                </span>
+              </div>
             </div>
 
-            {/* Sublines Table - Scrollable container */}
-            <div className="flex-1 overflow-auto custom-scrollbar p-4">
-              <div className="rounded-lg border border-slate-700/50 overflow-hidden">
-                <motion.table
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="w-full border-collapse text-left"
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-slate-300 hover:text-white transition-colors rounded-md hover:bg-slate-800 border border-slate-700/50"
+            >
+              <RefreshCw
+                size={16}
+                className={refreshing ? "animate-spin" : ""}
+              />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl w-full h-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        {/* Breadcrumb for mobile */}
+        <div className="md:hidden mb-4 text-sm text-slate-400">
+          <span className="inline-block max-w-[200px] truncate">
+            {line.article}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-2/3">
+          {/* Left section: Info cards */}
+          <div className="space-y-6 flex flex-col h-full">
+            <div className="h-1/4">
+              <DetailCard
+                title="Document Details"
+                icon={<FileText size={18} />}
+                details={documentDetails}
+              />
+            </div>
+            <div className="h-1/3">
+              <DetailCard
+                title="Line Details"
+                icon={<ShoppingCart size={18} />}
+                details={lineDetails}
+              />
+            </div>
+          </div>
+
+          {/* Right section: Sublines */}
+          <div className="lg:col-span-2 h-2/3">
+            <div className="bg-slate-800/60 rounded-xl border border-slate-700/50 shadow-xl h-full overflow-auto">
+              {/* Sublines header */}
+              <div className="border-b border-slate-700/50 bg-slate-800/80 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <h2 className="text-lg font-bold text-blue-400 flex items-center gap-2">
+                  <Layers size={18} />
+                  Sublines
+                  <span className="ml-2 px-1.5 py-0.5 bg-slate-700/70 text-slate-300 rounded-full text-xs">
+                    {subLines.length}
+                  </span>
+                </h2>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="sm:ml-auto px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-lg transition-colors inline-flex items-center gap-1.5 text-sm"
                 >
-                  <thead>
-                    <tr className="bg-slate-700/80 backdrop-blur-sm sticky top-0">
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-300">ID</th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-300">Title</th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-300">Attribute</th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-300 text-center w-32">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-700/50">
-                    {subLines.length > 0 ? (
-                      subLines.map((subLine, index) => (
-                        <motion.tr
+                  <Plus size={16} />
+                  Add Subline
+                </button>
+              </div>
+
+              {/* Responsive Sublines content */}
+              <div className="p-4">
+                {subLines.length > 0 ? (
+                  <>
+                    {/* Mobile: Card layout */}
+                    <div className="block sm:hidden space-y-3">
+                      {subLines.map((subLine) => (
+                        <motion.div
                           key={subLine.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
-                          className="hover:bg-slate-700/20 transition-colors"
+                          transition={{ duration: 0.3 }}
+                          className="bg-slate-700/20 rounded-lg border border-slate-700/30 overflow-hidden"
                         >
-                          <td className="px-4 py-3 text-sm font-mono text-blue-300">
-                            SL-{subLine.id}
-                          </td>
-                          <td className="px-4 py-3 text-slate-300 truncate max-w-[200px]" title={subLine.title}>
-                            {subLine.title}
-                          </td>
-                          <td className="px-4 py-3 text-slate-300 truncate max-w-[200px]" title={subLine.attribute}>
-                            {subLine.attribute}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-2">
+                          <div className="p-3 border-b border-slate-700/30 flex justify-between items-center">
+                            <span className="font-mono text-xs text-blue-300">
+                              SL-{subLine.id}
+                            </span>
+                            <div className="flex items-center gap-1">
                               <button
                                 onClick={() => {
                                   setSelectedSubLine(subLine);
                                   setShowEditModal(true);
                                 }}
-                                className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/70 transition-all hover:scale-110 tooltip group"
-                                data-tooltip="Edit"
+                                className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors"
                               >
-                                <Edit size={18} className="text-slate-300 group-hover:text-blue-300" />
+                                <Edit size={16} className="text-slate-300" />
                               </button>
                               <button
                                 onClick={() => handleDeleteSubLine(subLine.id)}
-                                className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/70 transition-all hover:scale-110 tooltip group"
-                                data-tooltip="Delete"
+                                className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors"
                               >
-                                <Trash size={18} className="text-red-400 group-hover:text-red-200" />
+                                <Trash size={16} className="text-red-400" />
                               </button>
                             </div>
-                          </td>
-                        </motion.tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="px-4 py-12 text-center">
-                          <div className="flex flex-col items-center">
-                            <div className="mb-4 p-4 rounded-full bg-slate-700/30">
-                              <List size={32} className="text-slate-400" />
-                            </div>
-                            <p className="text-slate-400 mb-2">No sublines found</p>
-                            <button
-                              onClick={() => setShowAddModal(true)}
-                              className="px-4 py-2 mt-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-sm text-white"
-                            >
-                              Add Your First Subline
-                            </button>
                           </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </motion.table>
+                          <div className="p-3 space-y-2">
+                            <div>
+                              <span className="text-xs text-slate-400 block mb-1">
+                                Title
+                              </span>
+                              <span className="text-white">
+                                {subLine.title}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-xs text-slate-400 block mb-1">
+                                Attribute
+                              </span>
+                              <span className="text-white">
+                                {subLine.attribute}
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Desktop: Table layout */}
+                    <div className="hidden sm:block overflow-x-auto">
+                      <table className="w-full border-collapse text-left">
+                        <thead>
+                          <tr className="bg-slate-700/30">
+                            <th className="px-4 py-3 text-xs font-semibold text-slate-400 rounded-tl-lg">
+                              ID
+                            </th>
+                            <th className="px-4 py-3 text-xs font-semibold text-slate-400">
+                              Title
+                            </th>
+                            <th className="px-4 py-3 text-xs font-semibold text-slate-400">
+                              Attribute
+                            </th>
+                            <th className="px-4 py-3 text-xs font-semibold text-slate-400 text-right rounded-tr-lg">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-700/30">
+                          {subLines.map((subLine) => (
+                            <motion.tr
+                              key={subLine.id}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="hover:bg-slate-700/10 transition-colors"
+                            >
+                              <td className="px-4 py-3 text-sm font-mono text-blue-300">
+                                SL-{subLine.id}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-slate-300 font-medium">
+                                {subLine.title}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-slate-300">
+                                {subLine.attribute}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSubLine(subLine);
+                                      setShowEditModal(true);
+                                    }}
+                                    className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip"
+                                    aria-label="Edit"
+                                  >
+                                    <Edit
+                                      size={16}
+                                      className="text-slate-300"
+                                    />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteSubLine(subLine.id)
+                                    }
+                                    className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip"
+                                    aria-label="Delete"
+                                  >
+                                    <Trash size={16} className="text-red-400" />
+                                  </button>
+                                </div>
+                              </td>
+                            </motion.tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                    <div className="w-16 h-16 rounded-full bg-slate-700/30 flex items-center justify-center mb-4">
+                      <Layers size={24} className="text-slate-500" />
+                    </div>
+                    <p className="text-slate-400 mb-2">No sublines found</p>
+                    <p className="text-slate-400 mb-2">No sublines found</p>
+                    <p className="text-slate-500 text-sm mb-6">
+                      This line doesn't have any sublines yet.
+                    </p>
+                    <button
+                      onClick={() => setShowAddModal(true)}
+                      className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors inline-flex items-center gap-2"
+                    >
+                      <Plus size={18} />
+                      Add Your First Subline
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      </main>
 
-      {/* Notifications */}
-      <div className="fixed bottom-6 right-6 z-50 space-y-2 max-h-[70vh] overflow-y-auto pb-2 pr-2 custom-scrollbar">
+      {/* Enhanced Notifications */}
+      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-[90vw] sm:max-w-md">
         <AnimatePresence>
           {notifications.map((notification) => (
             <motion.div
               key={notification.id}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 20, scale: 0.9 }}
-              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg backdrop-blur-sm shadow-xl
+              exit={{ opacity: 0, x: 20, scale: 0.95 }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg backdrop-blur-md border shadow-xl
                 ${
-                  notification.type === 'error'
-                    ? 'bg-gradient-to-r from-red-900/80 to-red-800/80 border-l-4 border-red-500'
-                    : notification.type === 'info'
-                    ? 'bg-gradient-to-r from-blue-900/80 to-blue-800/80 border-l-4 border-blue-500'
-                    : 'bg-gradient-to-r from-green-900/80 to-green-800/80 border-l-4 border-green-500'
+                  notification.type === "error"
+                    ? "border-red-500/50 bg-red-900/90"
+                    : notification.type === "info"
+                    ? "border-blue-500/50 bg-blue-900/90"
+                    : "border-green-500/50 bg-green-900/90"
                 }`}
             >
-              {notification.type === 'error' ? (
-                <AlertTriangle size={18} className="text-red-400 flex-shrink-0" />
-              ) : notification.type === 'info' ? (
-                <Info size={18} className="text-blue-400 flex-shrink-0" />
-              ) : (
-                <CheckCircle size={18} className="text-green-400 flex-shrink-0" />
-              )}
-              <span className="text-sm">{notification.message}</span>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                ${
+                  notification.type === "error"
+                    ? "bg-red-500/20"
+                    : notification.type === "info"
+                    ? "bg-blue-500/20"
+                    : "bg-green-500/20"
+                }`}
+              >
+                {notification.type === "error" ? (
+                  <AlertTriangle size={18} className="text-red-400" />
+                ) : notification.type === "info" ? (
+                  <Info size={18} className="text-blue-400" />
+                ) : (
+                  <CheckCircle size={18} className="text-green-400" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium line-clamp-2">
+                  {notification.message}
+                </p>
+              </div>
               {notification.undo && (
-                <div
+                <button
                   onClick={() => handleUndo(notification)}
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium px-2 py-1 bg-slate-800/60 hover:bg-slate-700/60 rounded cursor-pointer transition-colors flex-shrink-0"
+                  className="flex-shrink-0 ml-2 px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 rounded-md text-blue-400 text-sm font-medium transition-colors"
                 >
                   Undo
-                </div>
+                </button>
               )}
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
-      
-      {/* Custom scrollbar styling */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(15, 23, 42, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.3);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(59, 130, 246, 0.5);
-        }
-        
-        /* Tooltip styling */
-        .tooltip {
-          position: relative;
-        }
-        .tooltip:before {
-          content: attr(data-tooltip);
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 4px 8px;
-          background: rgba(15, 23, 42, 0.95);
-          color: white;
-          font-size: 12px;
-          white-space: nowrap;
-          border-radius: 4px;
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.2s;
-        }
-        .tooltip:hover:before {
-          opacity: 1;
-          visibility: visible;
-          bottom: calc(100% + 5px);
-        }
-      `}</style>
     </div>
   );
 };

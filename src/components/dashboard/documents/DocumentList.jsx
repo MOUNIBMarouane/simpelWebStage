@@ -139,7 +139,7 @@ const DocumentList = () => {
             onClick={async () => {
               try {
                 await axios.delete(
-                  `http://localhost:5204/api/Documents/${id}`,
+                  `http://192.168.1.94:5204/api/Documents/${id}`,
                   {
                     headers: { Authorization: `Bearer ${accessToken}` },
                   }
@@ -206,9 +206,12 @@ const DocumentList = () => {
               try {
                 await Promise.all(
                   selectedDocs.map((id) =>
-                    axios.delete(`http://localhost:5204/api/Documents/${id}`, {
-                      headers: { Authorization: `Bearer ${accessToken}` },
-                    })
+                    axios.delete(
+                      `http://192.168.1.94:5204/api/Documents/${id}`,
+                      {
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                      }
+                    )
                   )
                 );
                 setDocuments((prevDocs) =>

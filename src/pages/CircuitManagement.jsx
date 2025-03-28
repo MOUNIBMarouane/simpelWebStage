@@ -59,7 +59,7 @@ const CircuitManagement = () => {
   const fetchCircuits = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5204/api/circuit", {
+      const response = await axios.get("http://192.168.1.94:5204/api/circuit", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       setCircuits(response.data);
@@ -95,8 +95,8 @@ const CircuitManagement = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const url = editingCircuit
-        ? `http://localhost:5204/api/circuit/${editingCircuit.id}`
-        : "http://localhost:5204/api/circuit";
+        ? `http://192.168.1.94:5204/api/circuit/${editingCircuit.id}`
+        : "http://192.168.1.94:5204/api/circuit";
 
       const method = editingCircuit ? "put" : "post";
 
@@ -119,7 +119,7 @@ const CircuitManagement = () => {
   const fetchCircuitDetails = async (circuitId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5204/api/circuitdetail/bycircuit/${circuitId}`
+        `http://192.168.1.94:5204/api/circuitdetail/bycircuit/${circuitId}`
       );
       setCircuitDetails(response.data);
     } catch (error) {
@@ -155,9 +155,12 @@ const CircuitManagement = () => {
             onClick={async () => {
               try {
                 const accessToken = localStorage.getItem("accessToken");
-                await axios.delete(`http://localhost:5204/api/circuit/${id}`, {
-                  headers: { Authorization: `Bearer ${accessToken}` },
-                });
+                await axios.delete(
+                  `http://192.168.1.94:5204/api/circuit/${id}`,
+                  {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                  }
+                );
                 toast.success("Circuit deleted");
                 fetchCircuits();
               } catch (err) {

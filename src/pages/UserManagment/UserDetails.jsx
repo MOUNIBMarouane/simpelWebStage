@@ -72,7 +72,7 @@ const UserDetails = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const userResponse = await axios.get(
-          `http://localhost:5204/api/Admin/users/${userId}`,
+          `http://192.168.1.94:5204/api/Admin/users/${userId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         setUser(userResponse.data);

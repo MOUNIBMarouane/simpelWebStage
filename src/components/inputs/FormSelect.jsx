@@ -12,7 +12,7 @@ const FormSelect = ({
   options,
   required = false,
   icon: Icon,
-  label = "Select",
+  label = "",
 }) => {
   const handleChange = (e) => {
     onChange(e.target.value);
@@ -29,7 +29,7 @@ const FormSelect = ({
             transform: "translate(14px, 10px) scale(1)",
             "&.Mui-focused": {
               // opacity: 0,
-              
+
               color: "#3b82f6",
               transform: "translate(20px, -18px) scale(0.85)",
             },

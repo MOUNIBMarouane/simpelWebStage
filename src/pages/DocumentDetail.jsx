@@ -45,31 +45,30 @@ const DocumentDetail = () => {
     prix: "",
   });
 
-  // Function to fetch document details
+  // 1. Fix the fetchDocument function to correctly set the typeId
   const fetchDocument = async () => {
     setRefreshing(true);
     try {
       const data = await getDocument(idDoc);
       if (data) {
         console.log("Fetched document:", data);
+
+        // Find the correct typeId from the document data
+        // The API returns a documentType object with typeKey, typeName, etc.
+        // but might not include the id directly in documentType
+        const typeId = data.typeId; // This is the correct typeId from the API
+
         console.log("Document type info:", {
-          typeId: data.typeId,
+          typeId: typeId,
           documentType: data.documentType,
-          documentTypeId: data.documentType?.id,
         });
 
         setDocument(data);
 
-        // Initialize editedDocument with the fetched data
-        // Ensure typeId is a number, not a string
-        const typeId = data.documentType?.id || data.typeId;
-        const numericTypeId =
-          typeof typeId === "string" ? parseInt(typeId, 10) : typeId;
-
+        // Set the correct typeId when initializing the editedDocument
         setEditedDocument({
           ...data,
-          // Ensure typeId is set properly as a number
-          typeId: numericTypeId,
+          typeId: typeId, // Use the typeId directly from the API response
         });
 
         const linesData = await getDocumentLines(idDoc);
@@ -88,12 +87,13 @@ const DocumentDetail = () => {
   };
 
   // Function to fetch document types
+  // 6. Modify the fetchDocumentTypes function to better match with the API structure
   const fetchDocumentTypes = async () => {
     setIsLoadingTypes(true);
     const accessToken = localStorage.getItem("accessToken");
     try {
       const response = await axios.get(
-        "http://localhost:5204/api/Documents/Types",
+        "http://192.168.1.94:5204/api/Documents/Types",
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -101,18 +101,15 @@ const DocumentDetail = () => {
 
       console.log("Fetched document types:", response.data);
 
-      // Store the full type objects with all properties
-      // Ensure values are numbers, not strings
+      // Transform the type data to match the format needed for FormSelect
       const transformedTypes = response.data.map((type) => ({
-        // Ensure ID is a number
-        value: typeof type.id === "string" ? parseInt(type.id, 10) : type.id,
+        // FormSelect needs value and label properties
+        value: type.id,
         label: type.typeName,
+        // Keep the other properties for reference
         typeKey: type.typeKey,
         typeAttr: type.typeAttr,
-        createdAt: type.createdAt,
-        documents: type.documents,
-        // Add original ID for debugging
-        originalId: type.id,
+        typeAlias: type.typeAlias,
       }));
 
       console.log("Transformed type options:", transformedTypes);
@@ -129,7 +126,6 @@ const DocumentDetail = () => {
       setIsLoadingTypes(false);
     }
   };
-
   // Initial data loading
   useEffect(() => {
     fetchDocumentTypes();
@@ -153,36 +149,42 @@ const DocumentDetail = () => {
     };
   }, [notifications]);
 
+  // 4. Fix the handleTypeChange function to handle the typeId correctly
   const handleTypeChange = (selectedType) => {
-    // Convert selectedType to a number if it's a string (this is crucial)
-    const typeId =
-      typeof selectedType === "string"
-        ? parseInt(selectedType, 10)
-        : selectedType;
+    // Convert the selected type to a number
+    const typeId = Number(selectedType);
 
-    console.log(`Type selected: ${selectedType} (converted to: ${typeId})`);
-
-    const selectedTypeObj = documentTypes.find(
-      (type) => type.value === typeId || type.value === selectedType
+    console.log(
+      `Type selected: ${selectedType} (converted to number: ${typeId})`
     );
+
+    if (isNaN(typeId)) {
+      console.error("Invalid type ID selected:", selectedType);
+      return;
+    }
+
+    // Find the selected type object
+    const selectedTypeObj = documentTypes.find((type) => type.value === typeId);
 
     if (!selectedTypeObj) {
       console.error(
-        `Could not find type with ID: ${typeId} in options:`,
+        `Type with ID ${typeId} not found in options:`,
         documentTypes
       );
-    } else {
-      console.log("Selected type object:", selectedTypeObj);
+      return;
     }
 
+    console.log("Selected type object:", selectedTypeObj);
+
+    // Update the edited document with the new type
     setEditedDocument((prev) => ({
       ...prev,
-      typeId: typeId, // Make sure we're using the number version
+      typeId: typeId, // Store as number
       documentType: {
-        id: typeId,
-        typeName: selectedTypeObj ? selectedTypeObj.label : "",
-        typeKey: selectedTypeObj ? selectedTypeObj.typeKey : "",
-        typeAttr: selectedTypeObj ? selectedTypeObj.typeAttr : "",
+        typeName: selectedTypeObj.label,
+        typeKey: selectedTypeObj.typeKey,
+        typeAttr: selectedTypeObj.typeAttr,
+        typeAlias: selectedTypeObj.typeAlias || "",
       },
     }));
   };
@@ -243,43 +245,43 @@ const DocumentDetail = () => {
     }
   };
 
-const handleUpdateLine = async (formData) => {
-  try {
-    const updated = await updateDocumentLine(
-      editingLine.id,
-      formData.title,
-      formData.article,
-      formData.prix
-    );
-
-    if (updated) {
-      // First update the local state
-      setLines((prevLines) =>
-        prevLines.map((line) => (line.id === editingLine.id ? updated : line))
+  const handleUpdateLine = async (formData) => {
+    try {
+      const updated = await updateDocumentLine(
+        editingLine.id,
+        formData.title,
+        formData.article,
+        formData.prix
       );
 
-      // Show success notification
+      if (updated) {
+        // First update the local state
+        setLines((prevLines) =>
+          prevLines.map((line) => (line.id === editingLine.id ? updated : line))
+        );
+
+        // Show success notification
+        addNotification({
+          id: Date.now(),
+          message: `Line ${
+            updated.lingeKey || `LINE-${updated.id}`
+          } updated successfully!`,
+        });
+
+        // Add a refresh of the entire document data to fix undefined values
+        await fetchDocument();
+
+        return true;
+      }
+    } catch (error) {
+      console.error("Error updating line:", error);
       addNotification({
         id: Date.now(),
-        message: `Line ${
-          updated.lingeKey || `LINE-${updated.id}`
-        } updated successfully!`,
+        message: `Failed to update line: ${error.message || "Unknown error"}`,
       });
-
-      // Add a refresh of the entire document data to fix undefined values
-      await fetchDocument();
-
-      return true;
+      throw error;
     }
-  } catch (error) {
-    console.error("Error updating line:", error);
-    addNotification({
-      id: Date.now(),
-      message: `Failed to update line: ${error.message || "Unknown error"}`,
-    });
-    throw error;
-  }
-};
+  };
 
   const handleDeleteLine = (id) => {
     const lineToDelete = lines.find((line) => line.id === id);
@@ -307,23 +309,24 @@ const handleUpdateLine = async (formData) => {
     });
   };
 
+  // 2. Fix the handleEditToggle function to properly set the typeId
   const handleEditToggle = () => {
     if (isEditing) {
       // If we're canceling edit mode, reset to original document
       setEditedDocument({
         ...document,
-        typeId: document.documentType?.id || document.typeId,
+        typeId: document.typeId, // Use the typeId directly from document
       });
     } else {
-      // If we're entering edit mode, create a clean copy with correctly mapped fields
+      // If we're entering edit mode, create a clean copy with correctly mapped typeId
       setEditedDocument({
         ...document,
-        // Ensure typeId is mapped correctly for the dropdown
-        typeId: document.documentType?.id || document.typeId,
+        typeId: document.typeId, // Use the typeId directly from document
       });
+
       console.log("Entering edit mode with document:", {
         ...document,
-        typeId: document.documentType?.id || document.typeId,
+        typeId: document.typeId,
       });
     }
     setIsEditing(!isEditing);
@@ -334,38 +337,67 @@ const handleUpdateLine = async (formData) => {
     setEditedDocument((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 3. Fix the DetailItem for Type to render the typeId and select properly
+  const renderTypeDetailItem = () => (
+    <DetailItem
+      label="Type"
+      value={
+        isEditing ? (
+          isLoadingTypes ? (
+            <div className="flex items-center justify-center py-2">
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-400">Loading types...</span>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {/* Important debug information */}
+              <div className="p-2 bg-slate-700/80 rounded text-xs text-blue-300 mb-2">
+                Document typeId: {document.typeId} | editedDocument typeId:{" "}
+                {editedDocument.typeId}
+              </div>
+
+              <FormSelect
+                id="typeId"
+                value={editedDocument.typeId}
+                onChange={handleTypeChange}
+                options={documentTypes}
+              />
+            </div>
+          )
+        ) : (
+          <span className="px-2 py-1 bg-slate-700/50 rounded-md text-sm">
+            {document.documentType?.typeName || "Unknown"}
+            <span className="ml-2 text-xs text-gray-500">
+              (TypeID: {document.typeId || "N/A"})
+            </span>
+          </span>
+        )
+      }
+    />
+  );
+
   const handleDocumentSave = async () => {
     try {
-      // Ensure typeId is a number, not a string
-      const typeId =
-        typeof editedDocument.typeId === "string"
-          ? parseInt(editedDocument.typeId, 10)
-          : editedDocument.typeId;
+      // Ensure typeId is a number (not a string)
+      const typeId = Number(editedDocument.typeId);
 
-      // Prepare data for update with properly formatted type ID
-      const cleanedDocument = {
-        id: editedDocument.id,
+      if (isNaN(typeId)) {
+        throw new Error("Type ID must be a valid number");
+      }
+
+      // Create a minimal update object with only the needed fields
+      const updateData = {
         title: editedDocument.title,
         content: editedDocument.content,
-        documentKey: editedDocument.documentKey,
-        docDate: editedDocument.docDate,
-        // Ensure we're sending typeId as a number
         typeId: typeId,
-        status: editedDocument.status || document.status,
       };
 
-      // Log the exact payload we're sending
-      console.log("Saving document with data:", cleanedDocument);
-      console.log(
-        `TypeId type: ${typeof cleanedDocument.typeId}, value: ${
-          cleanedDocument.typeId
-        }`
-      );
+      console.log("Updating document with data:", updateData);
 
-      // Make the actual API call
-      await updateDocument(document.id, cleanedDocument);
+      // Call the update function with the document ID and update data
+      await updateDocument(document.id, updateData);
 
-      // After successful update, refresh the document to get the latest data
+      // Exit edit mode
       setIsEditing(false);
 
       // Show success notification
@@ -374,16 +406,15 @@ const handleUpdateLine = async (formData) => {
         message: "Document updated successfully!",
       });
 
-      // Refresh the document data to show the latest changes
+      // Refresh to show the latest changes
       await fetchDocument();
     } catch (error) {
       console.error("Error updating document:", error);
-      // Show more detailed error information
-      const errorMessage =
-        error.response?.data || error.message || "Unknown error";
       addNotification({
         id: Date.now(),
-        message: `Failed to update document: ${errorMessage}`,
+        message: `Failed to update document: ${
+          error.message || "Unknown error"
+        }`,
       });
     }
   };
@@ -413,7 +444,7 @@ const handleUpdateLine = async (formData) => {
     return <p className="text-white text-center">Document not found</p>;
 
   return (
-    <div className="w-full h-full flex-col justify-center bg-slate-900 items-center text-white rounded-lg p-3 relative">
+    <div className="w-full h-full flex flex-col bg-slate-900 text-white pb-16 overflow-hidden">
       {/* Edit Line Modal */}
       <AnimatePresence>
         {showEditForm && (
@@ -426,271 +457,250 @@ const handleUpdateLine = async (formData) => {
         )}
       </AnimatePresence>
 
-      {/* Back Navigation */}
-      <div className="h-1/12 mb-4 flex justify-between items-center">
-        <Link
-          to="/documents"
-          className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors group"
-        >
-          <ArrowLeft
-            className="group-hover:-translate-x-1 transition-transform"
-            size={18}
-          />
-          Back to Documents
-        </Link>
+      {/* Page Header with Navigation */}
+      <div className="sticky top-0 z-20 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 mb-4">
+        <div className="flex justify-between items-center py-3 px-4 max-w-7xl mx-auto">
+          <Link
+            to="/documents"
+            className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors group"
+          >
+            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 group-hover:bg-slate-700 transition-colors">
+              <ArrowLeft
+                className="group-hover:-translate-x-0.5 transition-transform"
+                size={18}
+              />
+            </div>
+            <span className="font-medium">Back to Documents</span>
+          </Link>
 
-        <button
-          onClick={handleRefresh}
-          className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors px-3 py-1 rounded-md hover:bg-slate-800"
-          disabled={refreshing}
-        >
-          <RefreshCw
-            size={16}
-            className={`${refreshing ? "animate-spin" : ""}`}
-          />
-          Refresh
-        </button>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors px-3 py-1.5 rounded-md hover:bg-slate-800 border border-slate-700/50"
+          >
+            <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+        </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-10/12">
-        {/* Document Details Card */}
-        <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 shadow-xl relative">
-          <div className="flex flex-col justify-between mb-4">
-            <h2 className="text-xl font-bold flex items-center gap-2 text-blue-400">
-              <FileText size={20} />
-              Document Details
-            </h2>
-            <div className="">
-              {isEditing ? (
-                <div className="w-full flex absolute bottom-0 left-0 justify-end gap-3 px-6 my-3">
-                  <button
-                    onClick={handleDocumentSave}
-                    className="px-3 py-1.5 text-sm bg-green-600/30 hover:bg-green-600/50 rounded-md flex items-center gap-1"
-                  >
-                    <CheckCircle size={16} className="text-green-400" />
-                    Save
-                  </button>
-                  <button
-                    onClick={handleEditToggle}
-                    className="px-3 py-1.5 text-sm bg-slate-600/30 hover:bg-slate-600/50 rounded-md flex items-center gap-1"
-                  >
-                    <X size={16} className="text-slate-300" />
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleEditToggle}
-                  className="absolute top-4 right-4 p-2.5 bg-slate-600 hover:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
-                >
-                  <Edit size={16} className="text-slate-300" />
-                </button>
-              )}
-            </div>
-          </div>
+      {/* Main Content */}
+      <div className="flex-1 px-3 sm:px-4 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+          {/* Document Details Panel */}
+          <div className="lg:col-span-4 xl:col-span-3">
+            <div className="bg-slate-800/60 rounded-xl border border-slate-700/50 shadow-xl overflow-hidden h-full">
+              <div className="relative">
+                <div className="p-4 sm:p-5 border-b border-slate-700/50 bg-slate-800/80">
+                  <h2 className="text-lg font-bold flex items-center gap-2 text-blue-400">
+                    <FileText size={20} />
+                    Document Details
+                  </h2>
 
-          <div className="space-y-4">
-            {document.createdBy && (
-              <DetailItem
-                label="Created By"
-                value={
-                  <span className="font-medium">
-                    {document.createdBy.username}
-                  </span>
-                }
-              />
-            )}
-
-            <DetailItem
-              label="Title"
-              value={
-                isEditing ? (
-                  <input
-                    type="text"
-                    name="title"
-                    value={editedDocument?.title || ""}
-                    onChange={handleDocumentChange}
-                    className="w-full p-2 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  />
-                ) : (
-                  document.title
-                )
-              }
-            />
-
-            <DetailItem
-              label="Document Key"
-              value={
-                isEditing ? (
-                  <input
-                    type="text"
-                    name="documentKey"
-                    value={editedDocument?.documentKey || ""}
-                    onChange={handleDocumentChange}
-                    className="w-full p-2 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-                  />
-                ) : (
-                  document.documentKey
-                )
-              }
-            />
-
-            <DetailItem
-              label="Type"
-              value={
-                isEditing ? (
-                  isLoadingTypes ? (
-                    <div className="flex items-center justify-center py-2">
-                      <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                      <span className="ml-2 text-gray-400">
-                        Loading types...
-                      </span>
-                    </div>
+                  {/* Edit/Save/Cancel Buttons */}
+                  {!isEditing ? (
+                    <button
+                      onClick={handleEditToggle}
+                      className="absolute top-4 right-4 p-2 bg-slate-700 hover:bg-slate-600 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                    >
+                      <Edit size={16} className="text-slate-300" />
+                    </button>
                   ) : (
-                    <div className="space-y-2">
-                      <FormSelect
-                        id="typeId"
-                        value={editedDocument.typeId}
-                        onChange={handleTypeChange}
-                        options={documentTypes}
-                      />
-                      {editedDocument.typeId && (
-                        <div className="mt-1 p-2 bg-slate-700/80 rounded text-xs text-gray-300 flex flex-col gap-1">
-                          <div className="flex items-center justify-between">
-                            <span>Type ID:</span>
-                            <span className="font-mono">
-                              {editedDocument.typeId} (
-                              {typeof editedDocument.typeId})
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>Type Name:</span>
-                            <span>
-                              {editedDocument.documentType?.typeName ||
-                                "Unknown"}
-                            </span>
-                          </div>
-                          {documentTypes.length > 0 && (
-                            <div className="text-blue-300 text-2xs">
-                              {documentTypes.some(
-                                (t) => t.value === editedDocument.typeId
-                              )
-                                ? "✓ ID matches available options"
-                                : "⚠️ ID not found in available options"}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                    <div className="absolute top-3 right-3 flex items-center gap-2">
+                      <button
+                        onClick={handleEditToggle}
+                        className="p-2 bg-slate-700 hover:bg-slate-600 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      >
+                        <X size={16} className="text-slate-300" />
+                      </button>
+                      <button
+                        onClick={handleDocumentSave}
+                        className="p-2 bg-green-600/30 hover:bg-green-600/50 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      >
+                        <CheckCircle size={16} className="text-green-400" />
+                      </button>
                     </div>
-                  )
-                ) : (
-                  <span className="px-2 py-1 bg-slate-700/50 rounded-md text-sm">
-                    {document.documentType?.typeName || "Unknown"}
-                    {document.documentType?.id && (
-                      <span className="ml-2 text-xs text-gray-500">
-                        (ID: {document.documentType.id}, TypeID:{" "}
-                        {document.typeId || "N/A"})
-                      </span>
-                    )}
-                  </span>
-                )
-              }
-            />
-
-            <div className="pt-4 border-t border-slate-700/50">
-              <h3 className="text-sm font-semibold text-slate-400 mb-2">
-                Content
-              </h3>
-              {isEditing ? (
-                <textarea
-                  name="content"
-                  value={editedDocument?.content || ""}
-                  onChange={handleDocumentChange}
-                  className="w-full p-2 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none min-h-[100px]"
-                />
-              ) : (
-                <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">
-                  {document.content || (
-                    <span className="italic text-slate-500">No content</span>
                   )}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+                </div>
 
-        {/* Lines Section */}
-        <div className="md:col-span-3 bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 shadow-xl">
-          <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl w-1/2 font-bold flex items-center gap-2 text-blue-400">
-                <List size={20} />
-                Document Lines
-              </h2>
-              <div className="w-1/2">
-                <AddLine onLineAdded={handleAddLine} />
+                {/* Scrollable Content Area */}
+                <div className="p-4 sm:p-5 space-y-4 overflow-y-auto max-h-[calc(100vh-13rem)]">
+                  {document.createdBy && (
+                    <DetailItem
+                      label="Created By"
+                      value={
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold">
+                            {document.createdBy.username
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                          <span className="font-medium">
+                            {document.createdBy.username}
+                          </span>
+                        </div>
+                      }
+                    />
+                  )}
+
+                  <DetailItem
+                    label="Title"
+                    value={
+                      isEditing ? (
+                        <input
+                          type="text"
+                          name="title"
+                          value={editedDocument?.title || ""}
+                          onChange={handleDocumentChange}
+                          className="w-full p-2 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+                        />
+                      ) : (
+                        <div className="px-3 py-2 bg-slate-700/20 rounded-md">
+                          {document.title}
+                        </div>
+                      )
+                    }
+                  />
+
+                  <DetailItem
+                    label="Document Key"
+                    value={
+                      isEditing ? (
+                        <input
+                          type="text"
+                          name="documentKey"
+                          value={editedDocument?.documentKey || ""}
+                          onChange={handleDocumentChange}
+                          className="w-full p-2 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+                        />
+                      ) : (
+                        <div className="font-mono text-sm bg-slate-700/20 px-3 py-2 rounded-md">
+                          {document.documentKey}
+                        </div>
+                      )
+                    }
+                  />
+
+                  <DetailItem
+                    label="Type"
+                    value={
+                      isEditing ? (
+                        isLoadingTypes ? (
+                          <div className="flex items-center justify-center py-3">
+                            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <span className="ml-2 text-gray-400">
+                              Loading types...
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <FormSelect
+                              id="typeId"
+                              value={editedDocument.typeId}
+                              onChange={handleTypeChange}
+                              options={documentTypes}
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="px-3 py-2 bg-slate-700/20 rounded-md flex items-center gap-2">
+                          <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">
+                            {document.typeId}
+                          </span>
+                          <span>
+                            {document.documentType?.typeName || "Unknown"}
+                          </span>
+                        </div>
+                      )
+                    }
+                  />
+
+                  <div className="pt-3 border-t border-slate-700/50">
+                    <h3 className="text-sm font-semibold text-slate-400 mb-2 flex items-center">
+                      <span>Content</span>
+                      {!isEditing && document.content && (
+                        <span className="ml-2 text-xs px-2 py-0.5 bg-slate-700/50 rounded-full">
+                          {document.content.length} chars
+                        </span>
+                      )}
+                    </h3>
+                    {isEditing ? (
+                      <textarea
+                        name="content"
+                        value={editedDocument?.content || ""}
+                        onChange={handleDocumentChange}
+                        className="w-full p-3 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none min-h-[120px] font-mono text-sm"
+                      />
+                    ) : (
+                      <div className="p-3 bg-slate-700/20 rounded-md text-slate-300 whitespace-pre-wrap leading-relaxed text-sm max-h-[200px] overflow-y-auto custom-scrollbar">
+                        {document.content || (
+                          <span className="italic text-slate-500">
+                            No content
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {isEditing && (
+                    <div className="pt-3 border-t border-slate-700/50 flex justify-end">
+                      <button
+                        onClick={handleDocumentSave}
+                        className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-md flex items-center gap-2 transition-colors"
+                      >
+                        <CheckCircle size={16} className="text-green-400" />
+                        Save Changes
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Table Container */}
-            <div className="flex-1 overflow-hidden">
-              <motion.div
-                className="h-full overflow-auto custom-scrollbar"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <table className="w-full relative border-collapse">
-                  <thead className="sticky top-0 z-10">
-                    <tr className="bg-slate-700/80 backdrop-blur-sm">
-                      {["Line ID", "Article", "Price", "Actions"].map(
-                        (header) => (
-                          <th
-                            key={header}
-                            className="px-4 py-3 text-left text-sm font-semibold text-slate-300 first:rounded-tl-lg last:rounded-tr-lg"
-                          >
-                            {header}
-                          </th>
-                        )
-                      )}
-                    </tr>
-                  </thead>
+          {/* Document Lines Panel */}
+          <div className="lg:col-span-8 xl:col-span-9">
+            <div className="bg-slate-800/60 rounded-xl border border-slate-700/50 shadow-xl overflow-hidden h-full flex flex-col">
+              {/* Header */}
+              <div className="p-4 sm:p-5 border-b border-slate-700/50 bg-slate-800/80">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <h2 className="text-lg font-bold flex items-center gap-2 text-blue-400">
+                    <List size={20} />
+                    Document Lines
+                    <span className="ml-2 text-xs px-2 py-0.5 bg-slate-700/50 rounded-full text-slate-300">
+                      {lines.length}
+                    </span>
+                  </h2>
+                  <div className="sm:ml-auto">
+                    <AddLine onLineAdded={handleAddLine} />
+                  </div>
+                </div>
+              </div>
 
-                  <tbody className="divide-y divide-slate-700/50">
+              {/* Table Container with better overflow handling */}
+              <div className="flex-1 overflow-hidden">
+                <div className="h-full overflow-auto custom-scrollbar p-4 sm:p-5">
+                  {/* Mobile View (Card-based) */}
+                  <div className="md:hidden space-y-3">
                     {lines.length > 0 ? (
                       lines.map((line) => (
-                        <motion.tr
+                        <motion.div
                           key={line.id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="hover:bg-slate-700/20 transition-colors group"
+                          className="bg-slate-700/20 rounded-lg border border-slate-700/30 overflow-hidden"
                         >
-                          <td className="px-4 py-3 text-sm font-mono text-blue-300">
-                            {line.lingeKey || `LINE-${line.id}`}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-slate-300">
-                              {line.article}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-slate-300">
-                              ${parseFloat(line.prix).toFixed(2)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                          <div className="flex justify-between items-center p-3 bg-slate-700/30">
+                            <div className="font-mono text-sm text-blue-300">
+                              {line.lingeKey || `LINE-${line.id}`}
+                            </div>
+                            <div className="flex items-center gap-1">
                               <Link
                                 to={`/DocumentDetail/${document.id}/${line.id}`}
                               >
-                                <div
-                                  className="p-1.5 rounded-md bg-blue-600/30 hover:bg-blue-600/50 transition-colors tooltip"
-                                  data-tooltip="View"
-                                >
+                                <div className="p-1.5 rounded-md bg-blue-600/30 hover:bg-blue-600/50 transition-colors">
                                   <EyeIcon
-                                    size={18}
+                                    size={16}
                                     className="text-blue-400"
                                   />
                                 </div>
@@ -705,65 +715,210 @@ const handleUpdateLine = async (formData) => {
                                   });
                                   setShowEditForm(true);
                                 }}
-                                className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip cursor-pointer"
-                                data-tooltip="Edit"
+                                className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors cursor-pointer"
                               >
-                                <Edit size={18} className="text-slate-300" />
+                                <Edit size={16} className="text-slate-300" />
                               </div>
-
                               <div
                                 onClick={() => handleDeleteLine(line.id)}
-                                className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip cursor-pointer"
-                                data-tooltip="Delete"
+                                className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors cursor-pointer"
                               >
-                                <Trash size={18} className="text-red-400" />
+                                <Trash size={16} className="text-red-400" />
                               </div>
                             </div>
-                          </td>
-                        </motion.tr>
+                          </div>
+                          <div className="p-3 space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-slate-400 text-xs">
+                                Article:
+                              </span>
+                              <span className="text-slate-200 font-medium">
+                                {line.article}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-400 text-xs">
+                                Price:
+                              </span>
+                              <span className="text-slate-200 font-medium">
+                                ${parseFloat(line.prix).toFixed(2)}
+                              </span>
+                            </div>
+                            {line.title && (
+                              <div className="flex justify-between">
+                                <span className="text-slate-400 text-xs">
+                                  Title:
+                                </span>
+                                <span className="text-slate-200 font-medium">
+                                  {line.title}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
                       ))
                     ) : (
-                      <tr>
-                        <td
-                          colSpan="4"
-                          className="p-4 text-center text-slate-500"
-                        >
-                          No lines found.
-                        </td>
-                      </tr>
+                      <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-700/30 flex items-center justify-center mb-4">
+                          <List size={24} className="text-slate-500" />
+                        </div>
+                        <p className="text-slate-400 mb-2">
+                          No document lines found
+                        </p>
+                        <p className="text-slate-500 text-sm">
+                          Add a new line to get started
+                        </p>
+                      </div>
                     )}
-                  </tbody>
-                </table>
-              </motion.div>
+                  </div>
+
+                  {/* Desktop Table */}
+                  <div className="hidden md:block">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-slate-700/30">
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-slate-400 rounded-tl-lg w-1/6">
+                            Line ID
+                          </th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-slate-400 w-1/2">
+                            Article
+                          </th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-slate-400 w-1/6">
+                            Price
+                          </th>
+                          <th className="px-4 py-3 text-right text-sm font-semibold text-slate-400 rounded-tr-lg w-1/6">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-700/30">
+                        {lines.length > 0 ? (
+                          lines.map((line) => (
+                            <motion.tr
+                              key={line.id}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="hover:bg-slate-700/10 transition-colors"
+                            >
+                              <td className="px-4 py-3 text-sm font-mono text-blue-300">
+                                {line.lingeKey || `LINE-${line.id}`}
+                              </td>
+                              <td className="px-4 py-3 text-slate-300 font-medium">
+                                {line.article}
+                                {line.title && (
+                                  <div className="text-xs text-slate-400 mt-1">
+                                    {line.title}
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="font-medium text-slate-200">
+                                  ${parseFloat(line.prix).toFixed(2)}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center justify-end gap-2">
+                                  <Link
+                                    to={`/DocumentDetail/${document.id}/${line.id}`}
+                                  >
+                                    <div
+                                      className="p-1.5 rounded-md bg-blue-600/30 hover:bg-blue-600/50 transition-colors tooltip"
+                                      data-tooltip="View"
+                                    >
+                                      <EyeIcon
+                                        size={18}
+                                        className="text-blue-400"
+                                      />
+                                    </div>
+                                  </Link>
+                                  <div
+                                    onClick={() => {
+                                      setEditingLine(line);
+                                      setEditFormData({
+                                        title: line.title || "",
+                                        article: line.article || "",
+                                        prix: line.prix || "",
+                                      });
+                                      setShowEditForm(true);
+                                    }}
+                                    className="p-1.5 rounded-md bg-slate-600/30 hover:bg-slate-600/50 transition-colors tooltip cursor-pointer"
+                                    data-tooltip="Edit"
+                                  >
+                                    <Edit
+                                      size={18}
+                                      className="text-slate-300"
+                                    />
+                                  </div>
+                                  <div
+                                    onClick={() => handleDeleteLine(line.id)}
+                                    className="p-1.5 rounded-md bg-red-600/30 hover:bg-red-600/50 transition-colors tooltip cursor-pointer"
+                                    data-tooltip="Delete"
+                                  >
+                                    <Trash size={18} className="text-red-400" />
+                                  </div>
+                                </div>
+                              </td>
+                            </motion.tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="4" className="px-4 py-8 text-center">
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="w-16 h-16 rounded-full bg-slate-700/30 flex items-center justify-center mb-4">
+                                  <List size={24} className="text-slate-500" />
+                                </div>
+                                <p className="text-slate-400 mb-2">
+                                  No document lines found
+                                </p>
+                                <p className="text-slate-500 text-sm">
+                                  Add a new line to get started
+                                </p>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Notifications */}
-      <div className="fixed bottom-6 right-6 z-50 space-y-2 h-1/12">
+      {/* Enhanced Notification System */}
+      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-[90vw] sm:max-w-md">
         <AnimatePresence>
           {notifications.map((notification) => (
             <motion.div
               key={notification.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="flex items-center gap-3 px-4 py-2.5 rounded-lg backdrop-blur-sm border border-slate-700/50 bg-slate-800/80 shadow-xl"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 20, scale: 0.95 }}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg backdrop-blur-lg border border-slate-700/50 bg-slate-800/90 shadow-xl"
             >
               {notification.undo ? (
-                <Info size={18} className="text-blue-400" />
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Info size={18} className="text-blue-400" />
+                </div>
               ) : (
-                <CheckCircle size={18} className="text-green-400" />
+                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <CheckCircle size={18} className="text-green-400" />
+                </div>
               )}
-              <span className="text-sm">{notification.message}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium line-clamp-2">
+                  {notification.message}
+                </p>
+              </div>
               {notification.undo && (
-                <div
+                <button
                   onClick={() => handleUndo(notification)}
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium underline cursor-pointer"
+                  className="flex-shrink-0 ml-2 px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 rounded-md text-blue-400 text-sm font-medium transition-colors"
                 >
                   Undo
-                </div>
+                </button>
               )}
             </motion.div>
           ))}
@@ -780,6 +935,7 @@ const DetailItem = ({ label, value }) => (
   </div>
 );
 
+// Updated EditLineModal with enhanced UI/UX
 const EditLineModal = ({ isOpen, onClose, line, onUpdate }) => {
   const [formData, setFormData] = useState({
     title: line?.title || "",
@@ -860,53 +1016,40 @@ const EditLineModal = ({ isOpen, onClose, line, onUpdate }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm z-50"
+      className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm z-50 p-4"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.95 }}
-        className="bg-slate-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-slate-700"
+        initial={{ scale: 0.95, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 20 }}
+        className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md border border-slate-700 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-white">
+        <div className="border-b border-slate-700/50 bg-slate-700/30 px-5 py-4 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Edit size={18} className="text-blue-400" />
             Edit Line {line?.lingeKey || `LINE-${line?.id}`}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-md hover:bg-slate-700/50 transition-colors"
           >
-            <X size={24} />
+            <X
+              size={20}
+              className="text-slate-400 hover:text-white transition-colors"
+            />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="p-5">
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-300 mb-1"
-              >
-                Title
-              </label>
-              <input
-                id="title"
-                name="title"
-                type="text"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label
                 htmlFor="article"
-                className="block text-sm font-medium text-gray-300 mb-1"
+                className="block text-sm font-medium text-slate-300 mb-1 flex items-center"
               >
-                Article <span className="text-red-400">*</span>
+                Article <span className="text-red-400 ml-1">*</span>
               </label>
               <input
                 id="article"
@@ -918,10 +1061,13 @@ const EditLineModal = ({ isOpen, onClose, line, onUpdate }) => {
                   validationErrors.article
                     ? "border-red-500"
                     : "border-slate-600"
-                } text-white rounded focus:ring-blue-500 outline-none`}
+                } text-white rounded focus:ring-blue-500 outline-none transition-colors`}
               />
               {validationErrors.article && (
-                <p className="mt-1 text-sm text-red-400">
+                <p className="mt-1 text-sm text-red-400 flex items-center gap-1">
+                  <span className="inline-block w-4 h-4 rounded-full bg-red-500/20 flex-shrink-0 flex items-center justify-center">
+                    <span className="text-xs">!</span>
+                  </span>
                   {validationErrors.article}
                 </p>
               )}
@@ -930,41 +1076,68 @@ const EditLineModal = ({ isOpen, onClose, line, onUpdate }) => {
             <div>
               <label
                 htmlFor="prix"
-                className="block text-sm font-medium text-gray-300 mb-1"
+                className="block text-sm font-medium text-slate-300 mb-1 flex items-center"
               >
-                Price <span className="text-red-400">*</span>
+                Price <span className="text-red-400 ml-1">*</span>
               </label>
-              <input
-                id="prix"
-                name="prix"
-                type="number"
-                step="0.01"
-                value={formData.prix}
-                onChange={handleChange}
-                className={`w-full p-2.5 bg-slate-700/50 border ${
-                  validationErrors.prix ? "border-red-500" : "border-slate-600"
-                } text-white rounded focus:ring-blue-500 outline-none`}
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  $
+                </span>
+                <input
+                  id="prix"
+                  name="prix"
+                  type="number"
+                  step="0.01"
+                  value={formData.prix}
+                  onChange={handleChange}
+                  className={`w-full pl-7 pr-3 py-2.5 bg-slate-700/50 border ${
+                    validationErrors.prix
+                      ? "border-red-500"
+                      : "border-slate-600"
+                  } text-white rounded focus:ring-blue-500 outline-none transition-colors`}
+                />
+              </div>
               {validationErrors.prix && (
-                <p className="mt-1 text-sm text-red-400">
+                <p className="mt-1 text-sm text-red-400 flex items-center gap-1">
+                  <span className="inline-block w-4 h-4 rounded-full bg-red-500/20 flex-shrink-0 flex items-center justify-center">
+                    <span className="text-xs">!</span>
+                  </span>
                   {validationErrors.prix}
                 </p>
               )}
             </div>
+
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-slate-300 mb-1"
+              >
+                Title <span className="text-xs text-slate-500">(Optional)</span>
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full p-2.5 bg-slate-700/50 border border-slate-600 text-white rounded focus:ring-blue-500 outline-none"
+              />
+            </div>
           </div>
 
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-3 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              className="flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
               disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className={`flex-1 py-2.5 ${
+              className={`flex-1 py-2.5 px-4 ${
                 isSubmitting
                   ? "bg-blue-600/70"
                   : "bg-blue-500 hover:bg-blue-600"
@@ -1005,4 +1178,5 @@ const EditLineModal = ({ isOpen, onClose, line, onUpdate }) => {
     </motion.div>
   );
 };
+
 export default DocumentDetail;

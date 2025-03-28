@@ -53,19 +53,19 @@ todo:
     
     ✔ 7ayed type alias min steps - and review at the end of add - notification @done(25-03-28 06:28)
     
-    ☐ edit document -- in document details - handel type select 
+    ✔ edit document -- in document details - handel type select @done(25-03-28 11:28)
 
     ☐ add user - be exactly like sign up
 
-    ☐ previliges 
+    ✘ previliges @cancelled(25-03-28 11:30)`
 
-    ☐ dwira 3la css auth 
+    ☐ dwira 3la css auth @started(25-03-28 11:28)
 
-    ☐ Edit document types @started(25-03-26 13:11)
+    ✔ Edit document types @started(25-03-26 13:11) @done(25-03-28 11:28) @lasted(1d22h17m45s)
 
     ☐ Edit document details
 
-    ☐ handler close form add - document 
+    ✔ handler close form add - document @done(25-03-28 11:29)
 
     ☐ add step for cerqui
 
@@ -87,5 +87,5 @@ todo:
     
     ☐ update view details user 
 
+    ☐ refactoring ui/ux of all pages and be unique and complemented 
 
-    ☐ // magnet:?xt=urn:btih:8a9f7f9e92254e4833aa2647e9f07e01df280dc2&dn=Mosh%20Hamedani%20-%20All%20Courses%20Pack
