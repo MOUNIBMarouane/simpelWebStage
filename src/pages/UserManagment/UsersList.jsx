@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./usersStyles.css";
 import { motion } from "framer-motion";
 import FormInput from "../../components/FormInputs";
 import {
@@ -10,50 +9,34 @@ import {
   Trash,
   Pencil,
   Eye,
-  MailIcon,
-  MailsIcon,
-  Pen,
+  Key,
+  EyeOff,
 } from "lucide-react";
 
 import axios from "axios";
-
-import {} from "lucide-react";
-import { DeletUser, updateStatus, UpdateUser } from "../../service/authService";
-
-import RoleSelect from "../../components/inputs/RoleSelect";
+import {
+  DeletUser,
+  UpdateUser,
+  FindUserName,
+  FindUserMail,
+} from "../../service/authService";
+import FormSelectRole from "../../components/inputs/FormSelectRole";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Add, Search } from "@mui/icons-material";
-import { Link } from "react-router-dom";
 
 const UsersList = () => {
   const [Users, setUsers] = useState([]);
   const [showFormNew, setShowFormNew] = useState(false);
   const [showFormDetails, setShowFormDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [availableRoles, setAvailableRoles] = useState([]);
-
-  const roleNameToId = {
-    Admin: "Admin",
-    SimpleUser: "SimpleUser",
-    FullUser: "FullUser",
-  };
-  const allRoles = ["Admin", "FullUser", "SimpleUser"];
-  const [initialRole, setInitialRole] = useState("");
+  const [editingUsers, setEditingUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [newUsers, setNewUsers] = useState({
-    username: "",
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    roleName: "",
-  });
   const [step, setStep] = useState(1);
+
+  // User form data for adding new users
   const [formData, setFormData] = useState({
     userId: "",
     firstName: "",
@@ -63,70 +46,20 @@ const UsersList = () => {
     PasswordHash: "",
     cpassword: "",
     roleName: "",
+    secretkey: "", // For admin verification if needed
   });
+
+  // Password visibility toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Form validation states
   const [passwordError, setPasswordError] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  // Handle individual user selection
-  const handleUserSelect = (userId) => {
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
-  };
+  const [usernameError, setUsernameError] = useState("");
+  const [usermailError, setUsermailError] = useState("");
+  const [secretKeyError, setSecretKeyError] = useState("");
 
-  const handleBulkRoleChange = async (e) => {
-    const newRole = e.target.value;
-    if (!newRole) return;
-
-    if (
-      !window.confirm(
-        `Change role of ${selectedUsers.length} users to ${newRole}?`
-      )
-    ) {
-      setSelectedRole("");
-      return;
-    }
-
-    try {
-      // Get numeric role ID from mapping
-      const newRoleId = roleNameToId[newRole];
-
-      // Optimistic update with correct role ID
-      const updatedUsers = Users.map((user) =>
-        selectedUsers.includes(user.id) ? { ...user, roleId: newRoleId } : user
-      );
-      setUsers(updatedUsers);
-
-      // Send proper role ID in update request
-      await Promise.all(
-        selectedUsers.map((id) => {
-          const updatedData = { userId: id, roleName: newRole };
-          return UpdateUser(updatedData);
-        })
-      );
-      await fetchUsers();
-      toast.success(`Roles updated to ${newRole}`);
-    } catch (error) {
-      // Revert on error
-      setUsers([...Users]);
-      toast.error("Failed to update roles");
-    } finally {
-      setSelectedRole("");
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-  // Handle select all/none
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedUsers(filteredUsers.map((user) => user.id));
-    } else {
-      setSelectedUsers([]);
-    }
-  };
+  // Field validations
   const [passwordValidations, setPasswordValidations] = useState({
     length: false,
     uppercase: false,
@@ -134,55 +67,29 @@ const UsersList = () => {
     digit: false,
     specialChar: false,
   });
-  const toggleUserStatus = async (user) => {
-    const originalUser = user;
-    const updatedStatus = !user.isActive;
 
-    try {
-      // Optimistic UI update
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.id === user.id ? { ...u, isActive: updatedStatus } : u
-        )
-      );
+  const [nameValidations, setNameValidations] = useState({
+    firstName: { length: false, format: false },
+    lastName: { length: false, format: false },
+    username: { length: false, format: false },
+  });
 
-      // Call API service
-      await updateStatus(user.id, updatedStatus);
-      toast.dismiss();
-      toast.success(
-        `User ${updatedStatus ? "activated" : "blocked"} successfully`,
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
-      );
-    } catch (error) {
-      console.error("Status update failed:", error);
+  const options = [
+    { value: "Admin", label: "Admin" },
+    { value: "FullUser", label: "FullUser" },
+    { value: "SimpleUser", label: "SimpleUser" },
+  ];
 
-      // Revert UI on error
-      setUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === originalUser.id ? originalUser : u))
-      );
-
-      // Show error toast
-      toast.error(`Failed to ${updatedStatus ? "activate" : "block"} user`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-  };
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-
-    if (id === "PasswordHash") {
-      validatePassword(value);
-    }
+  // Functions for password toggle
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  // Validate password with all requirements
   const validatePassword = (password) => {
     const validations = {
       length: password.length >= 8,
@@ -191,46 +98,153 @@ const UsersList = () => {
       digit: /\d/.test(password),
       specialChar: /[@$!%*?&]/.test(password),
     };
-    setPasswordValidations(validations);
 
+    setPasswordValidations(validations);
     return Object.values(validations).every(Boolean);
   };
 
-  const handleNext = () => {
-    if (
-      step === 1 &&
-      (!formData.firstName || !formData.lastName || !formData.username)
-    ) {
-      alert("Please fill in all fields");
-      return;
+  // Validate name fields (firstName, lastName, username)
+  const validateName = (field, value) => {
+    let validations;
+
+    if (field === "username") {
+      validations = {
+        length: value.length >= 3,
+        format: /^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$/.test(value), // Allows letters, numbers, `_`, `-` (not at start or end)
+      };
+    } else {
+      validations = {
+        length: value.length >= 3,
+        format: /^[a-zA-Z]+$/.test(value), // Only letters for firstName and lastName
+      };
     }
-    if (
-      step === 2 &&
-      (!formData.email || !formData.PasswordHash || !formData.cpassword)
-    ) {
-      alert("Please fill in all fields");
-      return;
-    }
-    if (step === 2 && formData.PasswordHash !== formData.cpassword) {
-      alert("Passwords don't match");
-      return;
-    }
-    if (step === 2 && !validatePassword(formData.PasswordHash)) {
+
+    setNameValidations((prev) => ({
+      ...prev,
+      [field]: validations,
+    }));
+
+    return validations.length && validations.format;
+  };
+
+  // Handle form input changes
+  const handleInputChange = async (e) => {
+    const { id, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+
+    // Clear previous validation errors
+    if (id === "username") {
+      setUsernameError("");
+      validateName(id, value);
+    } else if (id === "email") {
+      setUsermailError("");
+    } else if (id === "PasswordHash") {
+      validatePassword(value);
+      if (formData.cpassword) {
+        setPasswordError(
+          value === formData.cpassword ? "" : "Passwords do not match!"
+        );
+      }
+    } else if (id === "cpassword") {
       setPasswordError(
-        "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character."
+        value === formData.PasswordHash ? "" : "Passwords do not match!"
       );
-      return;
+    } else if (id === "firstName" || id === "lastName") {
+      validateName(id, value);
     }
+  };
+
+  // Navigation between form steps
+  const handleNext = async () => {
+    if (step === 1) {
+      if (!formData.firstName || !formData.lastName || !formData.username) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      if (
+        !nameValidations.firstName.length ||
+        !nameValidations.firstName.format ||
+        !nameValidations.lastName.length ||
+        !nameValidations.lastName.format ||
+        !nameValidations.username.length ||
+        !nameValidations.username.format
+      ) {
+        toast.error("Please correct the form errors before proceeding");
+        return;
+      }
+
+      try {
+        // Check if username exists
+        const usernameExists = await FindUserName(formData.username);
+        if (!usernameExists) {
+          setUsernameError("Username is already taken. Please choose another.");
+          toast.error("Username is already taken.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking username:", error);
+        setUsernameError("Error checking username. Please try again.");
+        return;
+      }
+    }
+
+    if (step === 2) {
+      if (!formData.email || !formData.PasswordHash || !formData.cpassword) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      if (formData.PasswordHash !== formData.cpassword) {
+        setPasswordError("Passwords do not match!");
+        toast.error("Passwords do not match!");
+        return;
+      }
+
+      if (!validatePassword(formData.PasswordHash)) {
+        setPasswordError("Password must meet all requirements.");
+        toast.error("Password must meet all requirements.");
+        return;
+      }
+
+      try {
+        // Check if email exists
+        const emailValid = await FindUserMail(formData.email);
+        if (!emailValid) {
+          setUsermailError("Email is already in use. Please use another.");
+          toast.error("Email is already in use.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+        setUsermailError("Error checking email. Please try again.");
+        return;
+      }
+    }
+
+    // Clear errors and proceed to next step
     setPasswordError("");
+    setUsermailError("");
     setStep((prev) => prev + 1);
   };
 
+  // Go back to previous step
   const handleBack = () => {
     setStep((prev) => prev - 1);
   };
 
+  // Submit the form to create a new user
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!formData.roleName) {
+      toast.error("Please select a user role");
+      return;
+    }
 
     const userData = {
       firstName: formData.firstName,
@@ -244,22 +258,22 @@ const UsersList = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
 
-      console.log(userData);
-      console.log(accessToken);
       const response = await axios.post(
-        "http://192.168.1.94:5204/api/Admin/users",
+        "http://192.168.1.59:5204/api/Admin/users",
         userData,
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
+            ...(formData.secretkey && { AdminSecret: formData.secretkey }),
           },
         }
       );
+
       if (response.status === 201) {
-        console.log("User succusful saved");
+        toast.success("User successfully created!");
         setShowFormNew(false);
-        await fetchUsers();
+        // Reset form data
         setFormData({
           userId: "",
           firstName: "",
@@ -269,32 +283,40 @@ const UsersList = () => {
           PasswordHash: "",
           cpassword: "",
           roleName: "",
+          secretkey: "",
         });
         setStep(1);
-        // Show success toast
-        toast.success("User created successfully");
-      } else {
-        console.log(response.status);
-        // console.error("Registration failed:", response.statusText);
+        // Refresh the users list
+        fetchUsers();
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.error(error.response?.data || "Failed to create user");
+
+      if (
+        error.response?.data?.toLowerCase().includes("invalid admin secret")
+      ) {
+        setSecretKeyError(
+          "The secret key is incorrect. Please check the key or contact administrator."
+        );
+      }
     }
   };
 
-  const options = [
-    { value: "Admin", label: "Admin" },
-    { value: "FullUser", label: "FullUser" },
-    { value: "SimpleUser", label: "SimpleUser" },
-  ];
+  // Render the current step form
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4 ">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
             <div className="w-full flex gap-4">
               <div className="w-1/2">
+                <div className="mb-2">
+                  <label className="text-gray-300" htmlFor="firstName">
+                    First Name:
+                  </label>
+                </div>
                 <FormInput
                   id="firstName"
                   type="text"
@@ -304,8 +326,27 @@ const UsersList = () => {
                   required
                   icon={User}
                 />
+                <p
+                  className={`text-sm mt-2 ${
+                    nameValidations.firstName.length &&
+                    nameValidations.firstName.format
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {nameValidations.firstName.length
+                    ? nameValidations.firstName.format
+                      ? "Valid name!"
+                      : "Only letters allowed"
+                    : "Name must be at least 3 characters"}
+                </p>
               </div>
               <div className="w-1/2">
+                <div className="mb-2">
+                  <label className="text-gray-300" htmlFor="lastName">
+                    Last Name:
+                  </label>
+                </div>
                 <FormInput
                   id="lastName"
                   type="text"
@@ -315,7 +356,26 @@ const UsersList = () => {
                   required
                   icon={User}
                 />
+                <p
+                  className={`text-sm mt-2 ${
+                    nameValidations.lastName.length &&
+                    nameValidations.lastName.format
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {nameValidations.lastName.length
+                    ? nameValidations.lastName.format
+                      ? "Valid name!"
+                      : "Only letters allowed"
+                    : "Name must be at least 3 characters"}
+                </p>
               </div>
+            </div>
+            <div>
+              <label className="text-gray-300" htmlFor="username">
+                User Name:
+              </label>
             </div>
             <FormInput
               id="username"
@@ -326,12 +386,35 @@ const UsersList = () => {
               required
               icon={User}
             />
+            <p
+              className={`text-sm mt-2 ${
+                nameValidations.username.length &&
+                nameValidations.username.format &&
+                !usernameError
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {usernameError
+                ? usernameError
+                : nameValidations.username.length
+                ? nameValidations.username.format
+                  ? "Valid username!"
+                  : "Username can only contain letters, numbers, '-', and '_'"
+                : "Username must be at least 3 characters"}
+            </p>
           </div>
         );
+
       case 2:
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Account Security</h3>
+            <div>
+              <label className="text-gray-300" htmlFor="email">
+                Email Address:
+              </label>
+            </div>
             <FormInput
               id="email"
               type="email"
@@ -341,9 +424,26 @@ const UsersList = () => {
               required
               icon={Mail}
             />
+            <p
+              className={`text-sm mt-2 ${
+                usermailError ? "text-red-500" : "text-green-500"
+              }`}
+            >
+              {usermailError
+                ? usermailError
+                : formData.email
+                ? "Valid email!"
+                : ""}
+            </p>
+
+            <div>
+              <label className="text-gray-300" htmlFor="PasswordHash">
+                Password:
+              </label>
+            </div>
             <FormInput
               id="PasswordHash"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formData.PasswordHash}
               onChange={handleInputChange}
               placeholder="Password"
@@ -351,16 +451,52 @@ const UsersList = () => {
               icon={Lock}
             />
 
+            <div>
+              <label className="text-gray-300" htmlFor="cpassword">
+                Confirm Password:
+              </label>
+            </div>
             <FormInput
               id="cpassword"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               value={formData.cpassword}
               onChange={handleInputChange}
               placeholder="Confirm Password"
               required
               icon={Lock}
             />
-            <div className="text-sm text-gray-400">
+            <p
+              className={`text-sm mt-2 ${
+                formData.cpassword
+                  ? formData.PasswordHash === formData.cpassword
+                    ? "text-green-500"
+                    : "text-red-500"
+                  : "text-white"
+              }`}
+            >
+              {formData.cpassword
+                ? formData.PasswordHash === formData.cpassword
+                  ? "Passwords match!"
+                  : "Passwords do not match!"
+                : ""}
+            </p>
+
+            <div className="flex mt-4">
+              <input
+                onClick={togglePasswordVisibility}
+                id="show-password-checkbox"
+                type="checkbox"
+                className="shrink-0 border-gray-100 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+              />
+              <label
+                htmlFor="show-password-checkbox"
+                className="text-sm text-gray-500 ms-3 dark:text-neutral-400"
+              >
+                Show passwords
+              </label>
+            </div>
+
+            <div className="text-sm text-gray-300">
               <p>Password must include:</p>
               <ul>
                 <li
@@ -406,87 +542,139 @@ const UsersList = () => {
                 </li>
               </ul>
             </div>
+
             {passwordError && (
-              <div className="text-white text-sm">{passwordError}</div>
+              <div className="text-red-500 text-sm">{passwordError}</div>
             )}
           </div>
         );
+
       case 3:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Role of User</h3>
-            <select
-              id="roleName"
-              value={formData.roleName}
-              onChange={handleChange}
-              className="w-full px-4 py-2.5 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-gray-800 dark:border-gray-600 dark:text-white transition-colors duration-300 ease"
-            >
-              <option value="" disabled>
-                Select Role
-              </option>
-              {allRoles.map((role) => (
-                <option key={role} value={role}>
-                  {role.replace(/([A-Z])/g, " $1").trim()}
-                </option>
-              ))}
-            </select>
+            <h3 className="text-lg font-semibold mb-4">User Role</h3>
+            <div>
+              <label className="text-gray-300 mb-2 block">
+                Select User Role:
+              </label>
+              <FormSelectRole
+                id="roleName"
+                value={formData.roleName}
+                onChange={(e) =>
+                  setFormData({ ...formData, roleName: e.target.value })
+                }
+                options={options}
+                icon={(props) => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    {...props}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                )}
+              />
+            </div>
+
+            <div className="mt-6">
+              <label className="text-gray-300" htmlFor="secretkey">
+                Admin Secret Key (Optional):
+              </label>
+              <FormInput
+                id="secretkey"
+                type="password"
+                value={formData.secretkey}
+                onChange={handleInputChange}
+                placeholder="Secret Key (if required)"
+                icon={Key}
+              />
+              {secretKeyError && (
+                <p className="text-red-500 text-sm mt-2">{secretKeyError}</p>
+              )}
+            </div>
           </div>
         );
+
       default:
         return null;
     }
   };
 
-  const deleteUsers = (ids) => {
-    if (!Array.isArray(ids)) ids = [ids];
+  // Check if the next button should be disabled
+  const isNextDisabled = () => {
+    if (step === 1) {
+      return !(
+        formData.firstName &&
+        formData.lastName &&
+        formData.username &&
+        nameValidations.firstName.length &&
+        nameValidations.firstName.format &&
+        nameValidations.lastName.length &&
+        nameValidations.lastName.format &&
+        nameValidations.username.length &&
+        nameValidations.username.format
+      );
+    }
 
-    toast.info(
-      <div className="p-4">
-        <p className="font-semibold">
-          Delete {ids.length} user{ids.length > 1 ? "s" : ""}?
-        </p>
-        <div className="flex gap-4 mt-4 text-white">
-          <div
-            className="px-4 py-2 bg-red-500 rounded hover:bg-red-600"
-            onClick={() => {
-              // Update UI first
-              setUsers((prev) => prev.filter((user) => !ids.includes(user.id)));
-              setSelectedUsers((prev) =>
-                prev.filter((id) => !ids.includes(id))
-              );
+    if (step === 2) {
+      return !(
+        formData.email &&
+        formData.PasswordHash &&
+        formData.cpassword &&
+        formData.PasswordHash === formData.cpassword &&
+        Object.values(passwordValidations).every(Boolean)
+      );
+    }
 
-              // Send delete requests
-              ids.forEach((id) => DeletUser(id));
+    return false; // Step 3 doesn't need validation
+  };
 
-              toast.dismiss();
-              toast.success(
-                `${ids.length} user${ids.length > 1 ? "s" : ""} deleted`
-              );
-            }}
-          >
-            Confirm
-          </div>
-          <div
-            className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600"
-            onClick={() => toast.dismiss()}
-          >
-            Cancel
-          </div>
-        </div>
-      </div>,
-      {
-        position: "top-right",
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        closediv: false,
-        toastId: "delete-confirmation",
-      }
-    );
+  const handleSave = async () => {
+    // Call API or update state with new user data
+    console.log("Saving user data:", formData);
+    UpdateUser(formData);
+    // Close the form after saving
+  };
+
+  const handleClose = () => {
+    setShowFormDetails(false);
+    setFormData({
+      userId: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      roleName: "",
+      PasswordHash: "",
+      cpassword: "",
+      secretkey: "",
+    }); // Clear form
+  };
+
+  const deleteUsers = (id) => {
+    setUsers(Users.filter((user) => user.id !== id));
+    DeletUser(id);
+    toast.success("User deleted successfully");
+  };
+
+  const editUsers = (user) => {
+    setFormData({
+      userId: user.id,
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email || "",
+      username: user.username || "",
+      roleName: user.roleId || "",
+    });
+    setEditingUsers(user.id);
+    setShowFormNew(true);
   };
 
   const roleName = (idrole) => {
-    console.log("Id role ", idrole);
     switch (idrole) {
       case 1:
         return "Admin";
@@ -494,24 +682,30 @@ const UsersList = () => {
         return "SimpleUser";
       case 3:
         return "FullUser";
+      default:
+        return "Unknown";
     }
+  };
+
+  const activeSatus = (status) => {
+    return status ? "Active" : "Inactive";
   };
 
   const fetchUsers = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://192.168.1.94:5204/api/Admin/users",
+        "http://192.168.1.59:5204/api/Admin/users",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-      console.log("user all ----:", response.data);
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users");
     }
   };
 
@@ -520,113 +714,88 @@ const UsersList = () => {
   }, []);
 
   useEffect(() => {
-    const roleMapping = {
-      1: "Admin",
-      2: "FullUser",
-      3: "SimpleUser",
-    };
-
-    // Get current role ID from selected user
-    const currentRoleId = selectedUser?.role.roleId || "";
-    console.log("Current role id ----", currentRoleId);
-    const currentRole = roleMapping[currentRoleId] || "";
-    console.log("Current role ----", currentRole);
-
-    setInitialRole(currentRole);
-    setAvailableRoles(allRoles.filter((role) => role !== currentRole));
-
     if (selectedUser) {
       setFormData({
         userId: selectedUser.id || "",
         firstName: selectedUser.firstName || "",
         lastName: selectedUser.lastName || "",
         email: selectedUser.email || "",
-        roleName: currentRole, // Use the mapped role name instead of ID
+        roleName: selectedUser.roleId || "",
       });
     }
   }, [selectedUser, showFormDetails]);
 
-  const filteredUsers = Users.filter((user) => {
-    const searchLower = searchQuery.toLowerCase();
+  const handleUserClick = (user, option) => {
+    setSelectedUser(user);
 
-    // Combine first and last name for full name search
-    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    if (option === "update") {
+      // Update form data with selected user details
+      setFormData({
+        userId: user.id || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        username: user.username || "",
+        email: user.email || "",
+        roleName: user.roleId || "",
+      });
+    } else setShowFormDetails(true);
+  };
 
-    // Convert status to string
-    const status = user.isActive ? "active" : "blocked";
-    console.log("Users-------1111", user);
+  const filteredUsers = Users.filter((user) =>
+    Object.values(user).some(
+      (value) =>
+        typeof value === "string" &&
+        value.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
 
-    return (
-      user.firstName.toLowerCase().includes(searchLower) ||
-      user.lastName.toLowerCase().includes(searchLower) ||
-      fullName.includes(searchLower) ||
-      user.username.toLowerCase().includes(searchLower) ||
-      user.email.toLowerCase().includes(searchLower) ||
-      user.role.roleName.toLowerCase().includes(searchLower) ||
-      status.includes(searchLower)
-    );
-  });
   return (
-    <div className="w-full h-full flex-col justify-center items-center text-white rounded-lg pt-3 ">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        // pauseOnHover
-        // theme="colored"
-      />
-      <div className=" w-full h-full backdrop-blur-md shadow-lg rounded-lg">
-        <h2 className=" text-2xl font-bold w-full text-left pl-6 ">
-          Users List
-        </h2>
-        <div className="w-full flex  flex-row px-6 py-3 gap-2.5">
-          <div className="w-5/12 h-full flex flex-row justify-between gap-2.5 ">
-            <div className="flex w-9/12 items-centert  rounded-lg  focus-within:border-amber-200">
-              {/* <Search className="text-gray-400 mr-2" />Z */}
-              <FormInput
-                id="searchUser"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search ..."
-                required={false}
-                icon={Search}
-              />
-            </div>
-            <div
-              onClick={() => setShowFormNew(true)}
-              className="bg-green-500 w-4/12 text-white px-4 py-2 hover:bg-green-600 transition rounded-lg cursor-pointer"
-            >
-              <Add />
-              Add Users
-            </div>
+    <div className="w-full h-full flex justify-center items-center text-white bg-blue-800/50">
+      <ToastContainer position="top-center" />
+      <div className="w-full h-full backdrop-blur-md p-6 shadow-lg">
+        <h2 className="text-center text-2xl font-bold">Users List</h2>
+
+        <div className="w-full flex flex-row justify-between pb-5">
+          <input
+            type="text"
+            placeholder="Search Users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 border rounded w-2/6"
+          />
+          <div
+            onClick={() => {
+              setShowFormNew(true);
+              setStep(1);
+              setFormData({
+                userId: "",
+                firstName: "",
+                lastName: "",
+                username: "",
+                email: "",
+                PasswordHash: "",
+                cpassword: "",
+                roleName: "",
+                secretkey: "",
+              });
+            }}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition cursor-pointer"
+          >
+            + Add User
           </div>
-          {/* <div className=" w-8/12 flex items-center">Filter</div> */}
         </div>
-        <div className="w-full max-h-10/12 overflow-auto  rounded-lg shadow-lg p-6 ">
+
+        <div className="overflow-hidden rounded-lg shadow-lg">
           <motion.table
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full h-full  border-collapse bg-gray-900 text-white rounded-lg"
+            className="w-full border-collapse bg-gray-900 text-white rounded-lg"
           >
-            <thead className="bg-blue-700 text-white h-1/12">
+            <thead className="bg-blue-700 text-white">
               <tr>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 rounded-lg"
-                    checked={
-                      selectedUsers.length === filteredUsers.length &&
-                      filteredUsers.length > 0
-                    }
-                    onChange={handleSelectAll}
-                  />
+                  #
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
                   User Name
@@ -638,14 +807,14 @@ const UsersList = () => {
                   Role
                 </th>
                 <th className="p-4 text-left uppercase text-sm tracking-wide">
-                  Status{" "}
+                  Status
                 </th>
                 <th className="p-4 text-center uppercase text-sm tracking-wide">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="h-10/12 overflow-scroll">
+            <tbody>
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
                   <motion.tr
@@ -656,75 +825,45 @@ const UsersList = () => {
                     className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
                   >
                     <td className="p-4">
-                      <input
-                        type="checkbox"
-                        className="w-6 h-6 rounded-lg"
-                        checked={selectedUsers.includes(user.id)}
-                        onChange={() => handleUserSelect(user.id)}
-                      />
+                      <input type="checkbox" className="w-6 h-6 rounded-lg" />
                     </td>
-                    <td className="p-4">{user.username}</td>
+                    <td
+                      className="p-4 cursor-pointer hover:text-blue-300"
+                      onClick={() => handleUserClick(user, "update")}
+                    >
+                      {user.username}
+                    </td>
                     <td className="p-4">{user.email}</td>
-                    <td className="p-4">{user.role.roleName} </td>
+                    <td className="p-4">{roleName(user.roleId)}</td>
                     <td className="p-4 items-center">
-                      <div className="flex items-center gap-3">
-                        <label
-                          htmlFor=""
-                          style={{
-                            color: user.isActive ? "#4CAF50" : "#FF3B30",
-                            fontWeight: 600,
-                            transition: "color 0.3s ease",
-                          }}
-                        >
-                          {user.isActive ? "Active" : "Blocked"}
-                        </label>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={user.isActive}
-                                onChange={() => toggleUserStatus(user)}
-                                sx={{
-                                  "& .MuiSwitch-switchBase.Mui-checked": {
-                                    color: "#4CAF50",
-                                    "& + .MuiSwitch-track": {
-                                      backgroundColor: "#4CAF50",
-                                    },
-                                  },
-                                  "& .MuiSwitch-switchBase": {
-                                    color: "#FF3B30",
-                                    "& + .MuiSwitch-track": {
-                                      backgroundColor: "#FF3B30",
-                                    },
-                                  },
-                                }}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </div>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={<Switch defaultChecked={user.isActive} />}
+                        />
+                      </FormGroup>
                     </td>
-
                     <td className="p-4 flex items-center justify-center space-x-3">
-                      {/* Toggle div */}
-                      {/* View div */}
-                      <Link to={`/user-details/${user.id}`}>
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
-                          <Eye size={18} />
-                        </div>
-                      </Link>
-                      <Link to={`/user-update/${user.id}`}>
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
-                          <Pen size={18} />
-                        </div>
-                      </Link>
-                      {/* Delete div */}
+                      {/* View Button */}
+                      <div
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer"
+                        onClick={() => handleUserClick(user, "details")}
+                      >
+                        <Eye size={18} />
+                      </div>
+
+                      {/* Delete Button */}
+                      <div
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
+                        onClick={() => deleteUsers(user.id)}
+                      >
+                        <Trash size={18} />
+                      </div>
                     </td>
                   </motion.tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-4 text-center text-gray-400">
+                  <td colSpan="6" className="p-4 text-center text-gray-400">
                     No users found.
                   </td>
                 </tr>
@@ -732,49 +871,28 @@ const UsersList = () => {
             </tbody>
           </motion.table>
         </div>
-        {/** actions part */}
-        {selectedUsers.length > 0 && (
-          <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 rounded-lg backdrop-blur-sm">
-            <div className="flex gap-4">
-              <select
-                value={selectedRole}
-                onChange={handleBulkRoleChange}
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg cursor-pointer hover:bg-gray-600 transition-colors"
-              >
-                <option value="" disabled>
-                  Change Role
-                </option>
-                {allRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-              <div
-                className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
-                onClick={() => deleteUsers(selectedUsers)}
-              >
-                <Trash />
-                <p>Delete d ({selectedUsers.length})</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Add/Edit User Form Modal */}
       {showFormNew && (
         <div
           onClick={(e) => {
-            if (e.target === e.currentTarget) setShowFormNew(false);
+            if (e.target === e.currentTarget) {
+              setShowFormNew(false);
+              setStep(1);
+            }
           }}
           className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center place-items-center text-white"
         >
-          <div className="relative bg-grade bg-blue-950/60 backdrop-blur-md p-6 md:w-6/12 lg:w-6/12 rounded-lg">
+          <div className="relative bg-blue-950/60 backdrop-blur-md p-6 md:w-6/12 lg:w-6/12 rounded-lg">
             <div className="w-full flex-col place-items-center pb-6">
               <X
                 className="absolute top-0 right-0 cursor-pointer m-2"
                 onClick={() => setShowFormNew(false)}
               />
-              <h2 className="text-2xl font-bold">Add New User</h2>
+              <h2 className="text-2xl font-bold">
+                {editingUsers ? "Edit User" : "Add New User"}
+              </h2>
               <div className="flex justify-center mt-4 space-x-2">
                 {[1, 2, 3].map((num) => (
                   <div
@@ -792,31 +910,86 @@ const UsersList = () => {
 
               <div className="flex justify-between mt-6">
                 {step > 1 && (
-                  <div
-                    type="div"
+                  <button
+                    type="button"
                     onClick={handleBack}
                     className="px-4 py-2 border border-white rounded hover:bg-white hover:text-black transition-colors"
                   >
                     Back
-                  </div>
+                  </button>
                 )}
                 {step < 3 ? (
-                  <div
-                    type="div"
+                  <button
+                    type="button"
                     onClick={handleNext}
-                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors ml-auto"
+                    className={`px-4 py-2 rounded transition-colors ml-auto ${
+                      isNextDisabled()
+                        ? "bg-gray-500 cursor-not-allowed opacity-50"
+                        : "bg-blue-500 hover:bg-blue-600"
+                    }`}
+                    disabled={isNextDisabled()}
                   >
                     Next
-                  </div>
+                  </button>
                 ) : (
-                  <div
+                  <button
                     type="submit"
                     onClick={handleSubmit}
                     className="px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition-colors ml-auto"
                   >
-                    Complete Signup
-                  </div>
+                    {editingUsers ? "Update User" : "Create User"}
+                  </button>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Details Modal */}
+      {showFormDetails && selectedUser && (
+        <div className="absolute bg-black/60 top-0 left-0 w-full h-full flex justify-center items-center text-white">
+          <div className="relative bg-blue-950/60 backdrop-blur-md p-6 w-6/12 rounded-lg">
+            <X
+              className="absolute top-0 right-0 cursor-pointer m-2"
+              onClick={handleClose}
+            />
+            <h2 className="text-2xl font-bold mb-4">User Details</h2>
+            <div className="space-y-3">
+              <p>
+                <span className="font-semibold">Username:</span>{" "}
+                {selectedUser.username}
+              </p>
+              <p>
+                <span className="font-semibold">Role:</span>{" "}
+                {roleName(selectedUser.roleId)}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span>{" "}
+                {selectedUser.email}
+              </p>
+              <p>
+                <span className="font-semibold">Full Name:</span>{" "}
+                {selectedUser.firstName} {selectedUser.lastName}
+              </p>
+              <p>
+                <span className="font-semibold">Account Status:</span>{" "}
+                {activeSatus(selectedUser.isActive)}
+              </p>
+              <p>
+                <span className="font-semibold">Created Date:</span>{" "}
+                {selectedUser.createdAt
+                  ? new Date(selectedUser.createdAt).toLocaleDateString()
+                  : "N/A"}
+              </p>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={handleClose}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
