@@ -180,9 +180,9 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     // Important: Prevent default form submission behavior
     if (e) e.preventDefault();
-    
+
     console.log("Submit button clicked");
-    
+
     setIsSubmitting(true);
     setSecretKeyError("");
 
@@ -198,7 +198,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5204/api/Auth/register",
+        "http://192.168.1.94:5204/api/Auth/register",
         userData,
         {
           headers: {
@@ -215,7 +215,7 @@ const SignUp = () => {
       }
     } catch (error) {
       console.error("Registration error:", error);
-      
+
       if (
         error.response?.data?.toLowerCase().includes("invalid admin secret.")
       ) {
@@ -302,7 +302,7 @@ const SignUp = () => {
               <div className="space-y-5">
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="firstName"
                   >
                     First Name
@@ -337,7 +337,7 @@ const SignUp = () => {
 
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="lastName"
                   >
                     Last Name
@@ -372,7 +372,7 @@ const SignUp = () => {
 
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="username"
                   >
                     Username
@@ -423,7 +423,7 @@ const SignUp = () => {
               <div className="space-y-5">
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="email"
                   >
                     Email Address
@@ -468,7 +468,7 @@ const SignUp = () => {
 
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="PasswordHash"
                   >
                     Password
@@ -601,7 +601,7 @@ const SignUp = () => {
 
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="cpassword"
                   >
                     Confirm Password
@@ -672,7 +672,7 @@ const SignUp = () => {
 
                 <div className="space-y-1">
                   <label
-                    className="block text-sm font-medium text-gray-300"
+                    className="w-full m-1 flex text-sm font-medium text-gray-300"
                     htmlFor="secretkey"
                   >
                     Admin Secret Key (Optional)
@@ -722,7 +722,7 @@ const SignUp = () => {
 
               {step < 3 ? (
                 <button
-                  type="button" 
+                  type="button"
                   onClick={handleNext}
                   disabled={isNextDisabled()}
                   className={`px-6 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
@@ -735,7 +735,7 @@ const SignUp = () => {
                 </button>
               ) : (
                 <button
-                  type="submit" 
+                  type="submit"
                   disabled={isSubmitting}
                   className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-teal-500 text-white rounded-lg hover:from-green-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 flex items-center"
                 >

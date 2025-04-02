@@ -31,12 +31,12 @@ const CircuitDetail = () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
         const circuitResponse = await axios.get(
-          `http://localhost:5204/api/Circuit/${circuitId}`,
+          `http://192.168.1.94:5204/api/Circuit/${circuitId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
 
         const detailsResponse = await axios.get(
-          `http://localhost:5204/api/CircuitDetail/by-circuit/${circuitId}`,
+          `http://192.168.1.94:5204/api/CircuitDetail/by-circuit/${circuitId}`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
 
@@ -81,7 +81,7 @@ const CircuitDetail = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.put(
-        `http://localhost:5204/api/circuit/${circuitId}`,
+        `http://192.168.1.94:5204/api/circuit/${circuitId}`,
         editedCircuit,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
@@ -104,7 +104,7 @@ const CircuitDetail = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.post(
-        "http://localhost:5204/api/circuitdetail",
+        "http://192.168.1.94:5204/api/circuitdetail",
         { ...newDetail, circuitId },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
@@ -126,7 +126,7 @@ const CircuitDetail = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.put(
-        `http://localhost:5204/api/circuitdetail/${id}`,
+        `http://192.168.1.94:5204/api/circuitdetail/${id}`,
         updatedDetail,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
@@ -157,11 +157,14 @@ const CircuitDetail = () => {
       undo: () => setCircuitDetails((prev) => [...prev, detailToDelete]),
       onConfirm: async () => {
         try {
-          await axios.delete(`http://localhost:5204/api/circuitdetail/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          });
+          await axios.delete(
+            `http://192.168.1.94:5204/api/circuitdetail/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              },
+            }
+          );
         } catch (error) {
           setCircuitDetails((prev) => [...prev, detailToDelete]);
           addNotification({
