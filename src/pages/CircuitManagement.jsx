@@ -41,21 +41,21 @@ const CircuitManagement = () => {
   const [circuitDetails, setCircuitDetails] = useState([]);
   const formContainerRef = useRef(null);
 
-  const handleModifyCircuit = (circuit) => {
-    setEditingCircuit(circuit);
-    setFormData({
-      circuitKey: circuit.circuitKey,
-      title: circuit.title,
-      descriptif: circuit.descriptif,
-      isActive: circuit.isActive,
-    });
-    formContainerRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+ n 
   // Fetch circuits on mount
   useEffect(() => {
     fetchCircuits();
   }, []);
-
+  const handleModifyCircuit = (circuit) => {
+    if (!circuit) return; // Prevents issues if circuit is null or undefined
+    setEditingCircuit(circuit);
+    setFormData({
+      circuitKey: circuit.circuitKey || "",
+      title: circuit.title || "",
+      descriptif: circuit.descriptif || "",
+      isActive: circuit.isActive ?? true,
+    });
+  };
   const fetchCircuits = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -95,22 +95,38 @@ const CircuitManagement = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const url = editingCircuit
-        ? `http://192.168.1.94:5204/api/circuit/${editingCircuit.id}`
-        : "http://192.168.1.94:5204/api/circuit";
+        ? `http://localhost:5204/api/circuit/${editingCircuit.id}`
+        : "http://localhost:5204/api/circuit";
 
-      const method = editingCircuit ? "put" : "post";
+      // Include the circuitKey in the request for updates
+      const updatedData = isEditing
+        ? { ...formData, circuitKey: editingCircuit.circuitKey }
+        : formData;
 
-      await axios[method](url, formData, {
+      await axios[method](url, updatedData, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       toast.success(
-        `Circuit ${editingCircuit ? "updated" : "created"} successfully!`
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Circuit {isEditing ? "updated" : "created"} successfully!
+        </motion.div>
       );
+
       fetchCircuits();
       resetForm();
     } catch (err) {
-      toast.error(`Failed to ${editingCircuit ? "update" : "create"} circuit`);
+      toast.error(
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Failed to {editingCircuit ? "update" : "create"} circuit
+        </motion.div>
+      );
     } finally {
       setLoading(false);
     }
@@ -213,9 +229,12 @@ const CircuitManagement = () => {
               className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-xl"
             >
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  New Circuit
+                <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                  {editingCircuit
+                    ? `Update Circuit: ${editingCircuit.title}`
+                    : "New Circuit"}
                 </h2>
+
                 {step > 1 && (
                   <button
                     onClick={resetForm}
