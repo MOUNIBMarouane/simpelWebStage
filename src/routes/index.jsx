@@ -1,7 +1,7 @@
 // src/routes/index.jsx
 
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // Layout Components
 import MainLayout from "../components/layout/MainLayout";
@@ -44,119 +44,111 @@ import PublicRoute from "./PublicRoute";
  */
 const AppRouter = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/"
-          element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
-        />
+    <Routes>
+      {/* Public Routes */}
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <Register />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/verify/:email"
-          element={
-            <PublicRoute>
-              <Verification />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/verify/:email"
+        element={
+          <PublicRoute>
+            <Verification />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/welcome-verify/:email"
-          element={
-            <PublicRoute>
-              <VerificationWelcome />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/welcome-verify/:email"
+        element={
+          <PublicRoute>
+            <VerificationWelcome />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/welcome/:email"
-          element={
-            <PublicRoute>
-              <Welcome />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/welcome/:email"
+        element={
+          <PublicRoute>
+            <Welcome />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/welcome-end"
-          element={
-            <PublicRoute>
-              <Welcome />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/welcome-end"
+        element={
+          <PublicRoute>
+            <Welcome />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ResetPassword />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        }
+      />
 
-        <Route
-          path="/update-password/:email"
-          element={
-            <PublicRoute>
-              <UpdatePassword />
-            </PublicRoute>
-          }
-        />
+      <Route
+        path="/update-password/:email"
+        element={
+          <PublicRoute>
+            <UpdatePassword />
+          </PublicRoute>
+        }
+      />
 
-        {/* Protected Routes */}
-        <Route
-          element={
-            <PrivateRoute>
-              <MainLayout />
-            </PrivateRoute>
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<SettingsPage />} />
+      {/* Protected Routes */}
+      <Route
+        element={
+          <PrivateRoute>
+            <MainLayout />
+          </PrivateRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
-          {/* Document Routes */}
-          <Route path="/documents" element={<Documents />} />
-          <Route path="/type-document" element={<DocumentTypes />} />
-          <Route path="/DocumentDetail/:idDoc" element={<DocumentDetail />} />
-          <Route
-            path="/DocumentDetail/:idDoc/:idLine"
-            element={<LineDetail />}
-          />
+        {/* Document Routes */}
+        <Route path="/documents" element={<Documents />} />
+        <Route path="/type-document" element={<DocumentTypes />} />
+        <Route path="/DocumentDetail/:idDoc" element={<DocumentDetail />} />
+        <Route path="/DocumentDetail/:idDoc/:idLine" element={<LineDetail />} />
 
-          {/* Circuit Routes */}
-          <Route path="/circuit" element={<CircuitManagement />} />
-          <Route
-            path="/circuit-details/:circuitId"
-            element={<CircuitDetail />}
-          />
+        {/* Circuit Routes */}
+        <Route path="/circuit" element={<CircuitManagement />} />
+        <Route path="/circuit-details/:circuitId" element={<CircuitDetail />} />
 
-          {/* User Management Routes */}
-          <Route path="/users-list" element={<UsersList />} />
-          <Route path="/user-profile" element={<Profile />} />
-          <Route path="/user-details/:userId" element={<UserDetails />} />
-          <Route path="/user-update/:userId" element={<UsersUpdate />} />
-        </Route>
+        {/* User Management Routes */}
+        <Route path="/users-list" element={<UsersList />} />
+        <Route path="/user-profile" element={<Profile />} />
+        <Route path="/user-details/:userId" element={<UserDetails />} />
+        <Route path="/user-update/:userId" element={<UsersUpdate />} />
+      </Route>
 
-        {/* Fallback Route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+      {/* Fallback Route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 

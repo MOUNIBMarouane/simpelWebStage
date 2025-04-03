@@ -1,3 +1,4 @@
+// src/components/dashboard/navBar/NavBar.jsx
 import React, { useState } from "react";
 import {
   File,
@@ -7,11 +8,21 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const NavBar = ({ userRole, onLogout }) => {
   // State to manage the visibility of sublinks
   const [showUsersSublinks, setShowUsersSublinks] = useState(false);
   const [showDocumentsSublinks, setShowDocumentsSublinks] = useState(false);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      logout();
+    }
+  };
 
   return (
     <nav className="h-full w-full space-y-3 ">
@@ -95,7 +106,7 @@ const NavBar = ({ userRole, onLogout }) => {
 
         {/* Logout div */}
         <div
-          onClick={onLogout}
+          onClick={handleLogout}
           className="bg-red-600/95 hover:bg-red-600 w-full p-2 rounded-sm flex items-center cursor-pointer"
         >
           <PanelRightClose color="#E0F2FE" />

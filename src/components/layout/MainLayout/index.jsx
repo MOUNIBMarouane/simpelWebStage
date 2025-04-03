@@ -8,7 +8,6 @@ import {
   User,
   FileText,
   Users,
-  Network,
   LogOut,
   Menu as MenuIcon,
   X,

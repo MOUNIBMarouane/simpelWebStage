@@ -2,27 +2,27 @@ import React, { useState, useEffect, useRef } from "react";
 import { Avatar } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../navBar/NavBar";
-import { authLogout, getUserAccount } from "../../../service/authService";
 import { Link } from "react-router-dom";
 import { ExpandMore, Notifications, Search } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { Settings, History, LogOut, UserCircle } from "lucide-react";
 import { RxAvatar } from "react-icons/rx";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import {
   Menu,
   MenuHandler,
   MenuList,
   MenuItem,
-  div,
 } from "@material-tailwind/react";
 
 function Layout() {
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -34,38 +34,11 @@ function Layout() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUserAccount();
-      if (userData) {
-        setUser(userData);
-      } else {
-        navigate("/");
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-  useEffect(() => {
-    window.testLogout = handleLogout;
-  }, []);
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem("refresh_token");
-    console.log("Before logout, refresh token:", refreshToken); // Debugging line
-
-    if (!refreshToken) {
-      console.warn("Refresh token is missing before calling logout!");
-    } else {
-      await authLogout(user?.userid); // Call before removing the token
-    }
-
-    // Remove tokens after logout attempt
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refresh_token");
-
-    setUser(null);
+    await logout();
     navigate("/");
   };
+
   const formattedDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -74,7 +47,7 @@ function Layout() {
   });
 
   return (
-    <div className="flex w-full h-full rounded-3xl  gap-2 p-2 backdrop-blur-md shadow-lg">
+    <div className="flex w-full h-full rounded-3xl gap-2 p-2 backdrop-blur-md shadow-lg">
       <div className="h-full w-2/12 rounded-lg bg-blue-950/55">
         <div className="w-full h-3/12 flex flex-col justify-center space-y-2 space-x-2">
           <div className="w-full flex flex-col justify-center items-center">
@@ -96,14 +69,14 @@ function Layout() {
             </div>
           </div>
         </div>
-        <div className="w-full h-9/12 p-2  shadow-lg">
+        <div className="w-full h-9/12 p-2 shadow-lg">
           {/* Pass logout function to NavBar */}
           <NavBar userRole={user?.role} onLogout={handleLogout} />
         </div>
       </div>
       <div className="w-full h-full bg-dash">
         {/* top bar of dash board */}
-        <div className="w-full h-full flex  flex-col justify-between  bg-dash">
+        <div className="w-full h-full flex flex-col justify-between bg-dash">
           {/* Updated Top Bar */}
           <div className="w-full h-1/12 rounded-lg p-2 px-6 bg-blue-950/50 flex items-center justify-between ">
             {/* Left Section */}
@@ -118,7 +91,6 @@ function Layout() {
             <div className="flex items-center gap-6">
               {/* Search Bar */}
               <div className="flex items-center bg-blue-950/30 rounded-full px-4 py-2">
-                {/* <Search className="text-gray-400 mr-2" />Z */}
                 <Search className="text-gray-400 mr-2" />
                 <input
                   type="text"
@@ -129,7 +101,6 @@ function Layout() {
 
               {/* Notifications */}
               <div className="text-gray-300 w-[36px] h-[36px] rounded-full flex justify-center items-center hover:text-white transition-colors bg-blue-900/75 border ">
-                {/* <Notifications /> */}
                 <Notifications />
               </div>
 
@@ -147,7 +118,6 @@ function Layout() {
                       {user?.role}
                     </p>
                   </div>
-                  {/* <ExpandMore className="text-white" /> */}
                 </Link>
                 <Menu
                   animate={{
@@ -242,9 +212,6 @@ function Layout() {
             <Outlet />
           </div>
         </div>
-        {/* <div className="w-full h-11/12">
-          <Outlet />
-        </div> */}
       </div>
     </div>
   );
