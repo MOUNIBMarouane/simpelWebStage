@@ -5,13 +5,10 @@ import {
   RefreshCw,
   Search,
   Calendar,
-  Undo,
   Eye,
   Trash,
-  Check,
-  File,
+  PlusCircle,
 } from "lucide-react";
-import DocumentCard from "./DocumentCard";
 import AddDocs from "./AddDocs";
 import { getDocuments } from "../../../service/docSrvice";
 import axios from "axios";
@@ -23,7 +20,9 @@ import "react-toastify/dist/ReactToastify.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { div } from "framer-motion/client";
+
+// Import the DataTable component
+import DataTable from "../../common/DataTable";
 
 const DocumentList = () => {
   const [documents, setDocuments] = useState([]);
@@ -32,19 +31,14 @@ const DocumentList = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
-  const [statuscontole, setStatusControl] = useState("Opened");
-  const [activedel, setActiveDel] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const headerCheckboxRef = useRef(null);
-
   // Update the filteredDocuments calculation
   const filteredDocuments = documents.filter((doc) => {
     const searchLower = searchQuery.toLowerCase();
-
     // Convert all searchable fields to strings
     const documentKey = doc.documentKey?.toString().toLowerCase() || "";
     const docId = doc.id?.toString().toLowerCase() || "";
@@ -251,6 +245,98 @@ const DocumentList = () => {
       }
     );
   };
+  // Define table columns
+  const columns = [
+    {
+      id: "selection",
+      header: "",
+      accessor: "id",
+      cellClassName: "w-12",
+    },
+    {
+      id: "documentKey",
+      header: "ID",
+      accessor: "documentKey",
+      cell: (row) => (
+        <div className="font-mono text-xs text-blue-300">{row.documentKey}</div>
+      ),
+      cellClassName: "w-1/6",
+    },
+    {
+      id: "title",
+      header: "Title",
+      accessor: "title",
+      cell: (row) => (
+        <div className="truncate max-w-xs" title={row.title}>
+          {row.title}
+        </div>
+      ),
+      cellClassName: "w-1/3",
+    },
+    {
+      id: "date",
+      header: "Date",
+      accessor: "docDate",
+      cell: (row) => (
+        <div>{new Date(row.docDate).toLocaleDateString("en-US")}</div>
+      ),
+      cellClassName: "w-1/6",
+    },
+    {
+      id: "type",
+      header: "Type",
+      accessor: "documentType.typeName",
+      cell: (row) => <div>{row.documentType?.typeName}</div>,
+      cellClassName: "w-1/6",
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      accessor: "id",
+      cell: (row) => (
+        <div className="flex items-center justify-center space-x-3">
+          <Link to={`/DocumentDetail/${row.id}`}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
+              <Eye size={18} />
+            </div>
+          </Link>
+          <div
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(row.id);
+            }}
+          >
+            <Trash size={18} />
+          </div>
+        </div>
+      ),
+      cellClassName: "w-1/6 text-right",
+    },
+  ];
+  // Custom actions for the table header
+  const tableActions = <AddDocs onDocumentAdded={handleDocumentAdded} />;
+
+  // Custom empty state content
+  const emptyStateContent = (
+    <div className="flex flex-col items-center py-12">
+      <div className="w-20 h-20 rounded-full bg-gray-700/30 flex items-center justify-center mb-4">
+        <FileText size={32} className="text-gray-500" />
+      </div>
+      <p className="text-gray-400 mb-4">No documents found</p>
+      {(user?.role === "Admin" || user?.role === "FullUser") && (
+        <div
+          onClick={() =>
+            document.getElementById("add-document-button")?.click()
+          }
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
+        >
+          <PlusCircle size={18} />
+          Create your first document
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="w-full h-full max-h-full mx-auto py-2 px-4">
@@ -280,17 +366,17 @@ const DocumentList = () => {
             {/* Search Input */}
             <div className=" flex w-4/12">
               <div className="relative ">
-                <Search
+                {/* <Search
                   className="absolute left-3  top-3 transform  text-gray-400"
                   size={20}
-                />
-                <input
+                /> */}
+                {/* <input
                   type="text"
                   placeholder="Search documents "
                   className="pl-10 pr-4 py-2 bg-gray-700 text-white rounded-md w-full focus:outline-none focus:ring focus:ring-blue-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                /> */}
               </div>
             </div>
             <div className=" flex w-full justify-between">
@@ -349,146 +435,49 @@ const DocumentList = () => {
           <LoadingDocs />
         </div>
       ) : (
-        <div className="w-full h-10/12 p-1 overflow-y-scroll overflow-x-clip scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800">
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-3">
-            {/* Document Liste */}
-            <div className="overflow-hidden rounded-lg shadow-lg">
-              <motion.table
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full border-collapse bg-gray-900 text-white rounded-lg"
-              >
-                <thead className="bg-blue-700 text-white">
-                  <tr>
-                    <th className="p-4 text-left uppercase text-sm tracking-wide">
-                      <input
-                        type="checkbox"
-                        ref={headerCheckboxRef}
-                        onChange={() => {
-                          if (
-                            selectedDocs.length === filteredDocuments.length
-                          ) {
-                            setSelectedDocs([]);
-                          } else {
-                            const allIds = filteredDocuments.map(
-                              (doc) => doc.id
-                            );
-                            setSelectedDocs(allIds);
-                          }
-                        }}
-                        className="w-6 h-6 rounded-lg"
-                      />
-                    </th>
-                    <th className="p-4 text-left uppercase text-sm tracking-wide">
-                      Title
-                    </th>
-                    <th className="p-4 text-left uppercase text-sm tracking-wide">
-                      Date
-                    </th>
-                    <th className="p-4 text-left uppercase text-sm tracking-wide">
-                      Type
-                    </th>
-                    <th className="p-4 uppercase text-sm tracking-wide text-center">
-                      <div>Status</div>
-                    </th>
-                    <th className="p-4 text-right uppercase text-sm tracking-wide flex items-center justify-evenly">
-                      <div onClick={handleRefresh}>
-                        <RefreshCw
-                          onClick={handleRefresh}
-                          disabled={loading || refreshing}
-                          className={`cursor-pointer rounded-4xl ${
-                            refreshing ? "animate-spin" : ""
-                          }`}
-                          size={28}
-                        />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDocuments.length > 0 ? (
-                    filteredDocuments.map((doc) => (
-                      <motion.tr
-                        key={doc.documentKey}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="border-b border-gray-700 hover:bg-gray-800 transition duration-200"
-                      >
-                        <td className="p-4 flex gap-1.5">
-                          <input
-                            type="checkbox"
-                            className="w-6 h-6 rounded-lg"
-                            checked={selectedDocs.includes(doc.id)}
-                            onChange={() => handleSelectDoc(doc.id)}
-                          />
-                          <p>{doc.documentKey}</p>
-                        </td>
-                        <td
-                          className="p-4"
-                          // onClick={() => handleUserClick(user, "update")}
-                        >
-                          {doc.title}
-                        </td>
-                        <td className="p-4">
-                          {" "}
-                          {new Date(doc.docDate).toLocaleDateString("sv-SE")}
-                        </td>
-                        <td className="p-4">{doc.documentType.typeName}</td>
-                        <td className="p-4 items-center ">
-                          <FormGroup className="items-center">
-                            <FormControlLabel
-                              control={<Switch />}
-                              label="Activate"
-                            />
-                          </FormGroup>
-                        </td>
-                        <td className="p-4 flex items-center justify-center space-x-3">
-                          {/* Toggle div */}
-
-                          {/* View div */}
-                          <Link to={`/DocumentDetail/${doc.id}`}>
-                            <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 cursor-pointer">
-                              <Eye size={18} />
-                            </div>
-                          </Link>
-
-                          {/* Delete div */}
-                          <div
-                            className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-700 text-white hover:bg-red-600 transition duration-200 cursor-pointer"
-                            onClick={() => handleDelete(doc.id)}
-                          >
-                            <Trash size={18} />
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="p-4 text-center text-gray-400">
-                        No users found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </motion.table>
-            </div>
-          </div>
+        <div className="w-full h-[calc(100vh-180px)] flex flex-col">
+          <DataTable
+            columns={columns}
+            data={documents}
+            onRefresh={handleRefresh}
+            isLoading={loading}
+            onRowClick={(row) => navigate(`/DocumentDetail/${row.id}`)}
+            actions={tableActions}
+            emptyStateContent={emptyStateContent}
+            onSearch={(query) => console.log("Search query:", query)}
+            searchPlaceholder="Search documents..."
+          />
         </div>
       )}
+
+      {/* Bulk Delete Action Bar */}
       {selectedDocs.length > 0 && (
-        <div className="w-full h-1/12 bg-gradient-to-r from-white via-white to-red-500 border flex justify-end items-center p-6 absolute bottom-0 left-0 rounded-lg backdrop-blur-sm">
-          <div className="flex gap-4">
-            <div
-              className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-600/65 transition-all rounded-lg cursor-pointer shadow-lg hover:shadow-red-500/30"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed bottom-4 right-4 left-4 bg-gray-800 border border-red-500/30 flex justify-between items-center p-4 rounded-lg shadow-lg backdrop-blur-sm z-40"
+        >
+          <div className="text-white">
+            <span className="font-semibold">{selectedDocs.length}</span>{" "}
+            document(s) selected
+          </div>
+          <div className="flex gap-3">
+            <button
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+              onClick={() => setSelectedDocs([])}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-600 flex gap-2 text-white px-4 py-2 hover:bg-red-700 transition rounded-lg"
               onClick={handleBulkDelete}
             >
-              <Trash />
-              <p>Delete d ({selectedDocs.length})</p>
-            </div>
+              <Trash size={20} />
+              Delete Selected
+            </button>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );
