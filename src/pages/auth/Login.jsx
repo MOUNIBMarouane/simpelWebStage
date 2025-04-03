@@ -2,7 +2,7 @@ import "../globales.css";
 import { useNavigate, Link } from "react-router-dom";
 import Avatar from "../../assets/icons/icons8-login-50.png";
 import React, { useState } from "react";
-import FormInput from "../../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 import { User, Lock } from "lucide-react";
 import axios from "axios";
 import { header } from "framer-motion/client";

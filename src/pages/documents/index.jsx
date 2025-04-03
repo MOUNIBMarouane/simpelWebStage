@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getDocuments } from "../service/docSrvice";
-import DocumentCard from "../components/dashboard/documents/DocumentCard";
-import AddDocs from "../components/dashboard/documents/AddDocs";
-import DocumentList from "../components/dashboard/documents/DocumentList";
+import { getDocuments } from "../../service/LInes";
+// import DocumentCard from "../components/dashboard/documents/DocumentCard";
+// import AddDocs from "../components/dashboard/documents/AddDocs";
+import DocumentList from "../../components/dashboard/documents/DocumentList";
 
 const Documents = () => {
   const [documents, setDocuments] = useState([]);

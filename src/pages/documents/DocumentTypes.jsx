@@ -19,8 +19,9 @@ import {
   Network,
   Search,
 } from "lucide-react";
-import { TypeDocExist } from "../service/docSrvice";
-import FormInput from "../components/FormInputs";
+// import { TypeDocExist } from "../service/docSrvice";
+import { TypeDocExist } from "../../service/docSrvice";
+// import FormInput from "../../components/FormInput";
 
 const AddDocumentType = () => {
   const navigate = useNavigate();

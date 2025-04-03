@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getDocument, updateDocument } from "../service/docSrvice";
+import { getDocument, updateDocument } from "../../service/docSrvice";
 
 import {
-  getDocumentLines,
+  getDocumentLine,
   addDocumentLine,
   updateDocumentLine,
   deleteDocumentLine,
-} from "../service/Lines";
-import AddLine from "../components/dashboard/documents/AddLine";
+} from "../../service/LInes";
+
+import AddLine from "../../components/dashboard/documents/AddLine";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye as EyeIcon,
@@ -22,7 +23,8 @@ import {
   List,
   RefreshCw,
 } from "lucide-react";
-import FormSelect from "../components/inputs/FormSelect";
+// import FormSelect from "../components/inputs/FormSelect";
+import FormSelect from "../../components/inputs/FormSelect";
 import axios from "axios";
 // import { EditLineModal } from "./EditLineModal";
 

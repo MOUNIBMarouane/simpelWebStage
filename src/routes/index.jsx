@@ -11,10 +11,9 @@ import MainLayout from "../components/layout/MainLayout";
 
 // Auth Pages
 import Login from "../pages/auth/Login";
-import Signup from "../pages/auth/Signup";
+import { Signup } from "../pages/auth/Register";
 import Verification from "../pages/auth/Verification";
 import VerificationWelcome from "../pages/auth/VerificationWelcome";
-import ResetPassword from "../pages/auth/ResetPassword";
 import UpdatePassword from "../pages/auth/UpdatePassword";
 import Welcome from "../pages/auth/Welcome";
 
@@ -24,19 +23,14 @@ import Dashboard from "../pages/Dashboard";
 // Document Pages
 import Documents from "../pages/Documents";
 import DocumentDetail from "../pages/documents/DocumentDetail";
-import LineDetail from "../pages/documents/LineDetail";
 import DocumentTypes from "../pages/documents/DocumentTypes";
 
 // Circuit Pages
-import CircuitManagement from "../pages/circuits/CircuitManagement";
-import CircuitDetail from "../pages/circuits/CircuitDetail";
 
 // User Management Pages
 import UsersList from "../pages/users/UsersList";
 import UserDetails from "../pages/users/UserDetails";
-import UsersUpdate from "../pages/users/UsersUpdate";
 import Profile from "../pages/users/Profile";
-import Settings from "../pages/users/Settings";
 
 // Route Guards
 import PrivateRoute from "./PrivateRoute";

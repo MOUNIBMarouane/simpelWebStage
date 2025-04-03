@@ -1,6 +1,6 @@
 import "../globales.css";
 import React, { useState } from "react";
-import FormInput from "../../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 import { Lock, Eye, EyeClosed } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";

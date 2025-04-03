@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import FormInput from "../../components/FormInputs";
+// import FormInput from "../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 import {
   Mail,
   User,
@@ -20,7 +21,7 @@ import {
   FindUserName,
   FindUserMail,
 } from "../../service/authService";
-import FormSelectRole from "../../components/inputs/FormSelectRole";
+import RoleSelect from "../../components/inputs/RoleSelect";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
@@ -557,7 +558,7 @@ const UsersList = () => {
               <label className="text-gray-300 mb-2 block">
                 Select User Role:
               </label>
-              <FormSelectRole
+              <RoleSelect
                 id="roleName"
                 value={formData.roleName}
                 onChange={(e) =>
