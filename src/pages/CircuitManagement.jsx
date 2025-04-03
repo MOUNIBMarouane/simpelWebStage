@@ -41,7 +41,6 @@ const CircuitManagement = () => {
   const [circuitDetails, setCircuitDetails] = useState([]);
   const formContainerRef = useRef(null);
 
- n 
   // Fetch circuits on mount
   useEffect(() => {
     fetchCircuits();

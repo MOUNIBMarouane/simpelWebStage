@@ -57,11 +57,13 @@ export const AuthProvider = ({ children }) => {
 
   // Login function
   const login = (accessToken, refreshToken, userData) => {
+    console.log("AuthContext.login called with:", { accessToken, userData });
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
 
     setUser(userData);
     setError(null);
+    console.log("User state updated:", userData);
   };
 
   // Logout function

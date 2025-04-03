@@ -5,20 +5,20 @@ import React, { useState } from "react";
 import FormInput from "../../components/common/Form/Input/index";
 import { User, Lock } from "lucide-react";
 import axios from "axios";
-import { header } from "framer-motion/client";
-// import { useContext } from "react";
-// import AuthContext from "../Auth/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
-  const [userid, setUserId] = useState(-1);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
@@ -28,30 +28,35 @@ const SignIn = () => {
           password: password,
         },
         {
-          withCredentials: true, // ✅ Ensures cookies are sent/received
+          withCredentials: true,
         }
       );
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);
-        // Example function to store tokens
 
-        // Store in LocalStorage (not recommended for security reasons)
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refresh_token", response.data.refreshToken);
+        // Use the login function from AuthContext
+        // In Login.jsx handleSubmit function
+        console.log("Before login call:", {
+          accessToken: response.data.accessToken,
+        });
+        login(
+          response.data.accessToken,
+          response.data.refreshToken,
+          response.data.user || { username: email } // Pass user data if available
+        );
+        console.log("After login call, about to navigate");
 
-        // Store in cookies (safer approach)
-        document.cookie = `accessToken=${response.data.accessToken}; Path=/; Secure; HttpOnly; SameSite=Strict`;
-        document.cookie = `refresh_token=${response.data.refreshToken}; Path=/; Secure; HttpOnly; SameSite=Strict`;
-
+        // Navigate to dashboard after login
         navigate("/dashboard");
       } else {
         setError("Login failed. Please check your credentials and try again.");
       }
     } catch (error) {
-      // console.error("Login error:", error);
-      // console.log(error.response?.data);
-      setError(error.response?.data);
+      console.error("Login error:", error);
+      setError(error.response?.data || "Invalid login credentials");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,17 +114,18 @@ const SignIn = () => {
           </div>
           <div className="w-full max-w-md mx-auto p-2 pt-4 flex justify-between place-items-center">
             <label className="text-[12px]">
-              I didn't have an account.{" "}
+              I don't have an account.{" "}
               <Link to="/signup">
                 <span>register</span>
               </Link>
             </label>
-            <div
+            <button
               onClick={handleSubmit}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 cursor-pointer"
+              disabled={isLoading}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              LOGIN
-            </div>
+              {isLoading ? "LOGGING IN..." : "LOGIN"}
+            </button>
           </div>
         </div>
       </div>
