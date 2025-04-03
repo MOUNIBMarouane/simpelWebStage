@@ -12,7 +12,7 @@ import {
   Network,
 } from "lucide-react";
 import axios from "axios";
-import FormInput from "../components/FormInputs";
+import FormInput from "../components/common/Form/Input";
 
 const CircuitDetail = () => {
   const { circuitId } = useParams();

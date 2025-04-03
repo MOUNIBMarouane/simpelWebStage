@@ -1,11 +1,11 @@
 // src/routes/PublicRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import { useAuth } from "../contexts/AuthContext";
 
 /**
  * Public Route component - redirects authenticated users away from public pages
+ *
  * @param {Object} props Component props
  * @param {React.ReactNode} props.children Child components
  * @returns {JSX.Element} Public route
@@ -29,10 +29,6 @@ const PublicRoute = ({ children }) => {
 
   // Render the public content
   return children;
-};
-
-PublicRoute.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export default PublicRoute;

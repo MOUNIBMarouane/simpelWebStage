@@ -18,7 +18,7 @@ import {
   Network,
   View,
 } from "lucide-react";
-import FormInput from "../components/FormInputs";
+import FormInput from "../components/common/Form/Input/index";
 import { RxEyeOpen } from "react-icons/rx";
 
 const CircuitManagement = () => {

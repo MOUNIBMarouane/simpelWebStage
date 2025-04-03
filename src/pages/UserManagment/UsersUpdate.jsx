@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Save } from "lucide-react";
-import FormInput from "../../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 
 const UsersUpdate = () => {
   const { userId } = useParams();

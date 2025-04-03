@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
-import FormInput from "../../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 
 const SettingsPage = () => {
   const navigate = useNavigate();

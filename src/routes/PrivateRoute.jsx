@@ -1,11 +1,11 @@
 // src/routes/PrivateRoute.jsx
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { useAuth } from '../contexts/AuthContext';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 /**
  * Private Route component - protects routes that require authentication
+ *
  * @param {Object} props Component props
  * @param {React.ReactNode} props.children Child components
  * @returns {JSX.Element} Protected route
@@ -29,10 +29,6 @@ const PrivateRoute = ({ children }) => {
 
   // Render the protected content
   return children;
-};
-
-PrivateRoute.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export default PrivateRoute;

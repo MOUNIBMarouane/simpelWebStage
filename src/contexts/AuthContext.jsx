@@ -2,18 +2,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
-import { getUserAccount } from "../services/authService";
+import { getUserAccount } from "../service/authService";
 
-/**
- * Authentication Context for managing user authentication state
- */
+// Create context
 const AuthContext = createContext(undefined);
 
-/**
- * Hook for using the auth context
- * @returns {Object} Auth context values
- */
+// Hook for using the auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -22,16 +16,14 @@ export const useAuth = () => {
   return context;
 };
 
-/**
- * Authentication Provider component
- */
+// Auth Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Effect to check if user is already authenticated
+  // Check if user is already authenticated on component mount
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -63,12 +55,7 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  /**
-   * Login function
-   * @param {string} accessToken - JWT access token
-   * @param {string} refreshToken - JWT refresh token
-   * @param {Object} userData - User data
-   */
+  // Login function
   const login = (accessToken, refreshToken, userData) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
@@ -77,9 +64,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
 
-  /**
-   * Logout function
-   */
+  // Logout function
   const logout = async () => {
     try {
       // Any logout API calls would go here
@@ -93,10 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Update current user information
-   * @param {Object} userData - Updated user data
-   */
+  // Update current user information
   const updateUser = (userData) => {
     setUser((prevUser) => ({
       ...prevUser,
@@ -117,10 +99,6 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
-};
-
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export default AuthContext;

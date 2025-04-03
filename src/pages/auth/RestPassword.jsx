@@ -1,6 +1,6 @@
 import "../globales.css";
 import React, { useState } from "react";
-import FormInput from "../../components/FormInputs";
+import FormInput from "../../components/common/Form/Input/index";
 import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
