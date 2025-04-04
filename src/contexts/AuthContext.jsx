@@ -31,8 +31,10 @@ export const AuthProvider = ({ children }) => {
         const accessToken = localStorage.getItem("accessToken");
 
         if (accessToken) {
+          // Fetch complete user data from the server
           const userData = await getUserAccount();
           if (userData) {
+            console.log("Retrieved user data on init:", userData);
             setUser(userData);
           } else {
             // Invalid token or session expired
@@ -55,14 +57,33 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Login function
-  const login = (accessToken, refreshToken, userData) => {
+  // Login function - now properly stores user data
+  const login = async (accessToken, refreshToken, userData) => {
     console.log("AuthContext.login called with:", { accessToken, userData });
+
+    // Store tokens
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
 
+    // Set the user data in state
     setUser(userData);
     setError(null);
+
+    // If we only have minimal user data, fetch complete profile
+    if (!userData.firstName || !userData.lastName || !userData.role) {
+      try {
+        console.log("Fetching complete user profile after login");
+        const completeUserData = await getUserAccount();
+        if (completeUserData) {
+          console.log("Retrieved complete user data:", completeUserData);
+          setUser(completeUserData);
+        }
+      } catch (err) {
+        console.error("Error fetching complete user data:", err);
+        // We continue with partial user data rather than failing
+      }
+    }
+
     console.log("User state updated:", userData);
   };
 

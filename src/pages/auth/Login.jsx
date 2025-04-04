@@ -1,3 +1,4 @@
+// src/pages/auth/Login.jsx
 import "../globales.css";
 import { useNavigate, Link } from "react-router-dom";
 import Avatar from "../../assets/icons/icons8-login-50.png";
@@ -35,18 +36,18 @@ const SignIn = () => {
       if (response.status === 200) {
         console.log("Login successful:", response.data);
 
-        // Use the login function from AuthContext
-        // In Login.jsx handleSubmit function
-        console.log("Before login call:", {
-          accessToken: response.data.accessToken,
-        });
-        login(
-          response.data.accessToken,
-          response.data.refreshToken,
-          response.data.user || { username: email } // Pass user data if available
-        );
-        console.log("After login call, about to navigate");
+        // Extract user data from the response
+        const userData = response.data.user || {
+          // Fallback with minimal user data if the API doesn't include complete user object
+          username: email,
+          email: email,
+          // Add other default fields as needed
+        };
 
+        // Use the login function from AuthContext with complete user data
+        login(response.data.accessToken, response.data.refreshToken, userData);
+
+        console.log("Login successful, navigating to dashboard");
         // Navigate to dashboard after login
         navigate("/dashboard");
       } else {
@@ -54,7 +55,7 @@ const SignIn = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.response?.data || "Invalid login credentials");
+      setError(error.response?.data?.message || "Invalid login credentials");
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +83,7 @@ const SignIn = () => {
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="Enter your email or username"
                 required
                 icon={User}
               />
