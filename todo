@@ -1,91 +1,71 @@
-todo:
-    ✔ password in register -Valide @done(25-03-19 07:38)
+TODO:
+    Signup:
+        ☐ in signup add option to add a type of user (company , personal)
+        ☐ if user is company, add a field to add company name, Company RC, company address, company phone number, company email, company website...
+        ☐ if user is personal, add a field to add personal name, personal address, personal phone number, personal email, personal website...
+        ☐ make the fill of the password and confirm password in the therth step with fill the sucret key ,
+        ☐ make him know that the password of the entery of the aplication and it separated of other accounts
+    Layout:
+        ☐ make the layout of the app more beautiful and more user friendly and responsive
+        ☐ seidebar upgrade
+        ☐ topbar upgrade
+        ☐ main upgrade - be fixed size just the content should be scrollable
+    Profile:
+        ☐ upgrade ui of the profile page
     
-    ✔ resend div : resend vereficaton code @done(25-03-19 07:38)
-    
-    ✔ after register should show a message @done(25-03-19 07:38)
-    
-    ✔ after verified a message welcome @done(25-03-19 07:38)
-    
-    ✔ message signi ficative @done(25-03-19 10:47)
-    
-    ✔ exit div @done(25-03-19 07:38)
-    
-    ✔ active div add the activation status @done(25-03-19 09:41)
+    ☐ make the ui of all pages compatible and uniform
+    ☐ make the ui of the app more beautiful and more user friendly and responsive
 
-    ✔ select list Delete @done(25-03-19 10:47)
+☐ hendle select 
+☐ handle spaces ui 
+☐ change key by number 
+☐ view by select all line 
+☐ add filter select
+☐ simple user can see parametring case
+☐ add all colum to add for user in register
+☐ add profile in sidbare
+☐ rederection
+☐ change view with one click - card or list 
+☐ spacing
+☐ attribute by comment
+☐ intevale de usage - by date
+☐ add table for line for the types and sublines in case
+☐ ---->stock the last namber
+☐ --dynamic count 
+☐ dont change the an active circuit
+document have status
+etap une operation deplace de status a autre status
+add typeLine where we can choose an intrerval of this type
 
-    ✔ log status for admin @done(25-03-19 10:47)
+-- types and subtypes
+-- add alias for the types and subtypes
+-- at creation of the document chouse the type at first
 
-    ✔ modification of users @done(25-03-20 02:18)
-    
-    ✔ role update @done(25-03-20 02:18)
+☐ add filter for user managment
+☐ change text in tables document (doc date, doc number )
+☐ filter 
+☐ type managment -- change attrebute by description
+☐ in creation type 
+    ☐ -- type name , type TypeAlias {optionel if not checked} , description --optionel
+    ☐ 
+☐ add subtype managment
 
-    ✔ refrech table when i add new user @done(25-03-20 06:50)
+ - for the user upgrade the ui and make it pretty and modern , and add a filter that i can search by what i select in the filter .
+ - do the same logic filter in users managmet in all tables
+ - in Document change document created by document date and document key by document code
+ - in type managment in the filter i want to see the date piker filter just when i select somting related by date in the filter in filter by it 
+ - fix the ui and ux in user managment and type management specelly the tables and the scroll and pagination
 
-    ✔ add document every singel input in one step - and show steps with a dotes claire @started(25-03-20 13:24) @done(25-03-20 14:19) @lasted(55m40s)
-
-    ✔ creation step by step and improvement of the css @done(25-03-20 14:20)
-
-    ✔ filter the view of date @done(25-03-21 13:45)
-
-    ✔ choose a beter templete and colors @done(25-03-21 13:53)
-    
-    ✔ add setting option - sublist on top @done(25-03-24 06:03)
-
-    ✔ select items opton and delete like userlist @done(25-03-24 13:55)
-    
-    ✔ document search by everyting @done(25-03-24 13:54)
-    
-    ✔ add setting page @done(25-03-24 13:54)
-    
-    ✔ add page to create a new type of document @done(25-03-24 06:32)
-    
-    ✘ add foreing keydoc and add in the type @cancelled(25-03-24 06:34)
-    
-    ✔ actions should be out the list (in the top) @done(25-03-24 06:34)
-    
-    ✔ after creation of doc should be viewed @done(25-03-24 13:55)
-
-    ✔ css - selecte list @done(25-03-26 11:34)
-
-    ✔ rederiction to details when the add is done - document @done(25-03-26 11:57)
-    
-    ✔ 7ayed type alias min steps - and review at the end of add - notification @done(25-03-28 06:28)
-    
-    ✔ edit document -- in document details - handel type select @done(25-03-28 11:28)
-
-    ☐ add user - be exactly like sign up
-
-    ✘ previliges @cancelled(25-03-28 11:30)`
-
-    ☐ dwira 3la css auth @started(25-03-28 11:28)
-
-    ✔ Edit document types @started(25-03-26 13:11) @done(25-03-28 11:28) @lasted(1d22h17m45s)
-
-    ☐ Edit document details
-
-    ✔ handler close form add - document @done(25-03-28 11:29)
-
-    ☐ add step for cerqui
-
-    ☐ add option in select - other - rederect to add new element 
-    
-    ☐ adding lines and sublines - step by step @started(25-03-24 13:55)
-
-    ☐ modification should be in another form @started(25-03-24 13:55)
-
-    ☐ modify and delete document from view @started(25-03-24 13:55)
+ WEEKEND:
+    ✔ after creation of document, user should be redirected to view document @done(25-05-09 16:07)
+    ✔ add assignement of document to circuit butoon to the view @started(25-05-09 16:08) @done(25-05-09 16:11) @lasted(3m20s)
+    ✔ in the documents table add redirection to the flow of document @done(25-05-09 16:27)
+    in document flow:
+        ☐ improve the ui
+        ☐ handle the move document button
+        ☐ before actions display message confirmation
+        ☐ handle auto refresh after action
+    in circuit, statuses and steps tables:
+        ☐ improve the ui
+        ☐ add filters
         
-    ☐ table en tete circuit => code, descriptif, boolen(active, desactive)
-
-    ☐ line circuit => code, numline, titre, descriptif
-
-    ☐ add div status to change circuit
-
-    ☐ user view be like user Update profile
-    
-    ☐ update view details user 
-
-    ☐ refactoring ui/ux of all pages and be unique and complemented 
-

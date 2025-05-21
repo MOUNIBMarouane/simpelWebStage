@@ -1,295 +1,363 @@
-@import "tailwindcss";
+@import './styles/form-overrides.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-    font-family: IInter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        "Helvetica Neue",
-        Arial,
-        "Noto Sans",
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji";
-    line-height: 1.5;
-    font-weight: 400;
+@layer base {
+  :root {
+    /* Light theme variables */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5% 64.9%;
+    --radius: 0.4rem;
 
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    /* background-color: #cc0606; */
-    background-image: url("../src/assets/bg/bg-dash2.jpg");
-    background-repeat: no-repeat;
-    background-size: auto;
-    background-size: 100% 100%;
+    /* Sidebar variables for light mode */
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 222.2 47.4% 11.2%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-secondary: 210 40% 98%;
+    --sidebar-secondary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-muted: 215.4 16.3% 46.9%;
+    --sidebar-muted-foreground: 215.4 16.3% 56.9%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-destructive: 0 84.2% 60.2%;
+    --sidebar-destructive-foreground: 210 40% 98%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-input: 214.3 31.8% 91.4%;
+    --sidebar-ring: 215.4 16.3% 46.9%;
+    --sidebar-radius: 0.4rem;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+    /* Document UI specific variables */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+  }
 
+  .dark {
+    /* Dark theme variables */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.6% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 72.2% 50.6%;
 
+    /* Sidebar variables for dark mode */
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-secondary: 222.2 47.4% 11.2%;
+    --sidebar-secondary-foreground: 210 40% 98%;
+    --sidebar-muted: 210 40% 98%;
+    --sidebar-muted-foreground: 215.4 16.3% 56.9%;
+    --sidebar-accent: 222.2 47.4% 11.2%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-destructive: 0 62.8% 30.6%;
+    --sidebar-destructive-foreground: 210 40% 98%;
+    --sidebar-border: 214.3 31.8% 9.1%;
+    --sidebar-input: 214.3 31.8% 9.1%;
+    --sidebar-ring: 222.2 84% 4.9%;
+    --sidebar-radius: 0.4rem;
+  }
 
-body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
+  /* Improved custom scrollbar for the registration form */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e2430;
+    border-radius: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #2563eb;
+  }
+
+  /* HTML and Body */
+  html {
+    overflow-x: hidden;
+    height: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    -ms-overflow-style: none;
+    height: 100%;
     min-height: 100vh;
+  }
+
+  /* Hide scrollbar for body on the registration page */
+  body::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
 }
 
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-size: 14px;
+  }
 }
 
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-
-    a:hover {
-        color: #747bff;
-    }
-
-}
-
-/* Custom scrollbar styles */
+/* Global custom scrollbar styling */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #1e293b;
-    /* Dark track */
-    border-radius: 10px;
+  background: rgba(30, 41, 59, 0.2);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #3b82f6;
-    /* Blue thumb */
-    border-radius: 10px;
-    border: 2px solid #1e293b;
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 6px;
+  border: 1px solid transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #2563eb;
-    /* Lighter blue on hover */
+  background: rgba(59, 130, 246, 0.7);
 }
 
-/* .bg-dash {
-    background-image: url("../src/assets/bg/bg-dash2.jpg");
-    background-repeat: no-repeat;
-    background-size: auto;
-    background-size: 100% 100%;
-} */
-
-/* Dashboard Glass Morphism Styles */
-
-/* Main background with gradient and image */
-.dashboard-container {
-    min-height: 100vh;
-    width: 100%;
-    background-image:
-        linear-gradient(to bottom right, rgba(17, 24, 39, 0.85), rgba(9, 9, 121, 0.65), rgba(0, 36, 51, 0.75)),
-        url('/src/assets/bg/dashboard-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    position: relative;
-    display: flex;
-    overflow: hidden;
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.5) rgba(30, 41, 59, 0.2);
 }
 
-/* Glass morphism sidebar */
-.sidebar-glass {
-    width: 260px;
-    height: 100vh;
-    background: rgba(15, 23, 42, 0.25);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    transition: all 0.3s ease;
-    border-radius: 0 24px 24px 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+/* Layout utility classes */
+@layer components {
+  .glass-card {
+    @apply bg-gradient-to-b from-[#0a1033] to-[#0d1541] border border-blue-900/30 backdrop-blur-md shadow-md rounded-lg;
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .flex-col-center {
+    @apply flex flex-col items-center justify-center;
+  }
+
+  .input-dark {
+    @apply bg-[#0d1541]/70 border-blue-900/50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white rounded-md text-sm h-9;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-md text-sm py-1.5 px-3;
+  }
+
+  /* Responsive padding utility */
+  .responsive-padding {
+    @apply px-2 sm:px-3 md:px-4 py-2 sm:py-3;
+  }
+
+  /* Container utility with max-width constraints */
+  .container-fluid {
+    @apply w-full max-w-7xl mx-auto px-2 sm:px-3 lg:px-4;
+  }
+
+  /* Compact card styling */
+  .compact-card {
+    @apply p-2 rounded-lg border border-blue-900/30 bg-[#0a1033]/90;
+  }
+
+  /* Compact form elements */
+  .form-label {
+    @apply text-xs font-medium text-gray-300 mb-1;
+  }
+
+  .form-input {
+    @apply h-8 text-sm px-2 bg-[#0d1541]/70 border-blue-900/50;
+  }
+
+  /* Scrollbar classes */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thumb-blue-600\/20 {
+    scrollbar-color: rgba(37, 99, 235, 0.2) transparent;
+  }
+
+  .scrollbar-track-blue-900\/10 {
+    scrollbar-track-color: rgba(30, 58, 138, 0.1);
+  }
+
+  /* New utility classes for app-specific use cases */
+  .overflow-x-auto-no-scrollbar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .overflow-x-auto-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Glass morphism top bar */
-.topbar-glass {
-    height: 70px;
-    background: rgba(15, 23, 42, 0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    z-index: 5;
-    border-radius: 0 0 16px 16px;
-    margin: 0 16px;
+/* Step form animations */
+.animation-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Main content area with glass effect */
-.content-glass {
-    flex: 1;
-    margin: 24px;
-    padding: 24px;
-    background: rgba(15, 23, 42, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-}
-
-/* Glass buttons */
-.glass-button {
-    background: rgba(59, 130, 246, 0.2);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
-    padding: 8px 16px;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.glass-button:hover {
-    background: rgba(59, 130, 246, 0.4);
-    border-color: rgba(59, 130, 246, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Glass cards */
-.glass-card {
-    background: rgba(30, 41, 59, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-/* Navigation menu items */
-.nav-item {
-    margin: 6px 12px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.nav-item.active {
-    background: rgba(59, 130, 246, 0.2);
-    color: white;
-    border-left: 3px solid rgb(59, 130, 246);
-}
-
-/* Custom scrollbar for glass elements */
-.glass-scroll::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.glass-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-}
-
-.glass-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-}
-
-.glass-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* User profile in sidebar */
-.user-profile {
-    display: flex;
-    align-items: center;
-    padding: 20px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 20px;
-}
-
-.user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(59, 130, 246, 0.3);
-    border: 2px solid rgba(59, 130, 246, 0.6);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Animation for glass elements */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0.5;
+    transform: translateY(8px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
+/* Modern calendar styling for date pickers */
+.react-calendar {
+  width: 100%;
+  background-color: transparent;
+  color: white;
+  font-size: 0.875rem;
+  border: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .sidebar-glass {
-        position: fixed;
-        left: -280px;
-        border-radius: 0 24px 24px 0;
-    }
+.react-calendar__navigation {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
 
-    .sidebar-glass.open {
-        left: 0;
-    }
+.react-calendar__navigation button {
+  background: none;
+  border: 0;
+  color: white;
+}
 
-    .topbar-glass {
-        margin: 0;
-        border-radius: 0;
-    }
+.react-calendar__navigation button:disabled {
+  opacity: 0.3;
+}
 
-    .content-glass {
-        margin: 16px;
-        padding: 16px;
-    }
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 6px;
+}
+
+.react-calendar__month-view__weekdays {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(148, 163, 184, 0.8);
+  margin-bottom: 0.25rem;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.25rem;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+.react-calendar__tile {
+  padding: 0.35rem;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  margin: 1px;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: white;
+}
+
+.react-calendar__tile--active {
+  background-color: rgba(59, 130, 246, 0.8) !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+.react-calendar__tile--now {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: white;
+  font-weight: 500;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: rgba(248, 113, 113, 0.9);
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: rgba(148, 163, 184, 0.5);
+}
+
+.custom-calendar .react-calendar__tile--active {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Dialog and modal styling improvements */
+.create-document-dialog {
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Button transitions */
+button {
+  transition: all 0.2s ease;
 }
