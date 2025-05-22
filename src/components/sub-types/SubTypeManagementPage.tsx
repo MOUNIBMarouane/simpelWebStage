@@ -11,7 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import SubTypeList from "./SubTypeList";
-import SubTypeCreateDialog from "./SubTypeCreateDialog";
+import { SubTypeCreateDialog } from "./SubTypeCreateDialog";
 import SubTypeEditDialog from "./SubTypeEditDialog";
 import SubTypeDeleteDialog from "./SubTypeDeleteDialog";
 import SubTypeFilterBar from "./SubTypeFilterBar";

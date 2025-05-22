@@ -10,6 +10,7 @@ import {
   FileText,
   FileEdit,
   Power,
+  Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -97,155 +98,46 @@ export const SubTypeReview = () => {
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="h-full"
     >
-      <Card className="border border-blue-900/30 bg-gradient-to-b from-[#0a1033] to-[#0d1541] shadow-lg rounded-lg overflow-hidden h-full flex flex-col">
-        <CardHeader className="bg-blue-900/20 p-3 border-b border-blue-900/30 flex-shrink-0">
-          <CardTitle className="text-sm text-blue-300 flex items-center">
-            <CheckCircle2 className="h-4 w-4 mr-2 text-blue-400" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 mb-1">
+          <CheckCircle2 className="h-5 w-5 text-blue-400" />
+          <h3 className="text-blue-200 text-base font-medium">
             Review Information
-          </CardTitle>
-        </CardHeader>
+          </h3>
+        </div>
 
-        <ScrollArea className="flex-grow overflow-auto max-h-[calc(100vh-250px)]">
-          <CardContent className="p-4">
-            <motion.div
-              className="space-y-4"
-              variants={container}
-              initial="hidden"
-              animate="show"
-            >
-              <motion.div variants={item} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-blue-300 flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-blue-400" />
-                    Dates & Status
-                  </h3>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => goToStep(1)}
-                    className="h-7 px-2 py-0 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 border-blue-900/40"
-                  >
-                    <FileEdit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                </div>
+        <ScrollArea className="max-h-[350px] pr-2 -mr-2">
+          <motion.div
+            className="space-y-4"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.div variants={item} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-blue-300 flex items-center">
+                  <Calendar className="h-4 w-4 mr-2 text-blue-400" />
+                  Dates & Status
+                </h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToStep(1)}
+                  className="h-7 px-2 py-0 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 border-blue-900/40"
+                >
+                  <FileEdit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+              </div>
 
-                <div className="bg-blue-900/20 rounded-md p-3 space-y-3 border border-blue-900/40">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex items-center mb-1">
-                        <span className="text-xs text-blue-300/70 font-medium mr-1">
-                          Start Date
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] px-1 py-0 h-4 font-normal text-blue-300/70 border-blue-900/50"
-                        >
-                          Required
-                        </Badge>
-                      </div>
-                      <div className="flex items-center">
-                        <CalendarClock className="h-3.5 w-3.5 mr-1.5 text-blue-400/70" />
-                        {formData.startDate ? (
-                          <p className="text-sm text-white">
-                            {formatSimpleDate(formData.startDate)}
-                          </p>
-                        ) : (
-                          <p className="text-sm text-red-400 flex items-center">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Not set
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center mb-1">
-                        <span className="text-xs text-blue-300/70 font-medium mr-1">
-                          End Date
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] px-1 py-0 h-4 font-normal text-blue-300/70 border-blue-900/50"
-                        >
-                          Required
-                        </Badge>
-                      </div>
-                      <div className="flex items-center">
-                        <CalendarClock className="h-3.5 w-3.5 mr-1.5 text-blue-400/70" />
-                        {formData.endDate ? (
-                          <p className="text-sm text-white">
-                            {formatSimpleDate(formData.endDate)}
-                          </p>
-                        ) : (
-                          <p className="text-sm text-red-400 flex items-center">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Not set
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {duration && (
-                    <div className="flex items-center text-xs bg-blue-900/30 p-2 rounded-md border border-blue-900/40">
-                      <Clock className="h-3.5 w-3.5 mr-1.5 text-blue-400/80" />
-                      <span className="text-blue-300/80">
-                        Duration:{" "}
-                        <span className="text-blue-300">{duration.text}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="flex items-center mb-1">
-                      <span className="text-xs text-blue-300/70 font-medium">
-                        Status
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <div
-                        className={`h-2.5 w-2.5 rounded-full mr-1.5 ${
-                          formData.isActive ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      ></div>
-                      <div className="flex items-center">
-                        <Power className="h-3.5 w-3.5 mr-1.5 text-blue-400/80" />
-                        <p className="text-sm text-white font-medium">
-                          {formData.isActive ? "Active" : "Inactive"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div variants={item} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-blue-300 flex items-center">
-                    <FileText className="h-4 w-4 mr-2 text-blue-400" />
-                    Enter Code
-                  </h3>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => goToStep(2)}
-                    className="h-7 px-2 py-0 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 border-blue-900/40"
-                  >
-                    <FileEdit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                </div>
-
-                <div className="bg-blue-900/20 rounded-md p-3 space-y-3 border border-blue-900/40">
+              <div className="bg-blue-950/40 rounded-md p-3 space-y-3 border border-blue-900/40">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="flex items-center mb-1">
                       <span className="text-xs text-blue-300/70 font-medium mr-1">
-                        Code
+                        Start Date
                       </span>
                       <Badge
                         variant="outline"
@@ -255,12 +147,40 @@ export const SubTypeReview = () => {
                       </Badge>
                     </div>
                     <div className="flex items-center">
-                      {formData.name ? (
-                        <p className="text-sm text-white font-medium">
-                          {formData.name}
+                      <CalendarClock className="h-3.5 w-3.5 mr-1.5 text-blue-400/70" />
+                      {formData.startDate ? (
+                        <p className="text-sm text-white">
+                          {formatSimpleDate(formData.startDate)}
                         </p>
                       ) : (
-                        <p className="text-sm text-red-400 font-medium flex items-center">
+                        <p className="text-sm text-red-400 flex items-center">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          Not set
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <span className="text-xs text-blue-300/70 font-medium mr-1">
+                        End Date
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-[9px] px-1 py-0 h-4 font-normal text-blue-300/70 border-blue-900/50"
+                      >
+                        Required
+                      </Badge>
+                    </div>
+                    <div className="flex items-center">
+                      <CalendarClock className="h-3.5 w-3.5 mr-1.5 text-blue-400/70" />
+                      {formData.endDate ? (
+                        <p className="text-sm text-white">
+                          {formatSimpleDate(formData.endDate)}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-red-400 flex items-center">
                           <AlertCircle className="h-3 w-3 mr-1" />
                           Not set
                         </p>
@@ -268,46 +188,115 @@ export const SubTypeReview = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            </motion.div>
-          </CardContent>
-        </ScrollArea>
 
-        {/* <div className="p-4 border-t border-blue-900/30 bg-blue-500/10 mt-auto flex-shrink-0">
-          <motion.div
-            variants={item}
-            className="rounded-md p-3 border border-blue-500/20 space-y-2"
-          >
-            <div className="flex items-center text-blue-400 text-sm mb-1">
-              <CheckCircle2 className="h-4 w-4 mr-1.5" />
-              Ready to create?
-            </div>
-            <p className="text-xs text-blue-300/80">
-              Please review all information above before submitting. You can go
-              back to edit any section using the Edit buttons.
-            </p>
-            <div className="pt-1 grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => goToStep(1)}
-                className="text-xs h-8 border-blue-900/40 text-blue-300"
-              >
-                Start Over
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={submitForm}
-                className="text-xs h-8 bg-blue-600 hover:bg-blue-500 text-white"
-              >
-                Create Subtype
-              </Button>
-            </div>
+                {duration && (
+                  <div className="flex items-center text-xs bg-blue-900/30 p-2 rounded-md border border-blue-900/40">
+                    <Clock className="h-3.5 w-3.5 mr-1.5 text-blue-400/80" />
+                    <span className="text-blue-300/80">
+                      Duration:{" "}
+                      <span className="text-blue-300">{duration.text}</span>
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex items-center mb-1">
+                    <span className="text-xs text-blue-300/70 font-medium">
+                      Status
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full mr-1.5 ${
+                        formData.isActive ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    ></div>
+                    <div className="flex items-center">
+                      <Power className="h-3.5 w-3.5 mr-1.5 text-blue-400/80" />
+                      <p className="text-sm text-white font-medium">
+                        {formData.isActive ? "Active" : "Inactive"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div variants={item} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-blue-300 flex items-center">
+                  <FileText className="h-4 w-4 mr-2 text-blue-400" />
+                  Basic Information
+                </h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToStep(2)}
+                  className="h-7 px-2 py-0 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 border-blue-900/40"
+                >
+                  <FileEdit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+              </div>
+
+              <div className="bg-blue-950/40 rounded-md p-3 space-y-3 border border-blue-900/40">
+                <div>
+                  <div className="flex items-center mb-1">
+                    <span className="text-xs text-blue-300/70 font-medium mr-1">
+                      Name
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] px-1 py-0 h-4 font-normal text-blue-300/70 border-blue-900/50"
+                    >
+                      Required
+                    </Badge>
+                  </div>
+                  <div className="flex items-center">
+                    {formData.name ? (
+                      <p className="text-sm text-white font-medium">
+                        {formData.name}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-red-400 font-medium flex items-center">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Not set
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center mb-1">
+                    <span className="text-xs text-blue-300/70 font-medium mr-1">
+                      Description
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] px-1 py-0 h-4 font-normal text-blue-300/70 border-blue-900/50"
+                    >
+                      Optional
+                    </Badge>
+                  </div>
+                  <div className="flex items-start">
+                    <Info className="h-3.5 w-3.5 mr-1.5 text-blue-400/70 mt-0.5" />
+                    {formData.description ? (
+                      <p className="text-sm text-white">
+                        {formData.description}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-blue-300/60">
+                        No description provided
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
-        </div> */}
-      </Card>
+        </ScrollArea>
+      </div>
     </motion.div>
   );
 };

@@ -19,18 +19,25 @@ interface FormContextType {
   updateForm: (updates: Partial<FormData>) => void;
   setFormData: (updates: Partial<FormData>) => void;
   errors: Record<string, string>;
+  setErrors: (errors: Record<string, string>) => void;
   goToStep: (stepNumber: number) => void;
   nextStep: () => void;
   prevStep: () => void;
   submitForm: () => Promise<void>;
   resetForm: () => void;
+  hasErrors: () => boolean;
 }
+
+// Set default dates for new subtypes
+const today = new Date();
+const nextYear = new Date();
+nextYear.setFullYear(today.getFullYear() + 1);
 
 const defaultFormData: Omit<FormData, "documentTypeId"> = {
   name: "",
   description: "",
-  startDate: "",
-  endDate: "",
+  startDate: today.toISOString().split("T")[0],
+  endDate: nextYear.toISOString().split("T")[0],
   isActive: true,
 };
 
@@ -80,6 +87,10 @@ export const SubTypeFormProvider: React.FC<SubTypeFormProviderProps> = ({
     }
   };
 
+  const hasErrors = () => {
+    return Object.keys(errors).length > 0;
+  };
+
   const goToStep = (stepNumber: number) => {
     if (stepNumber >= 1 && stepNumber <= 3) {
       setCurrentStep(stepNumber);
@@ -87,6 +98,9 @@ export const SubTypeFormProvider: React.FC<SubTypeFormProviderProps> = ({
   };
 
   const nextStep = () => {
+    // Don't proceed if there are errors on the current step
+    if (hasErrors()) return;
+
     if (currentStep < 3) {
       setCurrentStep((prev) => prev + 1);
     }
@@ -232,11 +246,13 @@ export const SubTypeFormProvider: React.FC<SubTypeFormProviderProps> = ({
     updateForm,
     setFormData: updateForm,
     errors,
+    setErrors,
     goToStep,
     nextStep,
     prevStep,
     submitForm: handleSubmit,
     resetForm,
+    hasErrors,
   };
 
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
